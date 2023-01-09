@@ -4,6 +4,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:manage_app/home/models/notification_model.dart';
 import 'package:manage_app/home/models/task_model.dart';
 import 'package:manage_app/home/screens/family_tree.dart';
@@ -12,10 +13,8 @@ import 'package:manage_app/home/screens/notifications.dart';
 import 'package:manage_app/home/screens/profile.dart';
 import 'package:manage_app/home/screens/staff_tree.dart';
 import 'package:manage_app/home/ui_view/task_card.dart';
-import 'package:manage_app/login/login.dart';
 import 'package:manage_app/utils/manage_theme.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -30,6 +29,8 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
     return WillPopScope(
         onWillPop: () async => false,
         child: Scaffold(
@@ -130,7 +131,7 @@ class _HomeState extends State<Home> {
                   child: Icon(
                     Icons.notifications_outlined,
                     color: Colors.grey,
-                    size: 30,
+                    size: screenWidth / 13,
                   ),
                 ),
                 Spacer(),
@@ -160,7 +161,7 @@ class _HomeState extends State<Home> {
                     Text(
                       "Today's Task",
                       style: ManageTheme.insideAppText(
-                          size: 27, weight: FontWeight.bold),
+                          size: screenWidth / 15, weight: FontWeight.bold),
                     ),
                     SizedBox(
                       height: 20,
@@ -202,7 +203,7 @@ class _HomeState extends State<Home> {
                         Text(
                           "Family Members",
                           style: ManageTheme.insideAppText(
-                              size: 24, weight: FontWeight.bold),
+                              size: screenWidth / 17, weight: FontWeight.bold),
                         ),
                         Spacer(),
                         IconButton(
@@ -213,8 +214,8 @@ class _HomeState extends State<Home> {
                                 pageTransitionAnimation:
                                     PageTransitionAnimation.scale);
                           },
-                          icon: Icon(Icons.forest_outlined),
-                          iconSize: 35,
+                          icon: Icon(FontAwesomeIcons.peopleRoof),
+                          iconSize: screenWidth / 16,
                         )
                       ],
                     ),
@@ -263,7 +264,7 @@ class _HomeState extends State<Home> {
                         Text(
                           "Staff Members",
                           style: ManageTheme.insideAppText(
-                              size: 24, weight: FontWeight.bold),
+                              size: screenWidth / 17, weight: FontWeight.bold),
                         ),
                         Spacer(),
                         IconButton(
@@ -274,8 +275,8 @@ class _HomeState extends State<Home> {
                                 pageTransitionAnimation:
                                     PageTransitionAnimation.scale);
                           },
-                          icon: Icon(Icons.forest_outlined),
-                          iconSize: 35,
+                          icon: Icon(FontAwesomeIcons.peopleGroup),
+                          iconSize: screenWidth / 16,
                         )
                       ],
                     ),
@@ -324,7 +325,7 @@ class _HomeState extends State<Home> {
                         Text(
                           "Guests",
                           style: ManageTheme.insideAppText(
-                              size: 24, weight: FontWeight.bold),
+                              size: screenWidth / 17, weight: FontWeight.bold),
                         ),
                         Spacer(),
                         IconButton(
@@ -337,8 +338,8 @@ class _HomeState extends State<Home> {
                                   PageTransitionAnimation.scale,
                             );
                           },
-                          icon: Icon(Icons.forest_outlined),
-                          iconSize: 35,
+                          icon: Icon(FontAwesomeIcons.peopleArrows),
+                          iconSize: screenWidth / 16,
                         )
                       ],
                     ),

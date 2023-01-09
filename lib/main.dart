@@ -38,7 +38,7 @@ class _MyAppState extends State<MyApp> {
     String? session = sharedPreferences.getString("session");
     if (session == null) {
       setState(() {
-        home = const Login();
+        home = const App();
       });
     } else {
       setState(() {

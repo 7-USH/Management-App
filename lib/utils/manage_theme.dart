@@ -18,7 +18,7 @@ class ManageTheme {
       "https://fastapi-soumitrakand7.cloud.okteto.net/";
 
   // ignore: constant_identifier_names
-  static const String API_VERSION = "api/vi/";
+  static const String API_VERSION = "api/v1/";
 
   static TextStyle appText({
     required double size,

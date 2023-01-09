@@ -2,7 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:manage_app/home/ui_view/profile_card.dart';
+import 'package:manage_app/login/login.dart';
 import 'package:manage_app/utils/manage_theme.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -74,7 +77,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   width: MediaQuery.of(context).size.width * 0.34,
                   height: 40,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      SharedPreferences pref =
+                          await SharedPreferences.getInstance();
+                      pref.remove("session").then((value) {
+                        PersistentNavBarNavigator.pushNewScreen(context,
+                            screen: Login(),
+                            withNavBar: false,
+                            pageTransitionAnimation:
+                                PageTransitionAnimation.scale);
+                      });
+                    },
                     style: ManageTheme.buttonStyle(
                         backColor: ManageTheme.nearlyBlack, fontSize: 15),
                     child: const Text(

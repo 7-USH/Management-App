@@ -1,11 +1,15 @@
-// ignore_for_file: unused_local_variable, unused_field, prefer_final_fields, non_constant_identifier_names
+// ignore_for_file: unused_local_variable, unused_field, prefer_final_fields, non_constant_identifier_names, prefer_const_constructors
 
 import 'dart:async';
 import 'package:action_slider/action_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:manage_app/attendance/models/status_enum.dart';
+import 'package:manage_app/attendance/screens/history_screen.dart';
+import 'package:manage_app/attendance/ui_view/leave_card.dart';
 import 'package:manage_app/utils/manage_theme.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 class Attendance extends StatefulWidget {
   const Attendance({super.key});
@@ -48,26 +52,52 @@ class _AttendanceState extends State<Attendance> {
       backgroundColor: ManageTheme.nearlyWhite,
       body: SafeArea(
         child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
-              Container(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Welcome,",
-                  style: ManageTheme.insideAppText(
-                      size: screenWidth / 19,
-                      weight: FontWeight.w400,
-                      color: Colors.black38),
-                ),
-              ),
-              Container(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Tushar Mali",
-                  style: ManageTheme.insideAppText(
-                      size: screenWidth / 16, weight: FontWeight.w600),
-                ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "Welcome,",
+                          style: ManageTheme.insideAppText(
+                              size: screenWidth / 19,
+                              weight: FontWeight.w400,
+                              color: Colors.black38),
+                        ),
+                      ),
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "Tushar Mali",
+                          style: ManageTheme.insideAppText(
+                              size: screenWidth / 16, weight: FontWeight.w600),
+                        ),
+                      ),
+                    ],
+                  ),
+                  IconButton(
+                      onPressed: () {
+                        PersistentNavBarNavigator.pushNewScreen(context,
+                            screen: HistoryScreen(),
+                            withNavBar: true,
+                            pageTransitionAnimation:
+                                PageTransitionAnimation.scale);
+                      },
+                      icon: Icon(
+                        FontAwesomeIcons.calendar,
+                        size: screenWidth / 15,
+                        color: Colors.black38,
+                      ))
+                ],
               ),
               Container(
                 alignment: Alignment.centerLeft,
@@ -89,7 +119,7 @@ class _AttendanceState extends State<Attendance> {
                     boxShadow: [
                       BoxShadow(
                           color: Colors.black26,
-                          blurRadius: 10,
+                          blurRadius: 7,
                           offset: Offset(2, 2))
                     ]),
                 child: Row(
@@ -157,7 +187,7 @@ class _AttendanceState extends State<Attendance> {
                 child: Text(
                   formattedTime,
                   style: ManageTheme.insideAppText(
-                      size: screenWidth / 22,
+                      size: screenWidth / 25,
                       weight: FontWeight.w500,
                       color: Colors.black38),
                 ),
@@ -226,15 +256,61 @@ class _AttendanceState extends State<Attendance> {
                         },
                       )
                     : Center(
-                        child: Text(
-                          "You have Completed this day!",
-                          style: ManageTheme.insideAppText(
-                              size: screenWidth / 24,
-                              weight: FontWeight.w500,
-                              color: Colors.black38),
+                        child: SizedBox(
+                          height: 70,
+                          child: Text(
+                            "You have Completed this day!",
+                            style: ManageTheme.insideAppText(
+                                size: screenWidth / 22,
+                                weight: FontWeight.w500,
+                                color: Colors.black38),
+                          ),
                         ),
                       );
-              })
+              }),
+              Container(
+                alignment: Alignment.centerLeft,
+                margin: const EdgeInsets.only(top: 32),
+                child: Text(
+                  "Leave Status",
+                  style: ManageTheme.insideAppText(
+                    size: screenWidth / 18,
+                    weight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.only(top: 12),
+                height: 200,
+                decoration: const BoxDecoration(
+                    color: ManageTheme.backgroundWhite,
+                    borderRadius: BorderRadius.all(Radius.circular(20)),
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 7,
+                          offset: Offset(2, 2))
+                    ]),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    LeaveCard(
+                      text: "Leaves \nTaken",
+                      number: "2",
+                      color: Colors.redAccent.shade100,
+                    ),
+                    LeaveCard(
+                        text: "Applied \nLeaves",
+                        number: "5",
+                        color: Colors.redAccent.shade700),
+                    LeaveCard(
+                        text: "Leaves \nLeft",
+                        number: "0",
+                        color: Colors.black26),
+                  ],
+                ),
+              ),
             ],
           ),
         ),

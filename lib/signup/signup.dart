@@ -170,8 +170,7 @@ class _SignUpState extends State<SignUp> {
                             .registerUser(
                                 model: RegisterModel(
                                     email: emailIdController.text,
-                                    firstName: userIdController.text,
-                                    lastName: userIdController.text,
+                                    fullName: userIdController.text,
                                     password: passwordController.text,
                                     mobileNo: mobileController.text,
                                     address: addressController.text),
