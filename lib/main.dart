@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:manage_app/app/app.dart';
 import 'package:manage_app/home/home.dart';
 import 'package:manage_app/login/login.dart';
+import 'package:manage_app/signup/screens/subplan_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {

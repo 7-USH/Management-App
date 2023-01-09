@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, unnecessary_import
-
 /*
 * Copyright 2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 *
@@ -31,9 +29,11 @@ class Message extends Model {
   static const classType = const _MessageModelType();
   final String id;
   final String? _message;
-  final String? _from_user;
-  final String? _to_user;
   final String? _time_stamp;
+  final String? _chatroomID;
+  final String? _userID;
+  final TemporalDateTime? _createdAt;
+  final TemporalDateTime? _updatedAt;
 
   @override
   getInstanceType() => classType;
@@ -52,27 +52,53 @@ class Message extends Model {
     return _message;
   }
   
-  String? get from_user {
-    return _from_user;
-  }
-  
-  String? get to_user {
-    return _to_user;
-  }
-  
   String? get time_stamp {
     return _time_stamp;
   }
   
-  const Message._internal({required this.id, message, from_user, to_user, time_stamp}): _message = message, _from_user = from_user, _to_user = to_user, _time_stamp = time_stamp;
+  String get chatroomID {
+    try {
+      return _chatroomID!;
+    } catch(e) {
+      throw new AmplifyCodeGenModelException(
+          AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+          recoverySuggestion:
+            AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+          underlyingException: e.toString()
+          );
+    }
+  }
   
-  factory Message({String? id, String? message, String? from_user, String? to_user, String? time_stamp}) {
+  String get userID {
+    try {
+      return _userID!;
+    } catch(e) {
+      throw new AmplifyCodeGenModelException(
+          AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+          recoverySuggestion:
+            AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+          underlyingException: e.toString()
+          );
+    }
+  }
+  
+  TemporalDateTime? get createdAt {
+    return _createdAt;
+  }
+  
+  TemporalDateTime? get updatedAt {
+    return _updatedAt;
+  }
+  
+  const Message._internal({required this.id, message, time_stamp, required chatroomID, required userID, createdAt, updatedAt}): _message = message, _time_stamp = time_stamp, _chatroomID = chatroomID, _userID = userID, _createdAt = createdAt, _updatedAt = updatedAt;
+  
+  factory Message({String? id, String? message, String? time_stamp, required String chatroomID, required String userID}) {
     return Message._internal(
       id: id == null ? UUID.getUUID() : id,
       message: message,
-      from_user: from_user,
-      to_user: to_user,
-      time_stamp: time_stamp);
+      time_stamp: time_stamp,
+      chatroomID: chatroomID,
+      userID: userID);
   }
   
   bool equals(Object other) {
@@ -85,9 +111,9 @@ class Message extends Model {
     return other is Message &&
       id == other.id &&
       _message == other._message &&
-      _from_user == other._from_user &&
-      _to_user == other._to_user &&
-      _time_stamp == other._time_stamp;
+      _time_stamp == other._time_stamp &&
+      _chatroomID == other._chatroomID &&
+      _userID == other._userID;
   }
   
   @override
@@ -100,44 +126,48 @@ class Message extends Model {
     buffer.write("Message {");
     buffer.write("id=" + "$id" + ", ");
     buffer.write("message=" + "$_message" + ", ");
-    buffer.write("from_user=" + "$_from_user" + ", ");
-    buffer.write("to_user=" + "$_to_user" + ", ");
-    buffer.write("time_stamp=" + "$_time_stamp");
+    buffer.write("time_stamp=" + "$_time_stamp" + ", ");
+    buffer.write("chatroomID=" + "$_chatroomID" + ", ");
+    buffer.write("userID=" + "$_userID" + ", ");
+    buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
+    buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
     
     return buffer.toString();
   }
   
-  Message copyWith({String? message, String? from_user, String? to_user, String? time_stamp}) {
-    return Message(
+  Message copyWith({String? message, String? time_stamp, String? chatroomID, String? userID}) {
+    return Message._internal(
       id: id,
       message: message ?? this.message,
-      from_user: from_user ?? this.from_user,
-      to_user: to_user ?? this.to_user,
-      time_stamp: time_stamp ?? this.time_stamp);
+      time_stamp: time_stamp ?? this.time_stamp,
+      chatroomID: chatroomID ?? this.chatroomID,
+      userID: userID ?? this.userID);
   }
   
   Message.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
       _message = json['message'],
-      _from_user = json['from_user'],
-      _to_user = json['to_user'],
-      _time_stamp = json['time_stamp'];
+      _time_stamp = json['time_stamp'],
+      _chatroomID = json['chatroomID'],
+      _userID = json['userID'],
+      _createdAt = json['createdAt'] != null ? TemporalDateTime.fromString(json['createdAt']) : null,
+      _updatedAt = json['updatedAt'] != null ? TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'message': _message, 'from_user': _from_user, 'to_user': _to_user, 'time_stamp': _time_stamp
+    'id': id, 'message': _message, 'time_stamp': _time_stamp, 'chatroomID': _chatroomID, 'userID': _userID, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
-    'id': id, 'message': _message, 'from_user': _from_user, 'to_user': _to_user, 'time_stamp': _time_stamp
+    'id': id, 'message': _message, 'time_stamp': _time_stamp, 'chatroomID': _chatroomID, 'userID': _userID, 'createdAt': _createdAt, 'updatedAt': _updatedAt
   };
 
   static final QueryModelIdentifier<MessageModelIdentifier> MODEL_IDENTIFIER = QueryModelIdentifier<MessageModelIdentifier>();
   static final QueryField ID = QueryField(fieldName: "id");
   static final QueryField MESSAGE = QueryField(fieldName: "message");
-  static final QueryField FROM_USER = QueryField(fieldName: "from_user");
-  static final QueryField TO_USER = QueryField(fieldName: "to_user");
   static final QueryField TIME_STAMP = QueryField(fieldName: "time_stamp");
+  static final QueryField CHATROOMID = QueryField(fieldName: "chatroomID");
+  static final QueryField USERID = QueryField(fieldName: "userID");
   static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "Message";
     modelSchemaDefinition.pluralName = "Messages";
@@ -153,6 +183,11 @@ class Message extends Model {
         ])
     ];
     
+    modelSchemaDefinition.indexes = [
+      ModelIndex(fields: const ["chatroomID"], name: "byChatRoom"),
+      ModelIndex(fields: const ["userID"], name: "byUser")
+    ];
+    
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
     
     modelSchemaDefinition.addField(ModelFieldDefinition.field(
@@ -162,21 +197,35 @@ class Message extends Model {
     ));
     
     modelSchemaDefinition.addField(ModelFieldDefinition.field(
-      key: Message.FROM_USER,
-      isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
-    
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
-      key: Message.TO_USER,
-      isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
-    
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
       key: Message.TIME_STAMP,
       isRequired: false,
       ofType: ModelFieldType(ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+      key: Message.CHATROOMID,
+      isRequired: true,
+      ofType: ModelFieldType(ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+      key: Message.USERID,
+      isRequired: true,
+      ofType: ModelFieldType(ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(ModelFieldDefinition.nonQueryField(
+      fieldName: 'createdAt',
+      isRequired: false,
+      isReadOnly: true,
+      ofType: ModelFieldType(ModelFieldTypeEnum.dateTime)
+    ));
+    
+    modelSchemaDefinition.addField(ModelFieldDefinition.nonQueryField(
+      fieldName: 'updatedAt',
+      isRequired: false,
+      isReadOnly: true,
+      ofType: ModelFieldType(ModelFieldTypeEnum.dateTime)
     ));
   });
 }

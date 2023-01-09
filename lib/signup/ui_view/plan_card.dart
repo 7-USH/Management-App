@@ -50,7 +50,7 @@ class _PlanCardState extends State<PlanCard> {
             Column(
               children: [
                 Text(
-                  widget.model.member_count,
+                  "${widget.model.minMembers!.toInt()}-${widget.model.maxMembers!.toInt()}",
                   style: ManageTheme.appText(
                       size: 22,
                       weight: FontWeight.w600,
@@ -66,7 +66,7 @@ class _PlanCardState extends State<PlanCard> {
               height: 20,
             ),
             Text(
-              "Rs.${widget.model.price.toInt()}",
+              "Rs.${widget.model.price!.toInt()}",
               style: ManageTheme.appText(
                   size: 20,
                   weight: FontWeight.w600,

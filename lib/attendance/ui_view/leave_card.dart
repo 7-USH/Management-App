@@ -39,7 +39,7 @@ class LeaveCard extends StatelessWidget {
             text,
             textAlign: TextAlign.center,
             style: ManageTheme.insideAppText(
-                size: screenWidth / 19, weight: FontWeight.w500),
+                size: screenWidth / 21, weight: FontWeight.w500),
           )
         ],
       ),

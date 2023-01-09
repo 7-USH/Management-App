@@ -29,61 +29,65 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
-    return PersistentTabView(
-      context,
-      backgroundColor: ManageTheme.backgroundWhite,
-      screenTransitionAnimation: ScreenTransitionAnimation(
-        animateTabTransition: true,
-        curve: Curves.easeIn,
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: PersistentTabView(
+        context,
+        backgroundColor: ManageTheme.backgroundWhite,
+        screenTransitionAnimation: ScreenTransitionAnimation(
+          animateTabTransition: true,
+          curve: Curves.easeIn,
+        ),
+        decoration: NavBarDecoration(
+            border:
+                Border(top: BorderSide(color: Colors.grey.withOpacity(0.2)))),
+        screens: [
+          Home(),
+          Chat(),
+          Attendance(),
+        ],
+        items: [
+          PersistentBottomNavBarItem(
+              icon: Icon(
+                CupertinoIcons.house,
+              ),
+              inactiveColorPrimary: Colors.grey,
+              activeColorSecondary: Colors.white,
+              activeColorPrimary: ManageTheme.nearlyBlack,
+              title: "Home",
+              textStyle:
+                  ManageTheme.insideAppText(size: 12, weight: FontWeight.w400)),
+          PersistentBottomNavBarItem(
+              icon: Icon(
+                CupertinoIcons.chat_bubble_2,
+              ),
+              inactiveColorPrimary: Colors.grey,
+              activeColorSecondary: Colors.white,
+              activeColorPrimary: ManageTheme.nearlyBlack,
+              title: "Chats",
+              textStyle:
+                  ManageTheme.insideAppText(size: 12, weight: FontWeight.w400)),
+          PersistentBottomNavBarItem(
+              icon: Icon(
+                CupertinoIcons.calendar_badge_plus,
+              ),
+              inactiveColorPrimary: Colors.grey,
+              activeColorSecondary: Colors.white,
+              activeColorPrimary: ManageTheme.nearlyBlack,
+              title: "Attendance",
+              textStyle:
+                  ManageTheme.insideAppText(size: 12, weight: FontWeight.w400)),
+        ],
+        controller: _controller,
+        confineInSafeArea: true,
+        handleAndroidBackButtonPress: true,
+        resizeToAvoidBottomInset: true,
+        stateManagement: true,
+        hideNavigationBarWhenKeyboardShows: false,
+        popAllScreensOnTapOfSelectedTab: true,
+        popActionScreens: PopActionScreensType.all,
+        navBarStyle: NavBarStyle.style10,
       ),
-      decoration: NavBarDecoration(
-          border: Border(top: BorderSide(color: Colors.grey.withOpacity(0.2)))),
-      screens: [
-        Home(),
-        Chat(),
-        Attendance(),
-      ],
-      items: [
-        PersistentBottomNavBarItem(
-            icon: Icon(
-              CupertinoIcons.house,
-            ),
-            inactiveColorPrimary: Colors.grey,
-            activeColorSecondary: Colors.white,
-            activeColorPrimary: ManageTheme.nearlyBlack,
-            title: "Home",
-            textStyle:
-                ManageTheme.insideAppText(size: 12, weight: FontWeight.w400)),
-        PersistentBottomNavBarItem(
-            icon: Icon(
-              CupertinoIcons.chat_bubble_2,
-            ),
-            inactiveColorPrimary: Colors.grey,
-            activeColorSecondary: Colors.white,
-            activeColorPrimary: ManageTheme.nearlyBlack,
-            title: "Chats",
-            textStyle:
-                ManageTheme.insideAppText(size: 12, weight: FontWeight.w400)),
-        PersistentBottomNavBarItem(
-            icon: Icon(
-              CupertinoIcons.calendar_badge_plus,
-            ),
-            inactiveColorPrimary: Colors.grey,
-            activeColorSecondary: Colors.white,
-            activeColorPrimary: ManageTheme.nearlyBlack,
-            title: "Attendance",
-            textStyle:
-                ManageTheme.insideAppText(size: 12, weight: FontWeight.w400)),
-      ],
-      controller: _controller,
-      confineInSafeArea: true,
-      handleAndroidBackButtonPress: true,
-      resizeToAvoidBottomInset: true,
-      stateManagement: true,
-      hideNavigationBarWhenKeyboardShows: false,
-      popAllScreensOnTapOfSelectedTab: true,
-      popActionScreens: PopActionScreensType.all,
-      navBarStyle: NavBarStyle.style10,
     );
   }
 }

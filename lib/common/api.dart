@@ -16,7 +16,7 @@ class ApiService {
 
   Future<Either<MyError, Map<String, dynamic>>> getData(String endpoint) async {
     Uri uri = getUri(endpoint);
-    var response = await http.get(uri);
+    var response = await http.get(uri, headers: await getHeaders());
     if (response.statusCode == 200) {
       return Right(jsonDecode(response.body.toString()));
     }
@@ -34,8 +34,7 @@ class ApiService {
       String endpoint, Map<String, dynamic> requestBody) async {
     Uri uri = getUri(endpoint);
     var response = await http.post(uri,
-        body: jsonEncode(requestBody),
-        headers: {"Content-Type": "application/json"});
+        body: jsonEncode(requestBody), headers: await getHeaders());
     if (response.statusCode == 200) {
       return Right(jsonDecode(response.body));
     }
@@ -89,7 +88,7 @@ class ApiService {
 
   Future<Map<String, String>> getHeaders() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
-    String? access = pref.getString("access");
+    String? access = pref.getString("session");
     return {
       'Authorization': 'Bearer $access',
       'Content-Type': 'application/json; charset=UTF-8',

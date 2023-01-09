@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, unused_field, sized_box_for_whitespace, use_build_context_synchronously
+// ignore_for_file: prefer_const_constructors, unused_field, sized_box_for_whitespace, use_build_context_synchronously, unused_local_variable
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
@@ -229,30 +229,29 @@ class _HomeState extends State<Home> {
                           border: Border.all(color: ManageTheme.nearlyBlack)),
                       child: AnimationLimiter(
                         child: GridView.count(
-                          key: const PageStorageKey<String>('GridView'),
-                          crossAxisCount: 3,
-                          padding: const EdgeInsets.all(10),
-                          mainAxisSpacing: 20,
-                          crossAxisSpacing: 20,
-                          childAspectRatio: 1.2,
-                          physics: const BouncingScrollPhysics(),
-                          children: List.generate(10, (index) {
-                            return AnimationConfiguration.staggeredGrid(
-                              position: index,
-                              duration:
-                                  const Duration(seconds: 1, milliseconds: 500),
-                              columnCount: 4,
-                              child: SlideAnimation(
-                                horizontalOffset: 80.0,
-                                child: FadeInAnimation(
-                                  child: CircleAvatar(
-                                    backgroundColor: ManageTheme.nearlyBlack,
+                            key: const PageStorageKey<String>('GridView'),
+                            crossAxisCount: 3,
+                            padding: const EdgeInsets.all(10),
+                            mainAxisSpacing: 20,
+                            crossAxisSpacing: 20,
+                            childAspectRatio: 1.2,
+                            physics: const BouncingScrollPhysics(),
+                            children: List.generate(10, (index) {
+                              return AnimationConfiguration.staggeredGrid(
+                                position: index,
+                                duration: const Duration(
+                                    seconds: 1, milliseconds: 500),
+                                columnCount: 4,
+                                child: SlideAnimation(
+                                  horizontalOffset: 80.0,
+                                  child: FadeInAnimation(
+                                    child: CircleAvatar(
+                                      backgroundColor: ManageTheme.nearlyBlack,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            );
-                          }),
-                        ),
+                              );
+                            })),
                       ),
                     ),
                     SizedBox(
