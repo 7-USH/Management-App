@@ -1,12 +1,18 @@
+// ignore_for_file: unused_local_variable, non_constant_identifier_names
+
+import 'package:amplify_core/amplify_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:manage_app/chat/models/ModelProvider.dart';
 import 'package:manage_app/chat/models/chat_model.dart';
 import 'package:manage_app/chat/screens/chat_screen.dart';
 import 'package:manage_app/chat/ui_view/chat_card.dart';
 import 'package:manage_app/chat/ui_view/circle_card.dart';
+import 'package:manage_app/chat/view_models/users_list_viewmodel.dart';
 import 'package:manage_app/utils/manage_theme.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+import 'package:provider/provider.dart';
 
 class Chat extends StatefulWidget {
   const Chat({super.key});
@@ -17,6 +23,7 @@ class Chat extends StatefulWidget {
 
 class _ChatState extends State<Chat> {
   late FocusNode searchNode;
+  late Stream<QuerySnapshot<User>> users;
 
   @override
   void initState() {
@@ -78,89 +85,88 @@ class _ChatState extends State<Chat> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ManageTheme.nearlyWhite,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        foregroundColor: Colors.transparent,
-        elevation: 0.0,
-        title: CupertinoSearchTextField(
-          autofocus: false,
-          onTap: () {
-            FocusScope.of(context).unfocus();
-          },
-          placeholder: "Search by Name/Tag",
-          padding: const EdgeInsets.all(10),
-          prefixInsets: const EdgeInsets.symmetric(horizontal: 8),
-          onChanged: (String value) {},
-          onSubmitted: (String value) {},
+        backgroundColor: ManageTheme.nearlyWhite,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          foregroundColor: Colors.transparent,
+          elevation: 0.0,
+          title: CupertinoSearchTextField(
+            autofocus: false,
+            onTap: () {
+              FocusScope.of(context).unfocus();
+            },
+            placeholder: "Search by Name/Tag",
+            padding: const EdgeInsets.all(10),
+            prefixInsets: const EdgeInsets.symmetric(horizontal: 8),
+            onChanged: (String value) {},
+            onSubmitted: (String value) {},
+          ),
         ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              height: 90,
-              child: AnimationLimiter(
-                child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    physics: const BouncingScrollPhysics(),
-                    shrinkWrap: true,
-                    itemBuilder: (_, index) {
-                      return AnimationConfiguration.staggeredList(
+        body: Padding(
+          padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                height: 90,
+                child: AnimationLimiter(
+                  child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      physics: const BouncingScrollPhysics(),
+                      shrinkWrap: true,
+                      itemBuilder: (_, index) {
+                        return AnimationConfiguration.staggeredList(
+                            position: index,
+                            duration: const Duration(milliseconds: 500),
+                            child: const SlideAnimation(
+                                horizontalOffset: 80,
+                                child: FadeInAnimation(child: CircleCard())));
+                      },
+                      itemCount: 15),
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Container(
+                height: 1.5,
+                color: Colors.grey.withOpacity(0.18),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Expanded(
+                child: AnimationLimiter(
+                  child: ListView.builder(
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: models.length,
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        return AnimationConfiguration.staggeredList(
                           position: index,
                           duration: const Duration(milliseconds: 500),
-                          child: const SlideAnimation(
-                              horizontalOffset: 80,
-                              child: FadeInAnimation(child: CircleCard())));
-                    },
-                    itemCount: 15),
-              ),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Container(
-              height: 1.5,
-              color: Colors.grey.withOpacity(0.18),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Expanded(
-              child: AnimationLimiter(
-                child: ListView.builder(
-                    physics: const BouncingScrollPhysics(),
-                    itemCount: models.length,
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) {
-                      return AnimationConfiguration.staggeredList(
-                        position: index,
-                        duration: const Duration(milliseconds: 500),
-                        child: SlideAnimation(
-                          horizontalOffset: 80,
-                          child: FadeInAnimation(
-                            child: GestureDetector(
-                                onTap: () {
-                                  PersistentNavBarNavigator.pushNewScreen(
-                                    context,
-                                    screen: ChatScreen(model: models[index]),
-                                    withNavBar: true,
-                                    pageTransitionAnimation:
-                                        PageTransitionAnimation.scale,
-                                  );
-                                },
-                                child: ChatCard(model: models[index])),
+                          child: SlideAnimation(
+                            horizontalOffset: 80,
+                            child: FadeInAnimation(
+                              child: GestureDetector(
+                                  onTap: () {
+                                    PersistentNavBarNavigator.pushNewScreen(
+                                      context,
+                                      screen: ChatScreen(model: models[index]),
+                                      withNavBar: true,
+                                      pageTransitionAnimation:
+                                          PageTransitionAnimation.scale,
+                                    );
+                                  },
+                                  child: ChatCard(model: models[index])),
+                            ),
                           ),
-                        ),
-                      );
-                    }),
-              ),
-            )
-          ],
-        ),
-      ),
-    );
+                        );
+                      }),
+                ),
+              )
+            ],
+          ),
+        ));
   }
 }

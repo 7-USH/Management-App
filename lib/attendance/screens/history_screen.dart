@@ -1,6 +1,7 @@
 // ignore_for_file: unused_local_variable, prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:manage_app/attendance/models/attendance_model.dart';
 import 'package:manage_app/attendance/ui_view/attendance_card.dart';
 import 'package:manage_app/utils/manage_theme.dart';
@@ -64,20 +65,31 @@ class _HistoryScreenState extends State<HistoryScreen> {
               height: 10,
             ),
             Expanded(
-              child: ListView.builder(
-                itemCount: 10,
-                physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.all(10),
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  return AttendanceCard(
-                    model: AttendanceModel(
-                        check_in_time: "09:30",
-                        check_out_time: "10:32",
-                        date: "07",
-                        day: "Fri"),
-                  );
-                },
+              child: AnimationLimiter(
+                child: ListView.builder(
+                  itemCount: 10,
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.all(10),
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    return AnimationConfiguration.staggeredList(
+                      position: index,
+                      duration: const Duration(milliseconds: 800),
+                      child: SlideAnimation(
+                        horizontalOffset: 120,
+                        child: FadeInAnimation(
+                          child: AttendanceCard(
+                            model: AttendanceModel(
+                                check_in_time: "09:30",
+                                check_out_time: "10:32",
+                                date: "07",
+                                day: "Fri"),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
             )
           ],

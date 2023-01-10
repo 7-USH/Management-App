@@ -9,6 +9,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.1"
+  amplify_api:
+    dependency: "direct main"
+    description:
+      name: amplify_api
+      sha256: "0dc2a8f5ca51b9ed13cab4d724e485bd7cba6fe31fa161871c64ed143194d855"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.6.10"
+  amplify_api_android:
+    dependency: transitive
+    description:
+      name: amplify_api_android
+      sha256: "1eb54d4d495a21b6fb105f23f7f01d1ae544a8adf4ceec891db05cc56a931c4a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.6.10"
+  amplify_api_ios:
+    dependency: transitive
+    description:
+      name: amplify_api_ios
+      sha256: b5a594a9d0c79302920bb516f0119fe3a481acd1a3ed2f6e1d5de6e069b27d16
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.6.10"
   amplify_core:
     dependency: "direct main"
     description:
@@ -504,6 +528,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.2"
+  shimmer:
+    dependency: "direct main"
+    description:
+      name: shimmer
+      sha256: "1f1009b5845a1f88f1c5630212279540486f97409e9fc3f63883e71070d107bf"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
   sky_engine:
     dependency: transitive
     description: flutter

@@ -1,4 +1,4 @@
-// ignore_for_file: unused_local_variable, unused_field, prefer_final_fields, non_constant_identifier_names, prefer_const_constructors
+// ignore_for_file: unused_local_variable, unused_field, prefer_final_fields, non_constant_identifier_names, prefer_const_constructors, deprecated_member_use
 
 import 'dart:async';
 import 'package:action_slider/action_slider.dart';
@@ -10,6 +10,7 @@ import 'package:manage_app/attendance/screens/history_screen.dart';
 import 'package:manage_app/attendance/ui_view/leave_card.dart';
 import 'package:manage_app/utils/manage_theme.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+import 'package:shimmer/shimmer.dart';
 
 class Attendance extends StatefulWidget {
   const Attendance({super.key});
@@ -131,6 +132,14 @@ class _AttendanceState extends State<Attendance> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
+                        Icon(
+                          FontAwesomeIcons.signInAlt,
+                          size: screenWidth / 15,
+                          color: Colors.black38,
+                        ),
+                        SizedBox(
+                          height: screenHeight / 50,
+                        ),
                         Text(
                           "Check In",
                           style: ManageTheme.insideAppText(
@@ -152,6 +161,14 @@ class _AttendanceState extends State<Attendance> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
+                        Icon(
+                          FontAwesomeIcons.signOutAlt,
+                          size: screenWidth / 15,
+                          color: Colors.black38,
+                        ),
+                        SizedBox(
+                          height: screenHeight / 50,
+                        ),
                         Text(
                           "Check Out",
                           style: ManageTheme.insideAppText(
@@ -214,14 +231,20 @@ class _AttendanceState extends State<Attendance> {
                           color: ManageTheme.backgroundWhite,
                           size: screenWidth / 13,
                         ),
-                        child: Text(
-                          status == AttendanceStatus.CHECK_OUT
-                              ? "Slide to Check Out"
-                              : "Slide to Check In",
-                          style: ManageTheme.insideAppText(
-                              size: screenWidth / 22,
-                              weight: FontWeight.w500,
-                              color: Colors.black38),
+                        child: Shimmer.fromColors(
+                          baseColor: Colors.black12,
+                          highlightColor: Colors.grey,
+                          child: Text(
+                            status == AttendanceStatus.CHECK_OUT
+                                ? "Slide to Check Out"
+                                : "Slide to Check In",
+                            style: ManageTheme.insideAppText(
+                                size: screenWidth / 21,
+                                weight: FontWeight.w600,
+                                color: status == AttendanceStatus.CHECK_IN
+                                    ? ManageTheme.successGreen
+                                    : Colors.redAccent),
+                          ),
                         ),
                         action: (controller) async {
                           controller.loading();
@@ -311,6 +334,42 @@ class _AttendanceState extends State<Attendance> {
                   ],
                 ),
               ),
+              SizedBox(
+                height: screenHeight / 30,
+              ),
+              SizedBox(
+                width: screenWidth,
+                height: screenHeight / 15,
+                child: ElevatedButton(
+                    onPressed: () {},
+                    style: ManageTheme.buttonStyle(
+                        backColor: ManageTheme.nearlyBlack),
+                    child: Text(
+                      "Request Leave",
+                      style: ManageTheme.insideAppText(
+                          size: screenWidth / 25,
+                          weight: FontWeight.w500,
+                          color: ManageTheme.backgroundWhite),
+                    )),
+              ),
+              SizedBox(
+                height: screenHeight / 40,
+              ),
+              SizedBox(
+                width: screenWidth,
+                height: screenHeight / 15,
+                child: ElevatedButton(
+                    onPressed: () {},
+                    style: ManageTheme.buttonStyle(
+                        backColor: ManageTheme.nearlyBlack),
+                    child: Text(
+                      "Application Status",
+                      style: ManageTheme.insideAppText(
+                          size: screenWidth / 25,
+                          weight: FontWeight.w500,
+                          color: ManageTheme.backgroundWhite),
+                    )),
+              )
             ],
           ),
         ),

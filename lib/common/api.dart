@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:convert';
 import 'package:either_dart/either.dart';
 import 'package:http/http.dart' as http;
@@ -45,7 +47,7 @@ class ApiService {
     }
     return Left(MyError(
         key: AppError.ERROR_DETECTED,
-        message: "Bad http status ${response.statusCode}"));
+        message: jsonDecode(response.body)["detail"]));
   }
 
   Future<Either<MyError, List<dynamic>>> getAllData(String endpoint) async {
