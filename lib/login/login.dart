@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:manage_app/login/models/login_model.dart';
 import 'package:manage_app/login/models/session_model.dart';
+import 'package:manage_app/login/screens/forgot_screen.dart';
 import 'package:manage_app/login/service/login_service.dart';
 import 'package:manage_app/signup/signup.dart';
 import 'package:manage_app/utils/manage_theme.dart';
@@ -99,6 +100,25 @@ class _LoginState extends State<Login> {
                             hint: "Password",
                             prefixIcon: Icons.lock,
                             fontSize: 16),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (_) {
+                            return ForgotScreen();
+                          }));
+                        },
+                        child: Container(
+                          alignment: Alignment.centerRight,
+                          margin: EdgeInsets.only(top: 8, bottom: 5),
+                          child: Text(
+                            "Forgot Password?",
+                            style: ManageTheme.appText(
+                                size: 13,
+                                weight: FontWeight.normal,
+                                color: Colors.black54),
+                          ),
+                        ),
                       ),
                       const SizedBox(
                         height: 20,
