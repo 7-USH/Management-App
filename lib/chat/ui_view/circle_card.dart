@@ -1,9 +1,11 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, must_be_immutable
 import 'package:flutter/material.dart';
+import 'package:manage_app/chat/models/ModelProvider.dart';
 import 'package:manage_app/utils/manage_theme.dart';
 
 class CircleCard extends StatefulWidget {
-  const CircleCard({super.key});
+  CircleCard({super.key, required this.model});
+  User model;
 
   @override
   State<CircleCard> createState() => _CircleCardState();
@@ -17,7 +19,13 @@ class _CircleCardState extends State<CircleCard> {
       width: 70,
       margin: EdgeInsets.all(10),
       decoration: BoxDecoration(
-          color: ManageTheme.nearlyBlack,
+          color: ManageTheme.nearlyWhite,
+          border: Border.all(
+              color: widget.model.is_online!
+                  ? ManageTheme.successGreen
+                  : Colors.grey,
+              width: 2.5,
+              strokeAlign: BorderSide.strokeAlignOutside),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(.5),
@@ -30,23 +38,13 @@ class _CircleCardState extends State<CircleCard> {
             ),
           ],
           borderRadius: BorderRadius.circular(35)),
-      child: Align(
-        alignment: Alignment.topRight,
+      child: Center(
         child: Container(
-          height: 15,
-          width: 15,
-          margin: EdgeInsets.all(1),
+          height: 66,
+          width: 66,
           decoration: BoxDecoration(
-              color: ManageTheme.nearlyWhite,
-              borderRadius: BorderRadius.circular(7.5)),
-          child: Container(
-            height: 10,
-            width: 10,
-            margin: EdgeInsets.all(3),
-            decoration: BoxDecoration(
-                color: ManageTheme.successGreen,
-                borderRadius: BorderRadius.circular(5)),
-          ),
+              color: ManageTheme.nearlyBlack,
+              borderRadius: BorderRadius.circular(33)),
         ),
       ),
     );

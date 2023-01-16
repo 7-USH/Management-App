@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, unused_field, sized_box_for_whitespace, use_build_context_synchronously, unused_local_variable
+// ignore_for_file: prefer_const_constructors, unused_field, sized_box_for_whitespace, use_build_context_synchronously, unused_local_variable, non_constant_identifier_names
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
@@ -25,7 +25,594 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   int _current = 0;
+  final List<String> _family_relations = [
+    "Dad",
+    "Mom",
+    "Son",
+    "Daughter",
+    "Other",
+  ];
+
+  final List<String> _staff_relations = [
+    "Manager",
+    "Housekeeper",
+    "Gardner",
+    "Cook",
+    "Other",
+  ];
+
+  final List<String> _guest_relations = [
+    "Home tutor",
+    "Friends",
+  ];
+
+  String _currentFamilySelectedValue = "Dad";
+  String _currentStaffSelectedValue = "Manager";
+  String _currentGuestSelectedValue = "Home tutor";
+
   CarouselController buttonCarouselController = CarouselController();
+
+  void addFamilyMembers() {
+    showModalBottomSheet(
+        context: context,
+        useSafeArea: true,
+        isScrollControlled: true,
+        useRootNavigator: true,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+        builder: (_) {
+          return Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Scaffold(
+              body: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: Column(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(bottom: 40),
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Add Family Member",
+                        style: ManageTheme.insideAppText(
+                            size: MediaQuery.of(context).size.width / 18,
+                            weight: FontWeight.w700),
+                      ),
+                    ),
+                    Column(
+                      children: [
+                        Container(
+                          height: MediaQuery.of(context).size.width / 3,
+                          width: MediaQuery.of(context).size.width / 3,
+                          margin: EdgeInsets.only(bottom: 25),
+                          decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(20)),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.add_a_photo,
+                                color: Colors.grey,
+                                size: MediaQuery.of(context).size.width / 14,
+                              ),
+                              Text(
+                                "Add Image",
+                                style: ManageTheme.insideAppText(
+                                    size:
+                                        MediaQuery.of(context).size.width / 43,
+                                    weight: FontWeight.w500,
+                                    color: Colors.grey),
+                              )
+                            ],
+                          ),
+                        ),
+                        TextFormField(
+                          cursorColor: ManageTheme.nearlyBlack,
+                          autofocus: true,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Please enter email";
+                            } else if (!RegExp(
+                                    r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
+                                .hasMatch(value)) {
+                              return "Email is not valid";
+                            }
+                            return null;
+                          },
+                          decoration: ManageTheme.faInputDecoration(
+                            hint: "Name",
+                            fontSize: 16,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        TextFormField(
+                          cursorColor: ManageTheme.nearlyBlack,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Please enter email";
+                            } else if (!RegExp(
+                                    r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
+                                .hasMatch(value)) {
+                              return "Email is not valid";
+                            }
+                            return null;
+                          },
+                          decoration: ManageTheme.faInputDecoration(
+                            hint: "Email",
+                            fontSize: 16,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        FormField<String>(
+                          builder: (FormFieldState<String> state) {
+                            return InputDecorator(
+                              decoration: ManageTheme.faInputDecoration(
+                                  hint: "Relation", fontSize: 16),
+                              isEmpty: _currentFamilySelectedValue == '',
+                              child: DropdownButtonHideUnderline(
+                                child: DropdownButton<String>(
+                                  value: _currentFamilySelectedValue,
+                                  isDense: true,
+                                  onChanged: (newValue) {
+                                    setState(() {
+                                      _currentFamilySelectedValue = newValue!;
+                                      state.didChange(newValue);
+                                    });
+                                  },
+                                  items: _family_relations.map((String value) {
+                                    return DropdownMenuItem<String>(
+                                      value: value,
+                                      child: Text(
+                                        value,
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        TextFormField(
+                          cursorColor: ManageTheme.nearlyBlack,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Please enter email";
+                            } else if (!RegExp(
+                                    r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
+                                .hasMatch(value)) {
+                              return "Email is not valid";
+                            }
+                            return null;
+                          },
+                          decoration: ManageTheme.faInputDecoration(
+                            hint: "Bank Details",
+                            fontSize: 16,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width,
+                          height: 60,
+                          child: ElevatedButton(
+                              style: ManageTheme.buttonStyle(
+                                  backColor: ManageTheme.nearlyBlack),
+                              onPressed: () {},
+                              child: Text(
+                                "Add Member",
+                                style: ManageTheme.insideAppText(
+                                    size: 15,
+                                    weight: FontWeight.w600,
+                                    color: ManageTheme.backgroundWhite),
+                              )),
+                        )
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        });
+  }
+
+  void addStaffMembers() {
+    showModalBottomSheet(
+        context: context,
+        useSafeArea: true,
+        isScrollControlled: true,
+        useRootNavigator: true,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+        builder: (_) {
+          return Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Scaffold(
+              body: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: Column(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(bottom: 40),
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Add Staff Member",
+                        style: ManageTheme.insideAppText(
+                            size: MediaQuery.of(context).size.width / 18,
+                            weight: FontWeight.w700),
+                      ),
+                    ),
+                    Column(
+                      children: [
+                        Container(
+                          height: MediaQuery.of(context).size.width / 3,
+                          width: MediaQuery.of(context).size.width / 3,
+                          margin: EdgeInsets.only(bottom: 25),
+                          decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(20)),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.add_a_photo,
+                                color: Colors.grey,
+                                size: MediaQuery.of(context).size.width / 14,
+                              ),
+                              Text(
+                                "Add Image",
+                                style: ManageTheme.insideAppText(
+                                    size:
+                                        MediaQuery.of(context).size.width / 43,
+                                    weight: FontWeight.w500,
+                                    color: Colors.grey),
+                              )
+                            ],
+                          ),
+                        ),
+                        TextFormField(
+                          cursorColor: ManageTheme.nearlyBlack,
+                          autofocus: true,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Please enter email";
+                            } else if (!RegExp(
+                                    r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
+                                .hasMatch(value)) {
+                              return "Email is not valid";
+                            }
+                            return null;
+                          },
+                          decoration: ManageTheme.faInputDecoration(
+                            hint: "Name",
+                            fontSize: 16,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        TextFormField(
+                          cursorColor: ManageTheme.nearlyBlack,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Please enter email";
+                            } else if (!RegExp(
+                                    r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
+                                .hasMatch(value)) {
+                              return "Email is not valid";
+                            }
+                            return null;
+                          },
+                          decoration: ManageTheme.faInputDecoration(
+                            hint: "Email",
+                            fontSize: 16,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        FormField<String>(
+                          builder: (FormFieldState<String> state) {
+                            return InputDecorator(
+                              decoration: ManageTheme.faInputDecoration(
+                                  hint: "Designation", fontSize: 16),
+                              isEmpty: _currentStaffSelectedValue == '',
+                              child: DropdownButtonHideUnderline(
+                                child: DropdownButton<String>(
+                                  value: _currentStaffSelectedValue,
+                                  isDense: true,
+                                  onChanged: (newValue) {
+                                    setState(() {
+                                      _currentStaffSelectedValue = newValue!;
+                                      state.didChange(newValue);
+                                    });
+                                  },
+                                  items: _staff_relations.map((String value) {
+                                    return DropdownMenuItem<String>(
+                                      value: value,
+                                      child: Text(
+                                        value,
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        TextFormField(
+                          cursorColor: ManageTheme.nearlyBlack,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Please enter email";
+                            } else if (!RegExp(
+                                    r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
+                                .hasMatch(value)) {
+                              return "Email is not valid";
+                            }
+                            return null;
+                          },
+                          decoration: ManageTheme.faInputDecoration(
+                            hint: "Address",
+                            fontSize: 16,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        TextFormField(
+                          cursorColor: ManageTheme.nearlyBlack,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Please enter email";
+                            } else if (!RegExp(
+                                    r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
+                                .hasMatch(value)) {
+                              return "Email is not valid";
+                            }
+                            return null;
+                          },
+                          decoration: ManageTheme.faInputDecoration(
+                            hint: "Job Details",
+                            fontSize: 16,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        TextFormField(
+                          cursorColor: ManageTheme.nearlyBlack,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Please enter email";
+                            } else if (!RegExp(
+                                    r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
+                                .hasMatch(value)) {
+                              return "Email is not valid";
+                            }
+                            return null;
+                          },
+                          decoration: ManageTheme.faInputDecoration(
+                            hint: "Bank Details",
+                            fontSize: 16,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width,
+                          height: 60,
+                          child: ElevatedButton(
+                              style: ManageTheme.buttonStyle(
+                                  backColor: ManageTheme.nearlyBlack),
+                              onPressed: () {},
+                              child: Text(
+                                "Add Member",
+                                style: ManageTheme.insideAppText(
+                                    size: 15,
+                                    weight: FontWeight.w600,
+                                    color: ManageTheme.backgroundWhite),
+                              )),
+                        )
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        });
+  }
+
+  void addGuestMembers() {
+    showModalBottomSheet(
+        context: context,
+        useSafeArea: true,
+        isScrollControlled: true,
+        useRootNavigator: true,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+        builder: (_) {
+          return Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Scaffold(
+              body: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: Column(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(bottom: 40),
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Add Guest Member",
+                        style: ManageTheme.insideAppText(
+                            size: MediaQuery.of(context).size.width / 18,
+                            weight: FontWeight.w700),
+                      ),
+                    ),
+                    Column(
+                      children: [
+                        Container(
+                          height: MediaQuery.of(context).size.width / 3,
+                          width: MediaQuery.of(context).size.width / 3,
+                          margin: EdgeInsets.only(bottom: 25),
+                          decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(20)),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.add_a_photo,
+                                color: Colors.grey,
+                                size: MediaQuery.of(context).size.width / 14,
+                              ),
+                              Text(
+                                "Add Image",
+                                style: ManageTheme.insideAppText(
+                                    size:
+                                        MediaQuery.of(context).size.width / 43,
+                                    weight: FontWeight.w500,
+                                    color: Colors.grey),
+                              )
+                            ],
+                          ),
+                        ),
+                        TextFormField(
+                          cursorColor: ManageTheme.nearlyBlack,
+                          autofocus: true,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Please enter email";
+                            } else if (!RegExp(
+                                    r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
+                                .hasMatch(value)) {
+                              return "Email is not valid";
+                            }
+                            return null;
+                          },
+                          decoration: ManageTheme.faInputDecoration(
+                            hint: "Name",
+                            fontSize: 16,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        TextFormField(
+                          cursorColor: ManageTheme.nearlyBlack,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Please enter email";
+                            } else if (!RegExp(
+                                    r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
+                                .hasMatch(value)) {
+                              return "Email is not valid";
+                            }
+                            return null;
+                          },
+                          decoration: ManageTheme.faInputDecoration(
+                            hint: "Email",
+                            fontSize: 16,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        FormField<String>(
+                          builder: (FormFieldState<String> state) {
+                            return InputDecorator(
+                              decoration: ManageTheme.faInputDecoration(
+                                  hint: "Relation", fontSize: 16),
+                              isEmpty: _currentGuestSelectedValue == '',
+                              child: DropdownButtonHideUnderline(
+                                child: DropdownButton<String>(
+                                  value: _currentGuestSelectedValue,
+                                  isDense: true,
+                                  onChanged: (newValue) {
+                                    setState(() {
+                                      _currentGuestSelectedValue = newValue!;
+                                      state.didChange(newValue);
+                                    });
+                                  },
+                                  items: _guest_relations.map((String value) {
+                                    return DropdownMenuItem<String>(
+                                      value: value,
+                                      child: Text(
+                                        value,
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        TextFormField(
+                          cursorColor: ManageTheme.nearlyBlack,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Please enter email";
+                            } else if (!RegExp(
+                                    r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
+                                .hasMatch(value)) {
+                              return "Email is not valid";
+                            }
+                            return null;
+                          },
+                          decoration: ManageTheme.faInputDecoration(
+                            hint: "Address",
+                            fontSize: 16,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width,
+                          height: 60,
+                          child: ElevatedButton(
+                              style: ManageTheme.buttonStyle(
+                                  backColor: ManageTheme.nearlyBlack),
+                              onPressed: () {},
+                              child: Text(
+                                "Add Member",
+                                style: ManageTheme.insideAppText(
+                                    size: 15,
+                                    weight: FontWeight.w600,
+                                    color: ManageTheme.backgroundWhite),
+                              )),
+                        )
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -251,7 +838,20 @@ class _HomeState extends State<Home> {
                                   ),
                                 ),
                               );
-                            })),
+                            })
+                              ..add(GestureDetector(
+                                onTap: () {
+                                  addFamilyMembers();
+                                },
+                                child: CircleAvatar(
+                                  backgroundColor: Colors.grey.shade400,
+                                  child: Icon(
+                                    Icons.add,
+                                    color: ManageTheme.backgroundWhite,
+                                    size: screenWidth / 9,
+                                  ),
+                                ),
+                              ))),
                       ),
                     ),
                     SizedBox(
@@ -311,7 +911,20 @@ class _HomeState extends State<Home> {
                                 ),
                               ),
                             );
-                          }),
+                          })
+                            ..add(GestureDetector(
+                              onTap: () {
+                                addStaffMembers();
+                              },
+                              child: CircleAvatar(
+                                backgroundColor: Colors.grey.shade400,
+                                child: Icon(
+                                  Icons.add,
+                                  color: ManageTheme.backgroundWhite,
+                                  size: screenWidth / 9,
+                                ),
+                              ),
+                            )),
                         ),
                       ),
                     ),
@@ -374,7 +987,20 @@ class _HomeState extends State<Home> {
                                 ),
                               ),
                             );
-                          }),
+                          })
+                            ..add(GestureDetector(
+                              onTap: () {
+                                addGuestMembers();
+                              },
+                              child: CircleAvatar(
+                                backgroundColor: Colors.grey.shade400,
+                                child: Icon(
+                                  Icons.add,
+                                  color: ManageTheme.backgroundWhite,
+                                  size: screenWidth / 9,
+                                ),
+                              ),
+                            )),
                         ),
                       ),
                     )

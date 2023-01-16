@@ -1,5 +1,4 @@
 // ignore_for_file: prefer_const_constructors, unused_import, unused_element, avoid_print
-
 import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
@@ -50,7 +49,7 @@ class _MyAppState extends State<MyApp> {
   void _configureAmplify() async {
     AmplifyDataStore datastorePlugin =
         AmplifyDataStore(modelProvider: ModelProvider.instance);
-    await Amplify.addPlugins([datastorePlugin]);
+    await Amplify.addPlugins([datastorePlugin, AmplifyAPI()]);
 
     try {
       await Amplify.configure(amplifyconfig);

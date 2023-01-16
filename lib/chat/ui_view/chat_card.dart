@@ -1,12 +1,12 @@
 // ignore_for_file: must_be_immutable
 
 import 'package:flutter/material.dart';
-import 'package:manage_app/chat/models/chat_model.dart';
+import 'package:manage_app/chat/models/ModelProvider.dart';
 import 'package:manage_app/utils/manage_theme.dart';
 
 class ChatCard extends StatefulWidget {
   ChatCard({super.key, required this.model});
-  ChatModel model;
+  User model;
   @override
   State<ChatCard> createState() => _ChatCardState();
 }
@@ -14,6 +14,7 @@ class ChatCard extends StatefulWidget {
 class _ChatCardState extends State<ChatCard> {
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
     return Container(
       padding: const EdgeInsets.all(10),
       margin: const EdgeInsets.symmetric(vertical: 10),
@@ -41,15 +42,19 @@ class _ChatCardState extends State<ChatCard> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text(
-                        widget.model.name,
-                        style: ManageTheme.insideAppText(
-                            size: 18, weight: FontWeight.bold),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.5,
+                        child: Text(
+                          widget.model.name!,
+                          overflow: TextOverflow.ellipsis,
+                          style: ManageTheme.insideAppText(
+                              size: screenWidth / 25, weight: FontWeight.bold),
+                        ),
                       ),
                       Text(
-                        widget.model.time,
+                        "9:34",
                         style: ManageTheme.insideAppText(
-                            size: 10,
+                            size: screenWidth / 40,
                             color: Colors.grey,
                             weight: FontWeight.bold),
                       ),
@@ -57,9 +62,11 @@ class _ChatCardState extends State<ChatCard> {
                   ),
                 ),
                 Text(
-                  widget.model.tag,
+                  widget.model.tag!,
                   style: ManageTheme.insideAppText(
-                      size: 11, color: Colors.grey, weight: FontWeight.w500),
+                      size: screenWidth / 40,
+                      color: Colors.grey,
+                      weight: FontWeight.w500),
                 ),
                 const SizedBox(
                   height: 7,
@@ -67,10 +74,10 @@ class _ChatCardState extends State<ChatCard> {
                 SizedBox(
                   width: MediaQuery.of(context).size.width * 0.63,
                   child: Text(
-                    widget.model.last_chat,
+                    "Hii There",
                     overflow: TextOverflow.ellipsis,
                     style: ManageTheme.insideAppText(
-                        size: 12, weight: FontWeight.w600),
+                        size: screenWidth / 39, weight: FontWeight.w600),
                   ),
                 ),
               ],

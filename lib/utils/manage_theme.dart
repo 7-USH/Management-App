@@ -80,6 +80,41 @@ class ManageTheme {
             side: BorderSide(color: borderColor)));
   }
 
+  static InputDecoration faInputDecoration(
+      {String? hint,
+      Color? bgColor,
+      double fontSize = 20,
+      Color? borderColor,
+      EdgeInsets? padding}) {
+    return InputDecoration(
+      contentPadding:
+          padding ?? const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+      counter: const Offstage(),
+      border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: Colors.grey)),
+      errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: Colors.redAccent)),
+      focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: borderColor ?? nearlyBlack)),
+      enabledBorder: const OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(16)),
+        borderSide: BorderSide(color: Colors.grey),
+      ),
+      labelText: hint,
+      fillColor: Colors.transparent,
+      floatingLabelStyle: appText(
+          size: fontSize, weight: FontWeight.normal, color: nearlyBlack),
+      labelStyle: appText(
+          size: fontSize, weight: FontWeight.normal, color: Colors.grey),
+      floatingLabelBehavior: FloatingLabelBehavior.always,
+      hintStyle: appText(size: fontSize, weight: FontWeight.normal),
+      filled: true,
+    );
+  }
+
   static InputDecoration waInputDecoration(
       {IconData? prefixIcon,
       String? hint,

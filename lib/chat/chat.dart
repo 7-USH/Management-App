@@ -4,6 +4,7 @@ import 'package:amplify_core/amplify_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:manage_app/chat/models/ModelProvider.dart';
 import 'package:manage_app/chat/models/chat_model.dart';
 import 'package:manage_app/chat/screens/chat_screen.dart';
@@ -27,8 +28,16 @@ class _ChatState extends State<Chat> {
 
   @override
   void initState() {
-    super.initState();
     searchNode = FocusNode();
+    getUsers();
+    super.initState();
+  }
+
+  void getUsers() {
+    var res = Provider.of<UsersListViewModel>(context, listen: false);
+    users = res.observeUsers(
+        subscriber_id:
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0cm1hbGlfYjIwQGl0LnZqdGkuYWMuaW4ifQ.LlTbGrS_37OWZiFpurQHFB17jGh9q5qI5zjvjZNcnDo");
   }
 
   @override
@@ -84,6 +93,7 @@ class _ChatState extends State<Chat> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
         backgroundColor: ManageTheme.nearlyWhite,
         appBar: AppBar(
@@ -102,71 +112,89 @@ class _ChatState extends State<Chat> {
             onSubmitted: (String value) {},
           ),
         ),
-        body: Padding(
-          padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(
-                height: 90,
-                child: AnimationLimiter(
-                  child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      physics: const BouncingScrollPhysics(),
-                      shrinkWrap: true,
-                      itemBuilder: (_, index) {
-                        return AnimationConfiguration.staggeredList(
-                            position: index,
-                            duration: const Duration(milliseconds: 500),
-                            child: const SlideAnimation(
-                                horizontalOffset: 80,
-                                child: FadeInAnimation(child: CircleCard())));
-                      },
-                      itemCount: 15),
-                ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Container(
-                height: 1.5,
-                color: Colors.grey.withOpacity(0.18),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Expanded(
-                child: AnimationLimiter(
-                  child: ListView.builder(
-                      physics: const BouncingScrollPhysics(),
-                      itemCount: models.length,
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) {
-                        return AnimationConfiguration.staggeredList(
-                          position: index,
-                          duration: const Duration(milliseconds: 500),
-                          child: SlideAnimation(
-                            horizontalOffset: 80,
-                            child: FadeInAnimation(
-                              child: GestureDetector(
-                                  onTap: () {
-                                    PersistentNavBarNavigator.pushNewScreen(
-                                      context,
-                                      screen: ChatScreen(model: models[index]),
-                                      withNavBar: true,
-                                      pageTransitionAnimation:
-                                          PageTransitionAnimation.scale,
-                                    );
-                                  },
-                                  child: ChatCard(model: models[index])),
-                            ),
-                          ),
-                        );
-                      }),
-                ),
-              )
-            ],
-          ),
-        ));
+        body: StreamBuilder<QuerySnapshot<User>>(
+            stream: users,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Padding(
+                  padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(
+                        height: 90,
+                        child: AnimationLimiter(
+                          child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              physics: const BouncingScrollPhysics(),
+                              shrinkWrap: true,
+                              itemBuilder: (_, index) {
+                                return AnimationConfiguration.staggeredList(
+                                    position: index,
+                                    duration: const Duration(milliseconds: 500),
+                                    child: SlideAnimation(
+                                        horizontalOffset: 80,
+                                        child: FadeInAnimation(
+                                            child: CircleCard(
+                                          model: snapshot.data!.items[index],
+                                        ))));
+                              },
+                              itemCount: snapshot.data!.items.length),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Container(
+                        height: 1.5,
+                        color: Colors.grey.withOpacity(0.18),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Expanded(
+                        child: AnimationLimiter(
+                          child: ListView.builder(
+                              physics: const BouncingScrollPhysics(),
+                              itemCount: models.length,
+                              shrinkWrap: true,
+                              itemBuilder: (context, index) {
+                                return AnimationConfiguration.staggeredList(
+                                  position: index,
+                                  duration: const Duration(milliseconds: 500),
+                                  child: SlideAnimation(
+                                    horizontalOffset: 80,
+                                    child: FadeInAnimation(
+                                      child: GestureDetector(
+                                          onTap: () {
+                                            PersistentNavBarNavigator
+                                                .pushNewScreen(
+                                              context,
+                                              screen: ChatScreen(
+                                                  model: models[index]),
+                                              withNavBar: true,
+                                              pageTransitionAnimation:
+                                                  PageTransitionAnimation.scale,
+                                            );
+                                          },
+                                          child: ChatCard(
+                                              model:
+                                                  snapshot.data!.items[index])),
+                                    ),
+                                  ),
+                                );
+                              }),
+                        ),
+                      )
+                    ],
+                  ),
+                );
+              } else {
+                return Center(
+                  child: LoadingAnimationWidget.staggeredDotsWave(
+                      color: ManageTheme.nearlyBlack, size: 35),
+                );
+              }
+            }));
   }
 }
