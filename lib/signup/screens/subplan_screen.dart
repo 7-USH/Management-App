@@ -172,7 +172,7 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                           },
                           style: ManageTheme.buttonStyle(
                             backColor: ManageTheme.nearlyBlack,
-                            fontSize: 18,
+                            fontSize: 15,
                           ),
                           child: _isLoading
                               ? Center(

@@ -101,16 +101,17 @@ class _LoginState extends State<Login> {
                             prefixIcon: Icons.lock,
                             fontSize: 16),
                       ),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (_) {
-                            return ForgotScreen();
-                          }));
-                        },
-                        child: Container(
-                          alignment: Alignment.centerRight,
-                          margin: EdgeInsets.only(top: 8, bottom: 5),
+                      Container(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          style: TextButton.styleFrom(
+                              surfaceTintColor: Colors.transparent),
+                          onPressed: () {
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (_) {
+                              return ForgotScreen();
+                            }));
+                          },
                           child: Text(
                             "Forgot Password?",
                             style: ManageTheme.appText(

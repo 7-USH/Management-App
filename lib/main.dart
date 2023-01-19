@@ -10,10 +10,10 @@ import 'package:manage_app/chat/view_models/chatroom_list_viewmodel.dart';
 import 'package:manage_app/chat/view_models/users_list_viewmodel.dart';
 import 'package:manage_app/home/home.dart';
 import 'package:manage_app/login/login.dart';
+import 'package:manage_app/login/screens/set_pass_screen.dart';
 import 'package:manage_app/signup/screens/subplan_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'chat/models/ModelProvider.dart';
 
 void main() {
@@ -82,6 +82,6 @@ class _MyAppState extends State<MyApp> {
         home: MultiProvider(providers: [
           ChangeNotifierProvider(create: (_) => UsersListViewModel()),
           ChangeNotifierProvider(create: (_) => ChatRoomListViewModel()),
-        ], child: home));
+        ], child: App()));
   }
 }

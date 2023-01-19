@@ -1,27 +1,22 @@
-// ignore_for_file: prefer_const_constructors, unused_element, unused_field, prefer_final_fields, prefer_const_constructors_in_immutables, unused_local_variable, must_be_immutable
+// ignore_for_file: prefer_final_fields, unused_import
+
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:lottie/lottie.dart';
-import 'package:manage_app/login/models/session_model.dart';
-import 'package:manage_app/signup/models/activate_model.dart';
-import 'package:manage_app/signup/screens/subplan_screen.dart';
-import 'package:manage_app/signup/service/signup_service.dart';
+import 'package:manage_app/login/screens/set_pass_screen.dart';
 import 'package:manage_app/utils/manage_theme.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-class VerifyScreen extends StatefulWidget {
-  VerifyScreen({super.key, required this.email});
-  String email;
+class VerifyOTPScreen extends StatefulWidget {
+  const VerifyOTPScreen({super.key});
+
   @override
-  State<VerifyScreen> createState() => _VerifyScreenState();
+  State<VerifyOTPScreen> createState() => _VerifyOTPScreenState();
 }
 
-class _VerifyScreenState extends State<VerifyScreen> {
+class _VerifyOTPScreenState extends State<VerifyOTPScreen> {
   TextEditingController _controller1 = TextEditingController();
   TextEditingController _controller2 = TextEditingController();
   TextEditingController _controller3 = TextEditingController();
   TextEditingController _controller4 = TextEditingController();
-  SignUpService service = SignUpService();
   bool _isLoading = false;
 
   @override
@@ -35,32 +30,32 @@ class _VerifyScreenState extends State<VerifyScreen> {
           backgroundColor: Colors.transparent,
           foregroundColor: ManageTheme.nearlyBlack,
           elevation: 0.0,
-          title: Text(
-            "Verify Email",
-            style: ManageTheme.appText(
-                size: 25, weight: FontWeight.bold, isShadow: false),
-          ),
         ),
         body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.all(25),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              LottieBuilder.asset(
-                "assets/gifs/email.json",
-                height: 200,
-                width: 200,
+              Text(
+                "OTP Verification",
+                style: ManageTheme.appText(
+                    size: MediaQuery.of(context).size.width / 14,
+                    weight: FontWeight.w600,
+                    isShadow: true),
               ),
-              Center(
-                child: Text(
-                  "A verification code has been sent to your email.\nThis code is valid for 15 minutes only.",
-                  textAlign: TextAlign.center,
-                  style: ManageTheme.appText(size: 16, weight: FontWeight.w600),
-                ),
+              const SizedBox(
+                height: 15,
               ),
-              SizedBox(
-                height: 20,
+              Text(
+                "Enter the verification code we just sent on your email address.",
+                style: ManageTheme.appText(
+                    size: 15,
+                    weight: FontWeight.w500,
+                    color: ManageTheme.nearlyBlack),
+              ),
+              const SizedBox(
+                height: 30,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -76,51 +71,18 @@ class _VerifyScreenState extends State<VerifyScreen> {
                       first: false, last: true, controller: _controller4),
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               Center(
                 child: SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.65,
-                  height: 45,
+                  width: MediaQuery.of(context).size.width,
+                  height: 50,
                   child: ElevatedButton(
                     onPressed: () {
-                      setState(() {
-                        _isLoading = true;
-                      });
-
-                      String activationCode = _controller1.text +
-                          _controller2.text +
-                          _controller3.text +
-                          _controller4.text;
-                          
-                      service
-                          .activateCode(
-                              model: ActivateModel(
-                                  email: widget.email,
-                                  activationCode: int.parse(activationCode)),
-                              context: context)
-                          .then((value) async {
-                        if (value is SessionModel) {
-                          SharedPreferences pref =
-                              await SharedPreferences.getInstance();
-                          pref
-                              .setString('session', value.session!)
-                              .then((value) {
-                            setState(() {
-                              _isLoading = false;
-                            });
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (_) {
-                              return SubscriptionPlanScreen();
-                            }));
-                          });
-                        } else {
-                          setState(() {
-                            _isLoading = false;
-                          });
-                        }
-                      });
+                      Navigator.push(context, MaterialPageRoute(builder: (_) {
+                        return const SetPassScreen();
+                      }));
                     },
                     style: ManageTheme.buttonStyle(
                       backColor: ManageTheme.nearlyBlack,

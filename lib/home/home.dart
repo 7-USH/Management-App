@@ -110,7 +110,6 @@ class _HomeState extends State<Home> {
                         ),
                         TextFormField(
                           cursorColor: ManageTheme.nearlyBlack,
-                          autofocus: true,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return "Please enter email";
@@ -284,7 +283,6 @@ class _HomeState extends State<Home> {
                         ),
                         TextFormField(
                           cursorColor: ManageTheme.nearlyBlack,
-                          autofocus: true,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return "Please enter email";
@@ -498,7 +496,6 @@ class _HomeState extends State<Home> {
                         ),
                         TextFormField(
                           cursorColor: ManageTheme.nearlyBlack,
-                          autofocus: true,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return "Please enter email";

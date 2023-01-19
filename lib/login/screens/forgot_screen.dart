@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:manage_app/login/screens/verify_otp.dart';
 import 'package:manage_app/signup/screens/verify_screen.dart';
 
 import '../../utils/manage_theme.dart';
@@ -31,7 +32,9 @@ class _ForgotScreenState extends State<ForgotScreen> {
             Text(
               "Forgot Password?",
               style: ManageTheme.appText(
-                  size: 35, weight: FontWeight.w600, isShadow: true),
+                  size: MediaQuery.of(context).size.width / 14,
+                  weight: FontWeight.w600,
+                  isShadow: true),
             ),
             const SizedBox(
               height: 15,
@@ -75,7 +78,7 @@ class _ForgotScreenState extends State<ForgotScreen> {
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.push(context, MaterialPageRoute(builder: (_) {
-                    return VerifyScreen(email: emailController.text);
+                    return const VerifyOTPScreen();
                   }));
                 },
                 style: ManageTheme.buttonStyle(

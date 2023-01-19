@@ -25,7 +25,7 @@ class SignUpService {
 
   Future<dynamic> activateCode(
       {required ActivateModel model, required BuildContext context}) async {
-    String endpoint = "activate-user";
+    String endpoint = "login/activate-user";
     var response = await _service.postData(endpoint, model.toJson());
     if (response.isLeft) {
       return ManageTheme.moveToError(
