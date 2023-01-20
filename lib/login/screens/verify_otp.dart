@@ -1,12 +1,15 @@
-// ignore_for_file: prefer_final_fields, unused_import
+// ignore_for_file: prefer_final_fields, unused_import, must_be_immutable
 
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:manage_app/login/models/reset_pass_model.dart';
 import 'package:manage_app/login/screens/set_pass_screen.dart';
+import 'package:manage_app/login/service/login_service.dart';
 import 'package:manage_app/utils/manage_theme.dart';
 
 class VerifyOTPScreen extends StatefulWidget {
-  const VerifyOTPScreen({super.key});
+  VerifyOTPScreen({super.key, required this.email});
+  String email;
 
   @override
   State<VerifyOTPScreen> createState() => _VerifyOTPScreenState();
@@ -18,6 +21,7 @@ class _VerifyOTPScreenState extends State<VerifyOTPScreen> {
   TextEditingController _controller3 = TextEditingController();
   TextEditingController _controller4 = TextEditingController();
   bool _isLoading = false;
+  LoginService service = LoginService();
 
   @override
   Widget build(BuildContext context) {
@@ -80,9 +84,38 @@ class _VerifyOTPScreenState extends State<VerifyOTPScreen> {
                   height: 50,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) {
-                        return const SetPassScreen();
-                      }));
+                      FocusScope.of(context).unfocus();
+
+                      String activationCode = _controller1.text +
+                          _controller2.text +
+                          _controller3.text +
+                          _controller4.text;
+
+                      if (activationCode.length == 4) {
+                        setState(() {
+                          _isLoading = true;
+                        });
+                        service
+                            .validateOTP(
+                                model: ResetPassModel(
+                                  email: widget.email,
+                                  resetCode: int.parse(activationCode),
+                                ),
+                                context: context)
+                            .then((value) {
+                          setState(() {
+                            _isLoading = false;
+                          });
+                          _controller1.clear();
+                          _controller2.clear();
+                          _controller3.clear();
+                          _controller4.clear();
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (_) {
+                            return const SetPassScreen();
+                          }));
+                        });
+                      }
                     },
                     style: ManageTheme.buttonStyle(
                       backColor: ManageTheme.nearlyBlack,

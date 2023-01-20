@@ -37,6 +37,8 @@ class ApiService {
     Uri uri = getUri(endpoint);
     var response = await http.post(uri,
         body: jsonEncode(requestBody), headers: await getHeaders());
+    print(response.body);
+    print(response.statusCode);
     if (response.statusCode == 200) {
       return Right(jsonDecode(response.body));
     }

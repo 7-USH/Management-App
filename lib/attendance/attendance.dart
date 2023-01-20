@@ -114,13 +114,14 @@ class _AttendanceState extends State<Attendance> {
               Container(
                 margin: const EdgeInsets.only(top: 12, bottom: 32),
                 height: 200,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                     color: ManageTheme.backgroundWhite,
+                    border: Border.all(color: ManageTheme.nearlyBlack),
                     borderRadius: BorderRadius.all(Radius.circular(20)),
-                    boxShadow: [
+                    boxShadow: const [
                       BoxShadow(
                           color: Colors.black26,
-                          blurRadius: 7,
+                          blurRadius: 2,
                           offset: Offset(2, 2))
                     ]),
                 child: Row(
@@ -305,13 +306,14 @@ class _AttendanceState extends State<Attendance> {
               Container(
                 margin: const EdgeInsets.only(top: 12),
                 height: 200,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                     color: ManageTheme.backgroundWhite,
                     borderRadius: BorderRadius.all(Radius.circular(20)),
-                    boxShadow: [
+                    border: Border.all(color: ManageTheme.nearlyBlack),
+                    boxShadow: const [
                       BoxShadow(
                           color: Colors.black26,
-                          blurRadius: 7,
+                          blurRadius: 2,
                           offset: Offset(2, 2))
                     ]),
                 child: Row(
@@ -343,13 +345,15 @@ class _AttendanceState extends State<Attendance> {
                 child: ElevatedButton(
                     onPressed: () {},
                     style: ManageTheme.buttonStyle(
-                        backColor: ManageTheme.nearlyBlack),
+                        backColor: ManageTheme.backgroundWhite,
+                        borderColor: ManageTheme.nearlyBlack
+                        ),
                     child: Text(
                       "Request Leave",
                       style: ManageTheme.insideAppText(
                           size: screenWidth / 25,
-                          weight: FontWeight.w500,
-                          color: ManageTheme.backgroundWhite),
+                          weight: FontWeight.w600,
+                          color: ManageTheme.nearlyBlack),
                     )),
               ),
               SizedBox(
@@ -361,13 +365,14 @@ class _AttendanceState extends State<Attendance> {
                 child: ElevatedButton(
                     onPressed: () {},
                     style: ManageTheme.buttonStyle(
-                        backColor: ManageTheme.nearlyBlack),
+                        backColor: ManageTheme.backgroundWhite,
+                        borderColor: ManageTheme.nearlyBlack),
                     child: Text(
                       "Application Status",
                       style: ManageTheme.insideAppText(
                           size: screenWidth / 25,
-                          weight: FontWeight.w500,
-                          color: ManageTheme.backgroundWhite),
+                          weight: FontWeight.w600,
+                          color: ManageTheme.nearlyBlack),
                     )),
               )
             ],

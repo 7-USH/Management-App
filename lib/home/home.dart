@@ -25,6 +25,8 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   int _current = 0;
+  bool _familyLoader = false;
+
   final List<String> _family_relations = [
     "Dad",
     "Mom",
@@ -62,166 +64,169 @@ class _HomeState extends State<Home> {
             borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(20), topRight: Radius.circular(20))),
         builder: (_) {
-          return Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Scaffold(
-              body: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                child: Column(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(bottom: 40),
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        "Add Family Member",
-                        style: ManageTheme.insideAppText(
-                            size: MediaQuery.of(context).size.width / 18,
-                            weight: FontWeight.w700),
+          return StatefulBuilder(builder: (context, setState) {
+            return Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Scaffold(
+                body: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: Column(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(bottom: 40),
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "Add Family Member",
+                          style: ManageTheme.insideAppText(
+                              size: MediaQuery.of(context).size.width / 18,
+                              weight: FontWeight.w700),
+                        ),
                       ),
-                    ),
-                    Column(
-                      children: [
-                        Container(
-                          height: MediaQuery.of(context).size.width / 3,
-                          width: MediaQuery.of(context).size.width / 3,
-                          margin: EdgeInsets.only(bottom: 25),
-                          decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey),
-                              borderRadius: BorderRadius.circular(20)),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.add_a_photo,
-                                color: Colors.grey,
-                                size: MediaQuery.of(context).size.width / 14,
-                              ),
-                              Text(
-                                "Add Image",
-                                style: ManageTheme.insideAppText(
-                                    size:
-                                        MediaQuery.of(context).size.width / 43,
-                                    weight: FontWeight.w500,
-                                    color: Colors.grey),
-                              )
-                            ],
-                          ),
-                        ),
-                        TextFormField(
-                          cursorColor: ManageTheme.nearlyBlack,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "Please enter email";
-                            } else if (!RegExp(
-                                    r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
-                                .hasMatch(value)) {
-                              return "Email is not valid";
-                            }
-                            return null;
-                          },
-                          decoration: ManageTheme.faInputDecoration(
-                            hint: "Name",
-                            fontSize: 16,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        TextFormField(
-                          cursorColor: ManageTheme.nearlyBlack,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "Please enter email";
-                            } else if (!RegExp(
-                                    r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
-                                .hasMatch(value)) {
-                              return "Email is not valid";
-                            }
-                            return null;
-                          },
-                          decoration: ManageTheme.faInputDecoration(
-                            hint: "Email",
-                            fontSize: 16,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        FormField<String>(
-                          builder: (FormFieldState<String> state) {
-                            return InputDecorator(
-                              decoration: ManageTheme.faInputDecoration(
-                                  hint: "Relation", fontSize: 16),
-                              isEmpty: _currentFamilySelectedValue == '',
-                              child: DropdownButtonHideUnderline(
-                                child: DropdownButton<String>(
-                                  value: _currentFamilySelectedValue,
-                                  isDense: true,
-                                  onChanged: (newValue) {
-                                    setState(() {
-                                      _currentFamilySelectedValue = newValue!;
-                                      state.didChange(newValue);
-                                    });
-                                  },
-                                  items: _family_relations.map((String value) {
-                                    return DropdownMenuItem<String>(
-                                      value: value,
-                                      child: Text(
-                                        value,
-                                      ),
-                                    );
-                                  }).toList(),
+                      Column(
+                        children: [
+                          Container(
+                            height: MediaQuery.of(context).size.width / 3,
+                            width: MediaQuery.of(context).size.width / 3,
+                            margin: EdgeInsets.only(bottom: 25),
+                            decoration: BoxDecoration(
+                                border: Border.all(color: Colors.grey),
+                                borderRadius: BorderRadius.circular(20)),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.add_a_photo,
+                                  color: Colors.grey,
+                                  size: MediaQuery.of(context).size.width / 14,
                                 ),
-                              ),
-                            );
-                          },
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        TextFormField(
-                          cursorColor: ManageTheme.nearlyBlack,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "Please enter email";
-                            } else if (!RegExp(
-                                    r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
-                                .hasMatch(value)) {
-                              return "Email is not valid";
-                            }
-                            return null;
-                          },
-                          decoration: ManageTheme.faInputDecoration(
-                            hint: "Bank Details",
-                            fontSize: 16,
+                                Text(
+                                  "Add Image",
+                                  style: ManageTheme.insideAppText(
+                                      size: MediaQuery.of(context).size.width /
+                                          43,
+                                      weight: FontWeight.w500,
+                                      color: Colors.grey),
+                                )
+                              ],
+                            ),
                           ),
-                        ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width,
-                          height: 60,
-                          child: ElevatedButton(
-                              style: ManageTheme.buttonStyle(
-                                  backColor: ManageTheme.nearlyBlack),
-                              onPressed: () {},
-                              child: Text(
-                                "Add Member",
-                                style: ManageTheme.insideAppText(
-                                    size: 15,
-                                    weight: FontWeight.w600,
-                                    color: ManageTheme.backgroundWhite),
-                              )),
-                        )
-                      ],
-                    ),
-                  ],
+                          TextFormField(
+                            cursorColor: ManageTheme.nearlyBlack,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Please enter email";
+                              } else if (!RegExp(
+                                      r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
+                                  .hasMatch(value)) {
+                                return "Email is not valid";
+                              }
+                              return null;
+                            },
+                            decoration: ManageTheme.faInputDecoration(
+                              hint: "Name",
+                              fontSize: 16,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          TextFormField(
+                            cursorColor: ManageTheme.nearlyBlack,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Please enter email";
+                              } else if (!RegExp(
+                                      r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
+                                  .hasMatch(value)) {
+                                return "Email is not valid";
+                              }
+                              return null;
+                            },
+                            decoration: ManageTheme.faInputDecoration(
+                              hint: "Email",
+                              fontSize: 16,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          FormField<String>(
+                            builder: (FormFieldState<String> state) {
+                              return InputDecorator(
+                                decoration: ManageTheme.faInputDecoration(
+                                    hint: "Relation", fontSize: 16),
+                                isEmpty: _currentFamilySelectedValue == '',
+                                child: DropdownButtonHideUnderline(
+                                  child: DropdownButton<String>(
+                                    value: _currentFamilySelectedValue,
+                                    isDense: true,
+                                    onChanged: (newValue) {
+                                      setState(() {
+                                        _currentFamilySelectedValue = newValue!;
+                                        state.didChange(newValue);
+                                      });
+                                    },
+                                    items:
+                                        _family_relations.map((String value) {
+                                      return DropdownMenuItem<String>(
+                                        value: value,
+                                        child: Text(
+                                          value,
+                                        ),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          TextFormField(
+                            cursorColor: ManageTheme.nearlyBlack,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Please enter email";
+                              } else if (!RegExp(
+                                      r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
+                                  .hasMatch(value)) {
+                                return "Email is not valid";
+                              }
+                              return null;
+                            },
+                            decoration: ManageTheme.faInputDecoration(
+                              hint: "Bank Details",
+                              fontSize: 16,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width,
+                            height: 60,
+                            child: ElevatedButton(
+                                style: ManageTheme.buttonStyle(
+                                    backColor: ManageTheme.nearlyBlack),
+                                onPressed: () {},
+                                child: Text(
+                                  "Add Member",
+                                  style: ManageTheme.insideAppText(
+                                      size: 15,
+                                      weight: FontWeight.w600,
+                                      color: ManageTheme.backgroundWhite),
+                                )),
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          );
+            );
+          });
         });
   }
 

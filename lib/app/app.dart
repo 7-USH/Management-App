@@ -4,9 +4,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:manage_app/attendance/attendance.dart';
 import 'package:manage_app/chat/chat.dart';
+import 'package:manage_app/chat/view_models/users_list_viewmodel.dart';
 import 'package:manage_app/home/home.dart';
 import 'package:manage_app/utils/manage_theme.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+import 'package:provider/provider.dart';
+
+import '../chat/view_models/chatroom_list_viewmodel.dart';
 
 class App extends StatefulWidget {
   const App({Key? key}) : super(key: key);
@@ -29,64 +33,70 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async => false,
-      child: PersistentTabView(
-        context,
-        backgroundColor: ManageTheme.backgroundWhite,
-        screenTransitionAnimation: ScreenTransitionAnimation(
-          animateTabTransition: true,
-          curve: Curves.easeIn,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => UsersListViewModel()),
+        ChangeNotifierProvider(create: (_) => ChatRoomListViewModel()),
+      ],
+      child: WillPopScope(
+        onWillPop: () async => false,
+        child: PersistentTabView(
+          context,
+          backgroundColor: ManageTheme.backgroundWhite,
+          screenTransitionAnimation: ScreenTransitionAnimation(
+            animateTabTransition: true,
+            curve: Curves.easeIn,
+          ),
+          decoration: NavBarDecoration(
+              border:
+                  Border(top: BorderSide(color: Colors.grey.withOpacity(0.2)))),
+          screens: [
+            Home(),
+            Chat(),
+            Attendance(),
+          ],
+          items: [
+            PersistentBottomNavBarItem(
+                icon: Icon(
+                  CupertinoIcons.house,
+                ),
+                inactiveColorPrimary: Colors.grey,
+                activeColorSecondary: Colors.white,
+                activeColorPrimary: ManageTheme.nearlyBlack,
+                title: "Home",
+                textStyle: ManageTheme.insideAppText(
+                    size: 12, weight: FontWeight.w400)),
+            PersistentBottomNavBarItem(
+                icon: Icon(
+                  CupertinoIcons.chat_bubble_2,
+                ),
+                inactiveColorPrimary: Colors.grey,
+                activeColorSecondary: Colors.white,
+                activeColorPrimary: ManageTheme.nearlyBlack,
+                title: "Chats",
+                textStyle: ManageTheme.insideAppText(
+                    size: 12, weight: FontWeight.w400)),
+            PersistentBottomNavBarItem(
+                icon: Icon(
+                  CupertinoIcons.calendar_badge_plus,
+                ),
+                inactiveColorPrimary: Colors.grey,
+                activeColorSecondary: Colors.white,
+                activeColorPrimary: ManageTheme.nearlyBlack,
+                title: "Attendance",
+                textStyle: ManageTheme.insideAppText(
+                    size: 12, weight: FontWeight.w400)),
+          ],
+          controller: _controller,
+          confineInSafeArea: true,
+          handleAndroidBackButtonPress: true,
+          resizeToAvoidBottomInset: true,
+          stateManagement: true,
+          hideNavigationBarWhenKeyboardShows: false,
+          popAllScreensOnTapOfSelectedTab: true,
+          popActionScreens: PopActionScreensType.all,
+          navBarStyle: NavBarStyle.style10,
         ),
-        decoration: NavBarDecoration(
-            border:
-                Border(top: BorderSide(color: Colors.grey.withOpacity(0.2)))),
-        screens: [
-          Home(),
-          Chat(),
-          Attendance(),
-        ],
-        items: [
-          PersistentBottomNavBarItem(
-              icon: Icon(
-                CupertinoIcons.house,
-              ),
-              inactiveColorPrimary: Colors.grey,
-              activeColorSecondary: Colors.white,
-              activeColorPrimary: ManageTheme.nearlyBlack,
-              title: "Home",
-              textStyle:
-                  ManageTheme.insideAppText(size: 12, weight: FontWeight.w400)),
-          PersistentBottomNavBarItem(
-              icon: Icon(
-                CupertinoIcons.chat_bubble_2,
-              ),
-              inactiveColorPrimary: Colors.grey,
-              activeColorSecondary: Colors.white,
-              activeColorPrimary: ManageTheme.nearlyBlack,
-              title: "Chats",
-              textStyle:
-                  ManageTheme.insideAppText(size: 12, weight: FontWeight.w400)),
-          PersistentBottomNavBarItem(
-              icon: Icon(
-                CupertinoIcons.calendar_badge_plus,
-              ),
-              inactiveColorPrimary: Colors.grey,
-              activeColorSecondary: Colors.white,
-              activeColorPrimary: ManageTheme.nearlyBlack,
-              title: "Attendance",
-              textStyle:
-                  ManageTheme.insideAppText(size: 12, weight: FontWeight.w400)),
-        ],
-        controller: _controller,
-        confineInSafeArea: true,
-        handleAndroidBackButtonPress: true,
-        resizeToAvoidBottomInset: true,
-        stateManagement: true,
-        hideNavigationBarWhenKeyboardShows: false,
-        popAllScreensOnTapOfSelectedTab: true,
-        popActionScreens: PopActionScreensType.all,
-        navBarStyle: NavBarStyle.style10,
       ),
     );
   }

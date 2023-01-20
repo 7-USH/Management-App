@@ -15,12 +15,13 @@ class AttendanceCard extends StatelessWidget {
     return Container(
       height: 200,
       margin: const EdgeInsets.only(bottom: 20),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
           color: ManageTheme.backgroundWhite,
-          borderRadius: BorderRadius.all(Radius.circular(20)),
-          boxShadow: [
+          border: Border.all(color: ManageTheme.nearlyBlack),
+          borderRadius: const BorderRadius.all(Radius.circular(20)),
+          boxShadow: const [
             BoxShadow(
-                color: Colors.black26, blurRadius: 7, offset: Offset(2, 2))
+                color: Colors.black26, blurRadius: 2, offset: Offset(2, 2))
           ]),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,

@@ -11,6 +11,7 @@ import 'package:manage_app/chat/view_models/users_list_viewmodel.dart';
 import 'package:manage_app/home/home.dart';
 import 'package:manage_app/login/login.dart';
 import 'package:manage_app/login/screens/set_pass_screen.dart';
+import 'package:manage_app/login/screens/success_reset_screen.dart';
 import 'package:manage_app/signup/screens/subplan_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -63,7 +64,7 @@ class _MyAppState extends State<MyApp> {
   void switchHome() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     String? session = sharedPreferences.getString("session");
-    if (session == null) {
+    if (session == null ) {
       setState(() {
         home = const Login();
       });
@@ -77,11 +78,6 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Management App',
-        debugShowCheckedModeBanner: false,
-        home: MultiProvider(providers: [
-          ChangeNotifierProvider(create: (_) => UsersListViewModel()),
-          ChangeNotifierProvider(create: (_) => ChatRoomListViewModel()),
-        ], child: App()));
+        title: 'Management App', debugShowCheckedModeBanner: false, home: home);
   }
 }

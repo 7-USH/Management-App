@@ -37,10 +37,14 @@ class _ChatScreenState extends State<ChatScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        widget.model.name,
-                        style: ManageTheme.insideAppText(
-                            size: 17, weight: FontWeight.bold),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width / 2,
+                        child: Text(
+                          widget.model.name,
+                          overflow: TextOverflow.ellipsis,
+                          style: ManageTheme.insideAppText(
+                              size: 17, weight: FontWeight.bold),
+                        ),
                       ),
                       Text(
                         widget.model.tag,

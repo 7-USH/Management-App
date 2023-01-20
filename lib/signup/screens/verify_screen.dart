@@ -85,42 +85,53 @@ class _VerifyScreenState extends State<VerifyScreen> {
                   height: 45,
                   child: ElevatedButton(
                     onPressed: () {
-                      setState(() {
-                        _isLoading = true;
-                      });
+                      FocusScope.of(context).unfocus();
 
                       String activationCode = _controller1.text +
                           _controller2.text +
                           _controller3.text +
                           _controller4.text;
-                          
-                      service
-                          .activateCode(
-                              model: ActivateModel(
-                                  email: widget.email,
-                                  activationCode: int.parse(activationCode)),
-                              context: context)
-                          .then((value) async {
-                        if (value is SessionModel) {
-                          SharedPreferences pref =
-                              await SharedPreferences.getInstance();
-                          pref
-                              .setString('session', value.session!)
-                              .then((value) {
+
+                      if (activationCode.length == 4) {
+                        setState(() {
+                          _isLoading = true;
+                        });
+                        service
+                            .activateCode(
+                                model: ActivateModel(
+                                    email: widget.email,
+                                    activationCode: int.parse(activationCode)),
+                                context: context)
+                            .then((value) async {
+                          if (value is SessionModel) {
+                            SharedPreferences pref =
+                                await SharedPreferences.getInstance();
+                            pref
+                                .setString('session', value.session!)
+                                .then((value) {
+                              setState(() {
+                                _isLoading = false;
+                              });
+                              _controller1.clear();
+                              _controller2.clear();
+                              _controller3.clear();
+                              _controller4.clear();
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (_) {
+                                return SubscriptionPlanScreen();
+                              }));
+                            });
+                          } else {
+                            _controller1.clear();
+                            _controller2.clear();
+                            _controller3.clear();
+                            _controller4.clear();
                             setState(() {
                               _isLoading = false;
                             });
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (_) {
-                              return SubscriptionPlanScreen();
-                            }));
-                          });
-                        } else {
-                          setState(() {
-                            _isLoading = false;
-                          });
-                        }
-                      });
+                          }
+                        });
+                      }
                     },
                     style: ManageTheme.buttonStyle(
                       backColor: ManageTheme.nearlyBlack,

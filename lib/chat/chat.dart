@@ -24,20 +24,11 @@ class Chat extends StatefulWidget {
 
 class _ChatState extends State<Chat> {
   late FocusNode searchNode;
-  late Stream<QuerySnapshot<User>> users;
 
   @override
   void initState() {
     searchNode = FocusNode();
-    getUsers();
     super.initState();
-  }
-
-  void getUsers() {
-    var res = Provider.of<UsersListViewModel>(context, listen: false);
-    users = res.observeUsers(
-        subscriber_id:
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0cm1hbGlfYjIwQGl0LnZqdGkuYWMuaW4ifQ.LlTbGrS_37OWZiFpurQHFB17jGh9q5qI5zjvjZNcnDo");
   }
 
   @override
@@ -45,51 +36,6 @@ class _ChatState extends State<Chat> {
     searchNode.dispose();
     super.dispose();
   }
-
-  List<ChatModel> models = [
-    ChatModel(
-        image_url: "",
-        tag: "Father",
-        person_phone: "7262818443",
-        last_chat: "Hi, nice to meet you. How can I help you Mr.Tushar Mali",
-        name: "Soumitra Kand",
-        time: "9:34 PM"),
-    ChatModel(
-        image_url: "",
-        tag: "Electrician",
-        last_chat: "Hi, nice to meet you. How can I help you Mr.Tushar Mali",
-        name: "Tushar Mali",
-        person_phone: "7262818443",
-        time: "9:34 PM"),
-    ChatModel(
-        image_url: "",
-        tag: "Driver",
-        last_chat: "Hi, nice to meet you. How can I help you Mr.Tushar Mali",
-        name: "Kashyap Chavhan",
-        person_phone: "7262818443",
-        time: "9:34 PM"),
-    ChatModel(
-        image_url: "",
-        tag: "Chef",
-        last_chat: "Hi, nice to meet you. How can I help you Mr.Tushar Mali",
-        name: "Hrishikesh Bade",
-        person_phone: "7262818443",
-        time: "9:34 PM"),
-    ChatModel(
-        image_url: "",
-        tag: "Cleaner",
-        last_chat: "Hi, nice to meet you. How can I help you Mr.Tushar Mali",
-        name: "Nirbhay Hanjura",
-        person_phone: "7262818443",
-        time: "9:34 PM"),
-    ChatModel(
-        image_url: "",
-        tag: "Maid",
-        last_chat: "Hi, nice to meet you. How can I help you Mr.Tushar Mali",
-        name: "Priya Roy",
-        person_phone: "7262818443",
-        time: "9:34 PM"),
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -113,7 +59,9 @@ class _ChatState extends State<Chat> {
           ),
         ),
         body: StreamBuilder<QuerySnapshot<User>>(
-            stream: users,
+            stream: context.watch<UsersListViewModel>().observeUsers(
+                subscriber_id:
+                    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0cm1hbGlfYjIwQGl0LnZqdGkuYWMuaW4ifQ.LlTbGrS_37OWZiFpurQHFB17jGh9q5qI5zjvjZNcnDo"),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return Padding(
@@ -156,7 +104,7 @@ class _ChatState extends State<Chat> {
                         child: AnimationLimiter(
                           child: ListView.builder(
                               physics: const BouncingScrollPhysics(),
-                              itemCount: models.length,
+                              itemCount: snapshot.data!.items.length,
                               shrinkWrap: true,
                               itemBuilder: (context, index) {
                                 return AnimationConfiguration.staggeredList(
@@ -171,7 +119,23 @@ class _ChatState extends State<Chat> {
                                                 .pushNewScreen(
                                               context,
                                               screen: ChatScreen(
-                                                  model: models[index]),
+                                                  model: ChatModel(
+                                                      image_url: snapshot
+                                                          .data!
+                                                          .items[index]
+                                                          .profile_img_url!,
+                                                      last_chat: "Hello",
+                                                      name: snapshot.data!
+                                                          .items[index].name!,
+                                                      time: snapshot
+                                                          .data!
+                                                          .items[index]
+                                                          .updatedAt
+                                                          .toString(),
+                                                      tag: snapshot.data!
+                                                          .items[index].tag!,
+                                                      person_phone:
+                                                          "7262818443")),
                                               withNavBar: true,
                                               pageTransitionAnimation:
                                                   PageTransitionAnimation.scale,

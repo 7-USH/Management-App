@@ -5,6 +5,7 @@ import 'package:manage_app/signup/models/activate_model.dart';
 import 'package:manage_app/signup/models/plan_model.dart';
 import 'package:manage_app/signup/models/register_model.dart';
 import 'package:manage_app/utils/manage_theme.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../login/models/session_model.dart';
 
@@ -28,8 +29,21 @@ class SignUpService {
     String endpoint = "login/activate-user";
     var response = await _service.postData(endpoint, model.toJson());
     if (response.isLeft) {
-      return ManageTheme.moveToError(
-          context: context, text: response.left.message!);
+      if (response.left.message == "Invalid OTP or Validity Expired") {
+        final snackBar = SnackBar(
+            backgroundColor: ManageTheme.nearlyBlack,
+            content: Text(
+              "Invalid OTP, please try again!",
+              style: ManageTheme.appText(
+                  size: 12,
+                  weight: FontWeight.w600,
+                  color: ManageTheme.backgroundWhite),
+            ));
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      } else {
+        return ManageTheme.moveToError(
+            context: context, text: response.left.message!);
+      }
     } else {
       return SessionModel.fromJson(response.right);
     }
