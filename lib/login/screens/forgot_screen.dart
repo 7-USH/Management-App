@@ -92,12 +92,20 @@ class _ForgotScreenState extends State<ForgotScreen> {
                     service.sendForgotOTP(
                         requestBody: {"email": emailController.text},
                         context: context).then((value) {
-                      setState(() {
-                        _isLoading = false;
-                      });
-                      Navigator.push(context, MaterialPageRoute(builder: (_) {
-                        return VerifyOTPScreen(email: emailController.text,);
-                      }));
+                      if (value) {
+                        setState(() {
+                          _isLoading = false;
+                        });
+                        Navigator.push(context, MaterialPageRoute(builder: (_) {
+                          return VerifyOTPScreen(
+                            email: emailController.text,
+                          );
+                        }));
+                      } else {
+                        setState(() {
+                          _isLoading = false;
+                        });
+                      }
                     });
                   }
                 },
@@ -105,19 +113,19 @@ class _ForgotScreenState extends State<ForgotScreen> {
                   backColor: ManageTheme.nearlyBlack,
                   fontSize: 15,
                 ),
-                child:  _isLoading
+                child: _isLoading
                     ? Center(
                         child: LoadingAnimationWidget.staggeredDotsWave(
                         color: Colors.white,
                         size: 20,
                       ))
-                    :  Text(
-                  "Send Verification Code",
-                  style: ManageTheme.appText(
-                      size: 15,
-                      weight: FontWeight.w600,
-                      color: ManageTheme.backgroundWhite),
-                ),
+                    : Text(
+                        "Send Verification Code",
+                        style: ManageTheme.appText(
+                            size: 15,
+                            weight: FontWeight.w600,
+                            color: ManageTheme.backgroundWhite),
+                      ),
               ),
             ),
             const SizedBox(

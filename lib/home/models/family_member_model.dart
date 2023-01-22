@@ -4,8 +4,7 @@ class FamilyMemberModel {
   String? mobileNo;
   String? address;
   String? profile;
-  String? parentEmail;
-  String? childEmail;
+  String? subscriberGroupId;
   String? relationTag;
 
   FamilyMemberModel(
@@ -14,8 +13,7 @@ class FamilyMemberModel {
       this.mobileNo,
       this.address,
       this.profile,
-      this.parentEmail,
-      this.childEmail,
+      this.subscriberGroupId,
       this.relationTag});
 
   FamilyMemberModel.fromJson(Map<String, dynamic> json) {
@@ -24,8 +22,7 @@ class FamilyMemberModel {
     mobileNo = json['mobile_no'];
     address = json['address'];
     profile = json['profile'];
-    parentEmail = json['parent_email'];
-    childEmail = json['child_email'];
+    subscriberGroupId = json['subscriber_group_id'];
     relationTag = json['relation_tag'];
   }
 
@@ -36,9 +33,9 @@ class FamilyMemberModel {
     data['mobile_no'] = mobileNo;
     data['address'] = address;
     data['profile'] = profile;
-    data['parent_email'] = parentEmail;
-    data['child_email'] = childEmail;
+    data['subscriber_group_id'] = subscriberGroupId;
     data['relation_tag'] = relationTag;
     return data;
   }
 }
+

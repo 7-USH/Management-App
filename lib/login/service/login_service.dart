@@ -26,7 +26,7 @@ class LoginService {
     }
   }
 
-  Future<dynamic> sendForgotOTP(
+  Future<bool> sendForgotOTP(
       {required Map<String, dynamic> requestBody,
       required BuildContext context}) async {
     String endpoint = "login/send-forgot-password-otp";
@@ -35,7 +35,7 @@ class LoginService {
       return ManageTheme.moveToError(
           context: context, text: response.left.message!);
     } else {
-      return response;
+      return true;
     }
   }
 

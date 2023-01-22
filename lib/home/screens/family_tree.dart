@@ -1,14 +1,37 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:flutter/material.dart';
+import 'package:graphview/GraphView.dart';
+import 'package:manage_app/home/models/family_relationship_model.dart';
+import 'package:manage_app/home/ui_view/member_card.dart';
 import 'package:manage_app/utils/manage_theme.dart';
 
 class FamilyTreeScreen extends StatefulWidget {
-  const FamilyTreeScreen({super.key});
+  FamilyTreeScreen({super.key, required this.model});
+  FamilyRelationShipModel model;
 
   @override
   State<FamilyTreeScreen> createState() => _FamilyTreeScreenState();
 }
 
 class _FamilyTreeScreenState extends State<FamilyTreeScreen> {
+  final Graph graph = Graph()..isTree = true;
+  SugiyamaConfiguration builder = SugiyamaConfiguration();
+
+  @override
+  void initState() {
+    for (var element in widget.model.userRealtions!) {
+      var fromEmailId = element.parentEmail!;
+      var toEmailId = element.childEmail!;
+      graph.addEdge(Node.Id(fromEmailId), Node.Id(toEmailId),
+          paint: Paint()..color = ManageTheme.nearlyBlack..strokeWidth = 1);
+    }
+    builder
+      ..nodeSeparation = (100) .. levelSeparation = (100)
+      ..orientation = (SugiyamaConfiguration.ORIENTATION_TOP_BOTTOM);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,6 +45,31 @@ class _FamilyTreeScreenState extends State<FamilyTreeScreen> {
           style: ManageTheme.insideAppText(size: 25, weight: FontWeight.bold),
         ),
       ),
+      body: widget.model.users!.isEmpty
+          ? Center(
+              child: Text(
+              "No members added yet!",
+              style: ManageTheme.appText(size: 16, weight: FontWeight.w500),
+            ))
+          : InteractiveViewer(
+              constrained: false,
+              boundaryMargin: const EdgeInsets.all(100),
+              minScale: 0.01,
+              maxScale: 5.6,
+              child: Center(
+                child: GraphView(
+                  graph: graph,
+                  algorithm: SugiyamaAlgorithm(builder),
+                  builder: (node) {
+                    var key = node.key!.value;
+                    var nodes = widget.model.users!
+                        .firstWhere((ele) => ele.email == key);
+                    return MemberCard(
+                        img_url: nodes.profileImageUrl,
+                        name: nodes.fullName!);
+                  },
+                ),
+              )),
     );
   }
 }

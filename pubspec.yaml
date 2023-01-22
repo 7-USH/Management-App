@@ -55,6 +55,7 @@ dependencies:
   amplify_flutter: ^0.6.10
   amplify_api: ^0.6.10
   shimmer: ^2.0.0
+  graphview: ^1.1.1
 
 dev_dependencies:
   flutter_test:

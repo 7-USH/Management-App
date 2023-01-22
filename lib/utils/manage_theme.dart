@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:manage_app/utils/error_page.dart';
 import 'dart:math' as math;
 
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+
 class ManageTheme {
   ManageTheme._();
 
@@ -149,9 +151,8 @@ class ManageTheme {
   }
 
   static moveToError({required BuildContext context, required String text}) {
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-      return ErrorPage(text: text);
-    }));
+    PersistentNavBarNavigator.pushNewScreen(context,
+        screen: ErrorPage(text: text),withNavBar: false);
   }
 
   static int generateOTP() {
