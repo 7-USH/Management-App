@@ -9,4 +9,20 @@ class UsersListViewModel with ChangeNotifier {
     return Amplify.DataStore.observeQuery(User.classType,
         where: User.SUBSCRIBER_ID.eq(subscriber_id));
   }
+
+  Future<void> addUser(
+      {required String tag,
+      required String profile_image_url,
+      required String name,
+      required String sub_id,
+      required bool is_online}) async {
+    User userToSave = User(
+        profile_img_url: profile_image_url,
+        tag: tag,
+        name: name,
+        is_online: is_online,
+        subscriber_id: sub_id);
+    await Amplify.DataStore.save(userToSave);
+    notifyListeners();
+  }
 }

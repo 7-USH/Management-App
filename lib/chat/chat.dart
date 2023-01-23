@@ -61,7 +61,7 @@ class _ChatState extends State<Chat> {
         body: StreamBuilder<QuerySnapshot<User>>(
             stream: context.watch<UsersListViewModel>().observeUsers(
                 subscriber_id:
-                    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0cm1hbGlfYjIwQGl0LnZqdGkuYWMuaW4ifQ.LlTbGrS_37OWZiFpurQHFB17jGh9q5qI5zjvjZNcnDo"),
+                    "Tushar"),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return Padding(
@@ -69,7 +69,8 @@ class _ChatState extends State<Chat> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      SizedBox(
+                      Container(
+                        alignment: Alignment.centerLeft,
                         height: 90,
                         child: AnimationLimiter(
                           child: ListView.builder(

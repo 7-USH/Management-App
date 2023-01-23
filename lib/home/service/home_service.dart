@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously, unused_local_variable
+// ignore_for_file: use_build_context_synchronously, unused_local_variable, non_constant_identifier_names
 
 import 'package:flutter/material.dart';
 import 'package:manage_app/common/api.dart';
@@ -13,6 +13,7 @@ class HomeService {
   Future<dynamic> createFamilyMember(
       {required BuildContext context, required FamilyMemberModel model}) async {
     String endpoint = "profile/create";
+    Map<String, dynamic> sub_id = await _service.getHeaders();
     var response = await _service.postData(endpoint, model.toJson());
     if (response.isLeft) {
       return ManageTheme.moveToError(
@@ -22,23 +23,14 @@ class HomeService {
     }
   }
 
-  Future<dynamic> getFamilyTree({required BuildContext context}) async {
+  
+
+  Future<FamilyRelationShipModel> getFamilyMembers(
+      {required BuildContext context}) async {
     String endpoint = "profile/get-family-tree";
     var response = await _service.getData(endpoint);
     if (response.isLeft) {
       return ManageTheme.moveToError(
-          context: context, text: response.left.message!);
-    } else {
-      return response.right;
-    }
-  }
-
-  Future<FamilyRelationShipModel> getFamilyMembers(
-      {required BuildContext context}) async{
-    String endpoint = "profile/get-family-tree";
-    var response = await _service.getData(endpoint);
-    if (response.isLeft) {
-     return ManageTheme.moveToError(
           context: context, text: response.left.message!);
     } else {
       return FamilyRelationShipModel.fromJson(response.right);
