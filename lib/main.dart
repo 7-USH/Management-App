@@ -4,7 +4,7 @@ import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:manage_app/amplifyconfiguration.dart';
+import 'package:manage_app/ignore/amplifyconfiguration.dart';
 import 'package:manage_app/app/app.dart';
 import 'package:manage_app/chat/view_models/chatroom_list_viewmodel.dart';
 import 'package:manage_app/chat/view_models/users_list_viewmodel.dart';
