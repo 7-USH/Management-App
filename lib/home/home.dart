@@ -7,6 +7,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:manage_app/chat/view_models/users_list_viewmodel.dart';
+import 'package:manage_app/common/api.dart';
 import 'package:manage_app/home/models/family_member_model.dart';
 import 'package:manage_app/home/models/family_relationship_model.dart';
 import 'package:manage_app/home/models/notification_model.dart';
@@ -266,8 +267,7 @@ class _HomeState extends State<Home> {
                                               st(() {
                                                 _familyLoader = false;
                                               });
-
-                                              if (value != null) {
+                                              if (value) {
                                                 context
                                                     .read<UsersListViewModel>()
                                                     .addUser(
@@ -276,7 +276,6 @@ class _HomeState extends State<Home> {
                                                         profile_image_url: "",
                                                         name:
                                                             nameController.text,
-                                                        sub_id: "Tushar",
                                                         is_online: false)
                                                     .then((value) =>
                                                         Navigator.of(context)

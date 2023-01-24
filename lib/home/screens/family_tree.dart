@@ -24,7 +24,7 @@ class _FamilyTreeScreenState extends State<FamilyTreeScreen> {
       var fromEmailId = element.parentEmail!;
       var toEmailId = element.childEmail!;
       graph.addEdge(Node.Id(fromEmailId), Node.Id(toEmailId),
-          paint: Paint()..color = ManageTheme.nearlyBlack..strokeWidth = 1);
+          paint: Paint()..color = ManageTheme.nearlyBlack.withOpacity(0.7)..strokeWidth = 1);
     }
     builder
       ..nodeSeparation = (100) .. levelSeparation = (100)
@@ -52,11 +52,15 @@ class _FamilyTreeScreenState extends State<FamilyTreeScreen> {
               style: ManageTheme.appText(size: 16, weight: FontWeight.w500),
             ))
           : InteractiveViewer(
-              constrained: false,
-              boundaryMargin: const EdgeInsets.all(100),
-              minScale: 0.01,
-              maxScale: 5.6,
-              child: Center(
+              boundaryMargin:const EdgeInsets.all(double.infinity),
+              minScale: 0.35,
+              maxScale: 1,
+              child: OverflowBox(
+                alignment: Alignment.center,
+                minWidth: 0.0,
+                minHeight: 0.0,
+                maxWidth: double.infinity,
+                maxHeight: double.infinity,
                 child: GraphView(
                   graph: graph,
                   algorithm: SugiyamaAlgorithm(builder),

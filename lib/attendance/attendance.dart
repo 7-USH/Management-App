@@ -1,12 +1,14 @@
-// ignore_for_file: unused_local_variable, unused_field, prefer_final_fields, non_constant_identifier_names, prefer_const_constructors, deprecated_member_use
+// ignore_for_file: unused_local_variable, unused_field, prefer_final_fields, non_constant_identifier_names, prefer_const_constructors, deprecated_member_use, use_build_context_synchronously, avoid_print
 
 import 'dart:async';
 import 'package:action_slider/action_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:manage_app/attendance/models/attendance_time_model.dart';
 import 'package:manage_app/attendance/models/status_enum.dart';
 import 'package:manage_app/attendance/screens/history_screen.dart';
+import 'package:manage_app/attendance/service/attendance_service.dart';
 import 'package:manage_app/attendance/ui_view/leave_card.dart';
 import 'package:manage_app/utils/manage_theme.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
@@ -29,12 +31,15 @@ class _AttendanceState extends State<Attendance> {
   ActionSliderController _controller = ActionSliderController();
   String check_in_time = "--/--";
   String check_out_time = "--/--";
+  AttendanceService service = AttendanceService();
+  late Future<AttendanceTimeModel> attendance_model;
 
   @override
   void initState() {
     super.initState();
     _timer =
         Timer.periodic(const Duration(milliseconds: 500), (timer) => _update());
+    attendance_model = service.getAttendaceStatus(context: context);
   }
 
   void _update() {
@@ -111,84 +116,88 @@ class _AttendanceState extends State<Attendance> {
                   ),
                 ),
               ),
-              Container(
-                margin: const EdgeInsets.only(top: 12, bottom: 32),
-                height: 200,
-                decoration: BoxDecoration(
-                    color: ManageTheme.backgroundWhite,
-                    border: Border.all(color: ManageTheme.nearlyBlack),
-                    borderRadius: BorderRadius.all(Radius.circular(20)),
-                    boxShadow: const [
-                      BoxShadow(
-                          color: Colors.black26,
-                          blurRadius: 2,
-                          offset: Offset(2, 2))
-                    ]),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
-                        child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Icon(
-                          FontAwesomeIcons.signInAlt,
-                          size: screenWidth / 15,
-                          color: Colors.black38,
-                        ),
-                        SizedBox(
-                          height: screenHeight / 50,
-                        ),
-                        Text(
-                          "Check In",
-                          style: ManageTheme.insideAppText(
-                              size: screenWidth / 20,
-                              weight: FontWeight.w400,
-                              color: Colors.black38),
-                        ),
-                        Text(
-                          check_in_time,
-                          style: ManageTheme.insideAppText(
-                            size: screenWidth / 18,
-                            weight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    )),
-                    Expanded(
-                        child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Icon(
-                          FontAwesomeIcons.signOutAlt,
-                          size: screenWidth / 15,
-                          color: Colors.black38,
-                        ),
-                        SizedBox(
-                          height: screenHeight / 50,
-                        ),
-                        Text(
-                          "Check Out",
-                          style: ManageTheme.insideAppText(
-                              size: screenWidth / 20,
-                              weight: FontWeight.w400,
-                              color: Colors.black38),
-                        ),
-                        Text(
-                          check_out_time,
-                          style: ManageTheme.insideAppText(
-                            size: screenWidth / 18,
-                            weight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ))
-                  ],
-                ),
-              ),
+              FutureBuilder(
+                  future: attendance_model,
+                  builder: (context, snapshot) {
+                    return Container(
+                      margin: const EdgeInsets.only(top: 12, bottom: 32),
+                      height: 200,
+                      decoration: BoxDecoration(
+                          color: ManageTheme.backgroundWhite,
+                          border: Border.all(color: ManageTheme.nearlyBlack),
+                          borderRadius: BorderRadius.all(Radius.circular(20)),
+                          boxShadow: const [
+                            BoxShadow(
+                                color: Colors.black26,
+                                blurRadius: 2,
+                                offset: Offset(2, 2))
+                          ]),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                              child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Icon(
+                                FontAwesomeIcons.signInAlt,
+                                size: screenWidth / 15,
+                                color: Colors.black38,
+                              ),
+                              SizedBox(
+                                height: screenHeight / 50,
+                              ),
+                              Text(
+                                "Check In",
+                                style: ManageTheme.insideAppText(
+                                    size: screenWidth / 20,
+                                    weight: FontWeight.w400,
+                                    color: Colors.black38),
+                              ),
+                              Text(
+                                check_in_time,
+                                style: ManageTheme.insideAppText(
+                                  size: screenWidth / 18,
+                                  weight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          )),
+                          Expanded(
+                              child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Icon(
+                                FontAwesomeIcons.signOutAlt,
+                                size: screenWidth / 15,
+                                color: Colors.black38,
+                              ),
+                              SizedBox(
+                                height: screenHeight / 50,
+                              ),
+                              Text(
+                                "Check Out",
+                                style: ManageTheme.insideAppText(
+                                    size: screenWidth / 20,
+                                    weight: FontWeight.w400,
+                                    color: Colors.black38),
+                              ),
+                              Text(
+                                check_out_time,
+                                style: ManageTheme.insideAppText(
+                                  size: screenWidth / 18,
+                                  weight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ))
+                        ],
+                      ),
+                    );
+                  }),
               Container(
                 alignment: Alignment.centerLeft,
                 child: Text(
@@ -233,8 +242,8 @@ class _AttendanceState extends State<Attendance> {
                           size: screenWidth / 13,
                         ),
                         child: Shimmer.fromColors(
-                          baseColor: Colors.black12,
-                          highlightColor: Colors.grey,
+                          baseColor: Colors.black87,
+                          highlightColor: Colors.black12,
                           child: Text(
                             status == AttendanceStatus.CHECK_OUT
                                 ? "Slide to Check Out"
@@ -249,15 +258,23 @@ class _AttendanceState extends State<Attendance> {
                         ),
                         action: (controller) async {
                           controller.loading();
-                          await Future.delayed(const Duration(seconds: 3));
-                          controller.success();
                           if (status == AttendanceStatus.CHECK_IN) {
-                            setState(() {
-                              check_in_time = formattedTime.split(" ")[0];
+                            service.checkIn(context: context).then((value) {
+                              controller.success();
+                              if (value) {
+                                setState(() {
+                                  check_in_time = formattedTime.split(" ")[0];
+                                });
+                              }
                             });
                           } else {
-                            setState(() {
-                              check_out_time = formattedTime.split(" ")[0];
+                            service.checkOut(context: context).then((value) {
+                              controller.success();
+                              if (value) {
+                                setState(() {
+                                  check_out_time = formattedTime.split(" ")[0];
+                                });
+                              }
                             });
                           }
                           if (status != AttendanceStatus.CHECK_OUT) {
@@ -346,8 +363,7 @@ class _AttendanceState extends State<Attendance> {
                     onPressed: () {},
                     style: ManageTheme.buttonStyle(
                         backColor: ManageTheme.backgroundWhite,
-                        borderColor: ManageTheme.nearlyBlack
-                        ),
+                        borderColor: ManageTheme.nearlyBlack),
                     child: Text(
                       "Request Leave",
                       style: ManageTheme.insideAppText(

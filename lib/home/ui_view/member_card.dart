@@ -16,11 +16,13 @@ class MemberCard extends StatelessWidget {
       alignment: Alignment.center,
       decoration: BoxDecoration(
           color: ManageTheme.backgroundWhite,
-           boxShadow:  [
+          boxShadow: [
             BoxShadow(
-                color: Colors.black26.withOpacity(0.01), blurRadius: 2, offset: const Offset(1, 1))
+                color: Colors.black26.withOpacity(0.01),
+                blurRadius: 2,
+                offset: const Offset(1, 1))
           ],
-          border: Border.all(color: ManageTheme.nearlyBlack),
+          border: Border.all(color: Colors.grey.withOpacity(0.5)),
           borderRadius: BorderRadius.circular(20)),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -32,11 +34,17 @@ class MemberCard extends StatelessWidget {
             decoration: BoxDecoration(
                 color: ManageTheme.nearlyDarkBlue,
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: ManageTheme.nearlyBlack)),
+                border: Border.all(color: Colors.grey.withOpacity(0.5))),
           ),
           Container(
-            alignment: Alignment.center,
-            child: Text(name,style: ManageTheme.appText(size: MediaQuery.of(context).size.width/35, weight: FontWeight.w600),overflow: TextOverflow.ellipsis,))
+              alignment: Alignment.center,
+              child: Text(
+                name,
+                style: ManageTheme.appText(
+                    size: MediaQuery.of(context).size.width / 35,
+                    weight: FontWeight.w600),
+                overflow: TextOverflow.ellipsis,
+              ))
         ],
       ),
     );

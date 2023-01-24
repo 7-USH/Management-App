@@ -16,14 +16,12 @@ class HomeService {
     Map<String, dynamic> sub_id = await _service.getHeaders();
     var response = await _service.postData(endpoint, model.toJson());
     if (response.isLeft) {
-      return ManageTheme.moveToError(
-          context: context, text: response.left.message!);
+      ManageTheme.moveToError(context: context, text: response.left.message!);
+      return false;
     } else {
-      return response;
+      return true;
     }
   }
-
-  
 
   Future<FamilyRelationShipModel> getFamilyMembers(
       {required BuildContext context}) async {
