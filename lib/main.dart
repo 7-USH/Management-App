@@ -13,6 +13,7 @@ import 'package:manage_app/login/login.dart';
 import 'package:manage_app/login/screens/set_pass_screen.dart';
 import 'package:manage_app/login/screens/success_reset_screen.dart';
 import 'package:manage_app/signup/screens/subplan_screen.dart';
+import 'package:manage_app/task/screens/task_add.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'chat/models/ModelProvider.dart';
@@ -64,7 +65,7 @@ class _MyAppState extends State<MyApp> {
   void switchHome() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     String? session = sharedPreferences.getString("session");
-    if (session == null ) {
+    if (session == null) {
       setState(() {
         home = const Login();
       });
@@ -78,6 +79,8 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Management App', debugShowCheckedModeBanner: false, home: home);
+        title: 'Management App',
+        debugShowCheckedModeBanner: false,
+        home: home);
   }
 }

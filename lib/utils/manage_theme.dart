@@ -85,7 +85,9 @@ class ManageTheme {
   static InputDecoration faInputDecoration(
       {String? hint,
       Color? bgColor,
+      Widget? suffixIcon,
       double fontSize = 20,
+      double radius = 16,
       Color? borderColor,
       EdgeInsets? padding}) {
     return InputDecoration(
@@ -93,20 +95,21 @@ class ManageTheme {
           padding ?? const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       counter: const Offstage(),
       border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(radius),
           borderSide: const BorderSide(color: Colors.grey)),
       errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(radius),
           borderSide: const BorderSide(color: Colors.redAccent)),
       focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(radius),
           borderSide: BorderSide(color: borderColor ?? nearlyBlack)),
-      enabledBorder: const OutlineInputBorder(
-        borderRadius: BorderRadius.all(Radius.circular(16)),
-        borderSide: BorderSide(color: Colors.grey),
+      enabledBorder:  OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(radius)),
+        borderSide: const BorderSide(color: Colors.grey),
       ),
       labelText: hint,
       fillColor: Colors.transparent,
+      suffixIcon: suffixIcon,
       floatingLabelStyle: appText(
           size: fontSize, weight: FontWeight.normal, color: nearlyBlack),
       labelStyle: appText(
@@ -121,6 +124,7 @@ class ManageTheme {
       {IconData? prefixIcon,
       String? hint,
       Color? bgColor,
+      double radius = 16,
       double fontSize = 20,
       Color? borderColor,
       EdgeInsets? padding}) {
@@ -129,16 +133,16 @@ class ManageTheme {
           padding ?? const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       counter: const Offstage(),
       border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(radius),
           borderSide: const BorderSide(color: nearlyBlack)),
       errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(radius),
           borderSide: const BorderSide(color: Colors.redAccent)),
       focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(radius),
           borderSide: BorderSide(color: borderColor ?? nearlyBlack)),
       enabledBorder: OutlineInputBorder(
-        borderRadius: const BorderRadius.all(Radius.circular(16)),
+        borderRadius: BorderRadius.all(Radius.circular(radius)),
         borderSide: BorderSide(color: Colors.grey.withOpacity(0.2)),
       ),
       fillColor: bgColor ?? nearlyBlack.withOpacity(0.04),
@@ -152,7 +156,7 @@ class ManageTheme {
 
   static moveToError({required BuildContext context, required String text}) {
     PersistentNavBarNavigator.pushNewScreen(context,
-        screen: ErrorPage(text: text),withNavBar: false);
+        screen: ErrorPage(text: text), withNavBar: false);
   }
 
   static int generateOTP() {

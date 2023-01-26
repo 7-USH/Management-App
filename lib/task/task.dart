@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:manage_app/home/models/profile_detail_model.dart';
+import 'package:manage_app/task/screens/task_add.dart';
 import 'package:manage_app/utils/manage_theme.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 class Task extends StatefulWidget {
   Task({super.key, required this.model});
@@ -108,41 +110,50 @@ class _TaskState extends State<Task> {
             ),
             Align(
               alignment: Alignment.centerRight,
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-                margin: const EdgeInsets.only(top: 20),
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Colors.black26)),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                        height: 30,
-                        width: 30,
-                        margin: const EdgeInsets.only(right: 10),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
-                            color: ManageTheme.nearlyBlack),
-                        child: const Icon(
-                          FontAwesomeIcons.plus,
-                          color: ManageTheme.backgroundWhite,
-                          size: 15,
-                        )),
-                    Container(
-                      margin: const EdgeInsets.only(right: 7),
-                      child: Text(
-                        "Create New Task",
-                        style: ManageTheme.insideAppText(
+              child: GestureDetector(
+                onTap: () {
+                  PersistentNavBarNavigator.pushNewScreen(context,
+                      withNavBar: false,
+                      pageTransitionAnimation: PageTransitionAnimation.scale,
+                      screen: const TaskAddScreen());
+                },
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                  margin: const EdgeInsets.only(top: 20),
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: Colors.black26)),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                          height: 30,
+                          width: 30,
+                          margin: const EdgeInsets.only(right: 10),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15),
+                              color: ManageTheme.nearlyBlack),
+                          child: Icon(
+                            FontAwesomeIcons.plus,
+                            color: ManageTheme.backgroundWhite,
                             size: screenWidth / 25,
-                            weight: FontWeight.w500,
-                            color: ManageTheme.nearlyBlack),
-                      ),
-                    )
-                  ],
+                          )),
+                      Container(
+                        margin: const EdgeInsets.only(right: 7),
+                        child: Text(
+                          "Create New Task",
+                          style: ManageTheme.insideAppText(
+                              size: screenWidth / 25,
+                              weight: FontWeight.w500,
+                              color: ManageTheme.nearlyBlack),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
