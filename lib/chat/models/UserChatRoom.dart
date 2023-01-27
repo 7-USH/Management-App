@@ -19,20 +19,18 @@
 
 // ignore_for_file: public_member_api_docs, annotate_overrides, dead_code, dead_codepublic_member_api_docs, depend_on_referenced_packages, file_names, library_private_types_in_public_api, no_leading_underscores_for_library_prefixes, no_leading_underscores_for_local_identifiers, non_constant_identifier_names, null_check_on_nullable_type_parameter, prefer_adjacent_string_concatenation, prefer_const_constructors, prefer_if_null_operators, prefer_interpolation_to_compose_strings, slash_for_doc_comments, sort_child_properties_last, unnecessary_const, unnecessary_constructor_name, unnecessary_late, unnecessary_new, unnecessary_null_aware_assignments, unnecessary_nullable_for_final_variable_declarations, unnecessary_string_interpolations, use_build_context_synchronously
 
+import 'ModelProvider.dart';
 import 'package:amplify_core/amplify_core.dart';
 import 'package:flutter/foundation.dart';
 
 
-/** This is an auto generated class representing the Message type in your schema. */
+/** This is an auto generated class representing the UserChatRoom type in your schema. */
 @immutable
-class Message extends Model {
-  static const classType = const _MessageModelType();
+class UserChatRoom extends Model {
+  static const classType = const _UserChatRoomModelType();
   final String id;
-  final String? _message;
-  final String? _time_stamp;
-  final String? _userID;
-  final String? _chatroomID;
-  final int? _index;
+  final ChatRoom? _chatRoom;
+  final User? _user;
   final TemporalDateTime? _createdAt;
   final TemporalDateTime? _updatedAt;
 
@@ -43,23 +41,15 @@ class Message extends Model {
   @override
   String getId() => id;
   
-  MessageModelIdentifier get modelIdentifier {
-      return MessageModelIdentifier(
+  UserChatRoomModelIdentifier get modelIdentifier {
+      return UserChatRoomModelIdentifier(
         id: id
       );
   }
   
-  String? get message {
-    return _message;
-  }
-  
-  String? get time_stamp {
-    return _time_stamp;
-  }
-  
-  String get userID {
+  ChatRoom get chatRoom {
     try {
-      return _userID!;
+      return _chatRoom!;
     } catch(e) {
       throw new AmplifyCodeGenModelException(
           AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
@@ -70,9 +60,9 @@ class Message extends Model {
     }
   }
   
-  String get chatroomID {
+  User get user {
     try {
-      return _chatroomID!;
+      return _user!;
     } catch(e) {
       throw new AmplifyCodeGenModelException(
           AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
@@ -81,10 +71,6 @@ class Message extends Model {
           underlyingException: e.toString()
           );
     }
-  }
-  
-  int? get index {
-    return _index;
   }
   
   TemporalDateTime? get createdAt {
@@ -95,16 +81,13 @@ class Message extends Model {
     return _updatedAt;
   }
   
-  const Message._internal({required this.id, message, time_stamp, required userID, required chatroomID, index, createdAt, updatedAt}): _message = message, _time_stamp = time_stamp, _userID = userID, _chatroomID = chatroomID, _index = index, _createdAt = createdAt, _updatedAt = updatedAt;
+  const UserChatRoom._internal({required this.id, required chatRoom, required user, createdAt, updatedAt}): _chatRoom = chatRoom, _user = user, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Message({String? id, String? message, String? time_stamp, required String userID, required String chatroomID, int? index}) {
-    return Message._internal(
+  factory UserChatRoom({String? id, required ChatRoom chatRoom, required User user}) {
+    return UserChatRoom._internal(
       id: id == null ? UUID.getUUID() : id,
-      message: message,
-      time_stamp: time_stamp,
-      userID: userID,
-      chatroomID: chatroomID,
-      index: index);
+      chatRoom: chatRoom,
+      user: user);
   }
   
   bool equals(Object other) {
@@ -114,13 +97,10 @@ class Message extends Model {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is Message &&
+    return other is UserChatRoom &&
       id == other.id &&
-      _message == other._message &&
-      _time_stamp == other._time_stamp &&
-      _userID == other._userID &&
-      _chatroomID == other._chatroomID &&
-      _index == other._index;
+      _chatRoom == other._chatRoom &&
+      _user == other._user;
   }
   
   @override
@@ -130,13 +110,10 @@ class Message extends Model {
   String toString() {
     var buffer = new StringBuffer();
     
-    buffer.write("Message {");
+    buffer.write("UserChatRoom {");
     buffer.write("id=" + "$id" + ", ");
-    buffer.write("message=" + "$_message" + ", ");
-    buffer.write("time_stamp=" + "$_time_stamp" + ", ");
-    buffer.write("userID=" + "$_userID" + ", ");
-    buffer.write("chatroomID=" + "$_chatroomID" + ", ");
-    buffer.write("index=" + (_index != null ? _index!.toString() : "null") + ", ");
+    buffer.write("chatRoom=" + (_chatRoom != null ? _chatRoom!.toString() : "null") + ", ");
+    buffer.write("user=" + (_user != null ? _user!.toString() : "null") + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -144,91 +121,63 @@ class Message extends Model {
     return buffer.toString();
   }
   
-  Message copyWith({String? message, String? time_stamp, String? userID, String? chatroomID, int? index}) {
-    return Message._internal(
+  UserChatRoom copyWith({ChatRoom? chatRoom, User? user}) {
+    return UserChatRoom._internal(
       id: id,
-      message: message ?? this.message,
-      time_stamp: time_stamp ?? this.time_stamp,
-      userID: userID ?? this.userID,
-      chatroomID: chatroomID ?? this.chatroomID,
-      index: index ?? this.index);
+      chatRoom: chatRoom ?? this.chatRoom,
+      user: user ?? this.user);
   }
   
-  Message.fromJson(Map<String, dynamic> json)  
+  UserChatRoom.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
-      _message = json['message'],
-      _time_stamp = json['time_stamp'],
-      _userID = json['userID'],
-      _chatroomID = json['chatroomID'],
-      _index = (json['index'] as num?)?.toInt(),
+      _chatRoom = json['chatRoom']?['serializedData'] != null
+        ? ChatRoom.fromJson(new Map<String, dynamic>.from(json['chatRoom']['serializedData']))
+        : null,
+      _user = json['user']?['serializedData'] != null
+        ? User.fromJson(new Map<String, dynamic>.from(json['user']['serializedData']))
+        : null,
       _createdAt = json['createdAt'] != null ? TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'message': _message, 'time_stamp': _time_stamp, 'userID': _userID, 'chatroomID': _chatroomID, 'index': _index, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'chatRoom': _chatRoom?.toJson(), 'user': _user?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
-    'id': id, 'message': _message, 'time_stamp': _time_stamp, 'userID': _userID, 'chatroomID': _chatroomID, 'index': _index, 'createdAt': _createdAt, 'updatedAt': _updatedAt
+    'id': id, 'chatRoom': _chatRoom, 'user': _user, 'createdAt': _createdAt, 'updatedAt': _updatedAt
   };
 
-  static final QueryModelIdentifier<MessageModelIdentifier> MODEL_IDENTIFIER = QueryModelIdentifier<MessageModelIdentifier>();
+  static final QueryModelIdentifier<UserChatRoomModelIdentifier> MODEL_IDENTIFIER = QueryModelIdentifier<UserChatRoomModelIdentifier>();
   static final QueryField ID = QueryField(fieldName: "id");
-  static final QueryField MESSAGE = QueryField(fieldName: "message");
-  static final QueryField TIME_STAMP = QueryField(fieldName: "time_stamp");
-  static final QueryField USERID = QueryField(fieldName: "userID");
-  static final QueryField CHATROOMID = QueryField(fieldName: "chatroomID");
-  static final QueryField INDEX = QueryField(fieldName: "index");
+  static final QueryField CHATROOM = QueryField(
+    fieldName: "chatRoom",
+    fieldType: ModelFieldType(ModelFieldTypeEnum.model, ofModelName: 'ChatRoom'));
+  static final QueryField USER = QueryField(
+    fieldName: "user",
+    fieldType: ModelFieldType(ModelFieldTypeEnum.model, ofModelName: 'User'));
   static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
-    modelSchemaDefinition.name = "Message";
-    modelSchemaDefinition.pluralName = "Messages";
-    
-    modelSchemaDefinition.authRules = [
-      AuthRule(
-        authStrategy: AuthStrategy.PUBLIC,
-        operations: [
-          ModelOperation.CREATE,
-          ModelOperation.UPDATE,
-          ModelOperation.DELETE,
-          ModelOperation.READ
-        ])
-    ];
+    modelSchemaDefinition.name = "UserChatRoom";
+    modelSchemaDefinition.pluralName = "UserChatRooms";
     
     modelSchemaDefinition.indexes = [
-      ModelIndex(fields: const ["userID"], name: "byUser"),
-      ModelIndex(fields: const ["chatroomID"], name: "byChatRoom")
+      ModelIndex(fields: const ["chatRoomId"], name: "byChatRoom"),
+      ModelIndex(fields: const ["userId"], name: "byUser")
     ];
     
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
-      key: Message.MESSAGE,
-      isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
-    
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
-      key: Message.TIME_STAMP,
-      isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
-    
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
-      key: Message.USERID,
+    modelSchemaDefinition.addField(ModelFieldDefinition.belongsTo(
+      key: UserChatRoom.CHATROOM,
       isRequired: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
+      targetNames: ['chatRoomId'],
+      ofModelName: 'ChatRoom'
     ));
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
-      key: Message.CHATROOMID,
+    modelSchemaDefinition.addField(ModelFieldDefinition.belongsTo(
+      key: UserChatRoom.USER,
       isRequired: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
-    
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
-      key: Message.INDEX,
-      isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.int)
+      targetNames: ['userId'],
+      ofModelName: 'User'
     ));
     
     modelSchemaDefinition.addField(ModelFieldDefinition.nonQueryField(
@@ -247,30 +196,30 @@ class Message extends Model {
   });
 }
 
-class _MessageModelType extends ModelType<Message> {
-  const _MessageModelType();
+class _UserChatRoomModelType extends ModelType<UserChatRoom> {
+  const _UserChatRoomModelType();
   
   @override
-  Message fromJson(Map<String, dynamic> jsonData) {
-    return Message.fromJson(jsonData);
+  UserChatRoom fromJson(Map<String, dynamic> jsonData) {
+    return UserChatRoom.fromJson(jsonData);
   }
   
   @override
   String modelName() {
-    return 'Message';
+    return 'UserChatRoom';
   }
 }
 
 /**
  * This is an auto generated class representing the model identifier
- * of [Message] in your schema.
+ * of [UserChatRoom] in your schema.
  */
 @immutable
-class MessageModelIdentifier implements ModelIdentifier<Message> {
+class UserChatRoomModelIdentifier implements ModelIdentifier<UserChatRoom> {
   final String id;
 
-  /** Create an instance of MessageModelIdentifier using [id] the primary key. */
-  const MessageModelIdentifier({
+  /** Create an instance of UserChatRoomModelIdentifier using [id] the primary key. */
+  const UserChatRoomModelIdentifier({
     required this.id});
   
   @override
@@ -288,7 +237,7 @@ class MessageModelIdentifier implements ModelIdentifier<Message> {
   String serializeAsString() => serializeAsMap().values.join('#');
   
   @override
-  String toString() => 'MessageModelIdentifier(id: $id)';
+  String toString() => 'UserChatRoomModelIdentifier(id: $id)';
   
   @override
   bool operator ==(Object other) {
@@ -296,7 +245,7 @@ class MessageModelIdentifier implements ModelIdentifier<Message> {
       return true;
     }
     
-    return other is MessageModelIdentifier &&
+    return other is UserChatRoomModelIdentifier &&
       id == other.id;
   }
   

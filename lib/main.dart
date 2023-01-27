@@ -79,8 +79,6 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Management App',
-        debugShowCheckedModeBanner: false,
-        home: home);
+        title: 'Management App', debugShowCheckedModeBanner: false, home: home);
   }
 }

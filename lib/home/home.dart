@@ -1,17 +1,18 @@
 // ignore_for_file: prefer_const_constructors, unused_field, sized_box_for_whitespace, use_build_context_synchronously, unused_local_variable, non_constant_identifier_names, prefer_final_fields, must_be_immutable
 
+import 'dart:async';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:lottie/lottie.dart';
 import 'package:manage_app/chat/view_models/users_list_viewmodel.dart';
 import 'package:manage_app/home/models/family_member_model.dart';
 import 'package:manage_app/home/models/family_relationship_model.dart';
 import 'package:manage_app/home/models/notification_model.dart';
 import 'package:manage_app/home/models/profile_detail_model.dart';
-import 'package:manage_app/home/models/task_model.dart';
 import 'package:manage_app/home/screens/family_tree.dart';
 import 'package:manage_app/home/screens/guest_relation.dart';
 import 'package:manage_app/home/screens/notifications.dart';
@@ -19,9 +20,12 @@ import 'package:manage_app/home/screens/profile.dart';
 import 'package:manage_app/home/screens/staff_tree.dart';
 import 'package:manage_app/home/service/home_service.dart';
 import 'package:manage_app/home/ui_view/task_card.dart';
+import 'package:manage_app/task/models/display_task_model.dart';
+import 'package:manage_app/task/service/task_service.dart';
 import 'package:manage_app/utils/manage_theme.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 
 class Home extends StatefulWidget {
   Home({super.key, required this.model});
@@ -34,13 +38,18 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   int _current = 0;
   HomeService service = HomeService();
+  TaskService taskService = TaskService();
   final _formKey = GlobalKey<FormState>();
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController bankController = TextEditingController();
   late Future<FamilyRelationShipModel> _familyRelationShips;
-
+  late TaskStream stream;
   bool _familyLoader = false;
+  String _currentFamilySelectedValue = "Dad";
+  String _currentStaffSelectedValue = "Manager";
+  String _currentGuestSelectedValue = "Home tutor";
+  CarouselController buttonCarouselController = CarouselController();
 
   final List<String> _family_relations = [
     "Dad",
@@ -63,16 +72,17 @@ class _HomeState extends State<Home> {
     "Friends",
   ];
 
-  String _currentFamilySelectedValue = "Dad";
-  String _currentStaffSelectedValue = "Manager";
-  String _currentGuestSelectedValue = "Home tutor";
-
-  CarouselController buttonCarouselController = CarouselController();
-
   @override
   void initState() {
     _familyRelationShips = service.getFamilyMembers(context: context);
+    stream = TaskStream(context: context);
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    stream.closeStream();
+    super.dispose();
   }
 
   Future<void> addFamilyMembers() async {
@@ -274,7 +284,10 @@ class _HomeState extends State<Home> {
                                                     .addUser(
                                                         tag:
                                                             _currentFamilySelectedValue,
+                                                        email: emailController
+                                                            .text,
                                                         profile_image_url: "",
+                                                        index: 1,
                                                         name:
                                                             nameController.text,
                                                         is_online: false)
@@ -848,36 +861,121 @@ class _HomeState extends State<Home> {
                             SizedBox(
                               height: 20,
                             ),
-                            CarouselSlider(
-                                carouselController: buttonCarouselController,
-                                items: List.generate(
-                                    10,
-                                    (index) => TaskCard(
-                                        isCurrent: index == _current,
-                                        model: TaskModel(
-                                            task_given_by: "Tushar Mali",
-                                            task_message:
-                                                "Received Guests by 10:30 AM",
-                                            task_number: "${index + 1}."))),
-                                options: CarouselOptions(
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.32,
-                                  aspectRatio: 1,
-                                  viewportFraction: 0.6,
-                                  padEnds: true,
-                                  disableCenter: true,
-                                  initialPage: 0,
-                                  enableInfiniteScroll: true,
-                                  onPageChanged: (index, reason) {
-                                    setState(() {
-                                      _current = index;
-                                    });
-                                  },
-                                  reverse: false,
-                                  enlargeCenterPage: true,
-                                  enlargeFactor: 0.3,
-                                  scrollDirection: Axis.horizontal,
-                                )),
+                            StreamBuilder<List<DisplayStaffTaskModel>>(
+                                stream: stream.taskStream,
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasData) {
+                                    return snapshot.data!.isEmpty
+                                        ? SizedBox(
+                                            height: screenHeight / 3.4,
+                                            child: Chip(
+                                              label: Center(
+                                                  child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  LottieBuilder.asset(
+                                                    "assets/gifs/task.json",
+                                                    frameRate: FrameRate.max,
+                                                    repeat: false,
+                                                    height: 150,
+                                                  ),
+                                                  Text(
+                                                    "No Task for Today!",
+                                                    style: ManageTheme.insideAppText(
+                                                        size: screenWidth / 24,
+                                                        weight: FontWeight.w500),
+                                                  )
+                                                ],
+                                              )),
+                                            ),
+                                          )
+                                        : CarouselSlider(
+                                            carouselController:
+                                                buttonCarouselController,
+                                            items: List.generate(
+                                                snapshot.data!.length,
+                                                (index) => TaskCard(
+                                                    index:
+                                                        (index + 1).toString(),
+                                                    isCurrent:
+                                                        index == _current,
+                                                    model:
+                                                        snapshot.data![index])),
+                                            options: CarouselOptions(
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.32,
+                                              aspectRatio: 1,
+                                              viewportFraction: 0.6,
+                                              padEnds: true,
+                                              disableCenter: true,
+                                              initialPage: 0,
+                                              enableInfiniteScroll: true,
+                                              onPageChanged: (index, reason) {
+                                                setState(() {
+                                                  _current = index;
+                                                });
+                                              },
+                                              reverse: false,
+                                              enlargeCenterPage: true,
+                                              enlargeFactor: 0.3,
+                                              scrollDirection: Axis.horizontal,
+                                            ));
+                                  } else {
+                                    return CarouselSlider(
+                                        carouselController:
+                                            buttonCarouselController,
+                                        items: List.generate(
+                                            5,
+                                            (index) => Shimmer.fromColors(
+                                                  baseColor:
+                                                      Colors.grey.shade300,
+                                                  highlightColor: ManageTheme
+                                                      .nearlyGrey
+                                                      .withOpacity(0.5),
+                                                  direction:
+                                                      ShimmerDirection.rtl,
+                                                  child: TaskCard(
+                                                      isCurrent: true,
+                                                      index: "",
+                                                      model:
+                                                          DisplayStaffTaskModel(
+                                                              priority: "",
+                                                              validFor: 3,
+                                                              validFrom: "",
+                                                              taskTitle: "",
+                                                              description: "",
+                                                              status: "",
+                                                              id: "",
+                                                              assignedAt: "")),
+                                                )),
+                                        options: CarouselOptions(
+                                          height: MediaQuery.of(context)
+                                                  .size
+                                                  .height *
+                                              0.32,
+                                          aspectRatio: 1,
+                                          viewportFraction: 0.6,
+                                          padEnds: true,
+                                          disableCenter: true,
+                                          initialPage: 0,
+                                          enableInfiniteScroll: true,
+                                          onPageChanged: (index, reason) {
+                                            setState(() {
+                                              _current = index;
+                                            });
+                                          },
+                                          reverse: false,
+                                          enlargeCenterPage: true,
+                                          enlargeFactor: 0.3,
+                                          scrollDirection: Axis.horizontal,
+                                        ));
+                                  }
+                                }),
                             SizedBox(
                               height: 20,
                             ),

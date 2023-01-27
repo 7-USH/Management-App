@@ -89,12 +89,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     onPressed: () async {
                       SharedPreferences pref =
                           await SharedPreferences.getInstance();
-                      pref.remove("session").then((value) {
-                        PersistentNavBarNavigator.pushNewScreen(context,
-                            screen: Login(),
-                            withNavBar: false,
-                            pageTransitionAnimation:
-                                PageTransitionAnimation.scale);
+                      pref.clear().then((value) {
+                        if (value) {
+                          PersistentNavBarNavigator.pushNewScreen(context,
+                              screen: Login(),
+                              withNavBar: false,
+                              pageTransitionAnimation:
+                                  PageTransitionAnimation.scale);
+                        }
                       });
                     },
                     style: ManageTheme.buttonStyle(

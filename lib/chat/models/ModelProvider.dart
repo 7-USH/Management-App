@@ -23,16 +23,18 @@ import 'package:amplify_core/amplify_core.dart';
 import 'ChatRoom.dart';
 import 'Message.dart';
 import 'User.dart';
+import 'UserChatRoom.dart';
 
 export 'ChatRoom.dart';
 export 'Message.dart';
 export 'User.dart';
+export 'UserChatRoom.dart';
 
 class ModelProvider implements ModelProviderInterface {
   @override
-  String version = "ff01b3635bd6f49056bef600cbeeeb68";
+  String version = "9d71849692b5a5a71b2f42e95bfd614b";
   @override
-  List<ModelSchema> modelSchemas = [ChatRoom.schema, Message.schema, User.schema];
+  List<ModelSchema> modelSchemas = [ChatRoom.schema, Message.schema, User.schema, UserChatRoom.schema];
   static final ModelProvider _instance = ModelProvider();
   @override
   List<ModelSchema> customTypeSchemas = [];
@@ -47,6 +49,8 @@ class ModelProvider implements ModelProviderInterface {
         return Message.classType;
       case "User":
         return User.classType;
+      case "UserChatRoom":
+        return UserChatRoom.classType;
       default:
         throw Exception("Failed to find model in model provider for model name: " + modelName);
     }

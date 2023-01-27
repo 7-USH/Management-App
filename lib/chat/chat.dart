@@ -1,4 +1,4 @@
-// ignore_for_file: unused_local_variable, non_constant_identifier_names
+// ignore_for_file: unused_local_variable, non_constant_identifier_names, unused_import, must_be_immutable
 
 import 'package:amplify_core/amplify_core.dart';
 import 'package:flutter/cupertino.dart';
@@ -10,14 +10,17 @@ import 'package:manage_app/chat/models/chat_model.dart';
 import 'package:manage_app/chat/screens/chat_screen.dart';
 import 'package:manage_app/chat/ui_view/chat_card.dart';
 import 'package:manage_app/chat/ui_view/circle_card.dart';
+import 'package:manage_app/chat/view_models/chatroom_list_viewmodel.dart';
 import 'package:manage_app/chat/view_models/users_list_viewmodel.dart';
+import 'package:manage_app/home/models/profile_detail_model.dart';
 import 'package:manage_app/utils/manage_theme.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Chat extends StatefulWidget {
-  const Chat({super.key});
+  Chat({super.key, required this.model});
+  ProfileDetailModel model;
 
   @override
   State<Chat> createState() => _ChatState();
@@ -138,58 +141,90 @@ class _ChatState extends State<Chat> {
                         const SizedBox(
                           height: 10,
                         ),
-                        Expanded(
-                          child: AnimationLimiter(
-                            child: ListView.builder(
-                                physics: const BouncingScrollPhysics(),
-                                itemCount: snapshot.data!.items.length,
-                                shrinkWrap: true,
-                                itemBuilder: (context, index) {
-                                  return AnimationConfiguration.staggeredList(
-                                    position: index,
-                                    duration: const Duration(milliseconds: 500),
-                                    child: SlideAnimation(
-                                      horizontalOffset: 80,
-                                      child: FadeInAnimation(
-                                        child: GestureDetector(
-                                            onTap: () {
-                                              PersistentNavBarNavigator
-                                                  .pushNewScreen(
-                                                context,
-                                                screen: ChatScreen(
-                                                    model: ChatModel(
-                                                        image_url: snapshot
-                                                                .data!
-                                                                .items[index]
-                                                                .profile_img_url ??
-                                                            "",
-                                                        last_chat: "Hello",
-                                                        name: snapshot.data!
-                                                            .items[index].name!,
-                                                        time: snapshot
-                                                            .data!
-                                                            .items[index]
-                                                            .updatedAt
-                                                            .toString(),
-                                                        tag: snapshot.data!
-                                                            .items[index].tag!,
-                                                        person_phone:
-                                                            "7262818443")),
-                                                withNavBar: false,
-                                                pageTransitionAnimation:
-                                                    PageTransitionAnimation
-                                                        .scale,
-                                              );
-                                            },
-                                            child: ChatCard(
-                                                model: snapshot
-                                                    .data!.items[index])),
-                                      ),
-                                    ),
-                                  );
-                                }),
-                          ),
-                        )
+                        ChangeNotifierProvider(
+                            create: (_) => ChatRoomListViewModel(),
+                            builder: (context, child) {
+                              return Expanded(
+                                child: AnimationLimiter(
+                                  child: ListView.builder(
+                                      physics: const BouncingScrollPhysics(),
+                                      itemCount: snapshot.data!.items.length,
+                                      shrinkWrap: true,
+                                      itemBuilder: (context, index) {
+                                        return AnimationConfiguration
+                                            .staggeredList(
+                                          position: index,
+                                          duration:
+                                              const Duration(milliseconds: 500),
+                                          child: SlideAnimation(
+                                            horizontalOffset: 80,
+                                            child: FadeInAnimation(
+                                              child: GestureDetector(
+                                                  onTap: () async {
+                                                    // PersistentNavBarNavigator
+                                                    //     .pushNewScreen(
+                                                    //   context,
+                                                    //   screen: ChatScreen(
+                                                    //       model: ChatModel(
+                                                    //           image_url: snapshot
+                                                    //                   .data!
+                                                    //                   .items[
+                                                    //                       index]
+                                                    //                   .profile_img_url ??
+                                                    //               "",
+                                                    //           last_chat:
+                                                    //               "Hello",
+                                                    //           name: snapshot
+                                                    //               .data!
+                                                    //               .items[index]
+                                                    // context
+                                                    //     .read<
+                                                    //         ChatRoomListViewModel>()
+                                                    //     .createNewChatRoom(
+                                                    //       chatRoomID:
+                                                    //           "${widget.model.email!}_${snapshot.data!.items[index].email_id!}",
+                                                    //       clicked_user_id:
+                                                    //           snapshot
+                                                    //               .data!
+                                                    //               .items[index]
+                                                    //               .id,
+                                                    //     )
+                                                    //     .then((value) => print(
+                                                    //         "ChatRoom Created"));                //               .name!,
+                                                    //           time: snapshot
+                                                    //               .data!
+                                                    //               .items[index]
+                                                    //               .updatedAt
+                                                    //               .toString(),
+                                                    //           tag: snapshot
+                                                    //               .data!
+                                                    //               .items[index]
+                                                    //               .tag!,
+                                                    //           person_phone:
+                                                    //               "7262818443")),
+                                                    //   withNavBar: false,
+                                                    //   pageTransitionAnimation:
+                                                    //       PageTransitionAnimation
+                                                    //           .scale,
+                                                    // );
+
+                                                    // context
+                                                    //     .read<
+                                                    //         ChatRoomListViewModel>()
+                                                    //     .fetchChatRooms()
+                                                    //     .then((value) =>
+                                                    //         print(value[0]));
+                                                  },
+                                                  child: ChatCard(
+                                                      model: snapshot
+                                                          .data!.items[index])),
+                                            ),
+                                          ),
+                                        );
+                                      }),
+                                ),
+                              );
+                            })
                       ],
                     ),
                   );

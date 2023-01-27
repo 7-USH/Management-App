@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables
-
 /*
 * Copyright 2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 *
@@ -31,9 +29,10 @@ import 'package:flutter/foundation.dart';
 class ChatRoom extends Model {
   static const classType = const _ChatRoomModelType();
   final String id;
-  final List<Message>? _Messages;
-  final String? _userID;
+  final List<Message>? _messages;
   final Message? _last_message;
+  final List<UserChatRoom>? _users;
+  final int? _index;
   final TemporalDateTime? _createdAt;
   final TemporalDateTime? _updatedAt;
   final String? _chatRoomLast_messageId;
@@ -50,25 +49,20 @@ class ChatRoom extends Model {
     return ChatRoomModelIdentifier(id: id);
   }
 
-  List<Message>? get Messages {
-    return _Messages;
-  }
-
-  String get userID {
-    try {
-      return _userID!;
-    } catch (e) {
-      throw new AmplifyCodeGenModelException(
-          AmplifyExceptionMessages
-              .codeGenRequiredFieldForceCastExceptionMessage,
-          recoverySuggestion: AmplifyExceptionMessages
-              .codeGenRequiredFieldForceCastRecoverySuggestion,
-          underlyingException: e.toString());
-    }
+  List<Message>? get messages {
+    return _messages;
   }
 
   Message? get last_message {
     return _last_message;
+  }
+
+  List<UserChatRoom>? get users {
+    return _users;
+  }
+
+  int? get index {
+    return _index;
   }
 
   TemporalDateTime? get createdAt {
@@ -85,31 +79,35 @@ class ChatRoom extends Model {
 
   const ChatRoom._internal(
       {required this.id,
-      Messages,
-      required userID,
+      messages,
       last_message,
+      users,
+      index,
       createdAt,
       updatedAt,
       chatRoomLast_messageId})
-      : _Messages = Messages,
-        _userID = userID,
+      : _messages = messages,
         _last_message = last_message,
+        _users = users,
+        _index = index,
         _createdAt = createdAt,
         _updatedAt = updatedAt,
         _chatRoomLast_messageId = chatRoomLast_messageId;
 
   factory ChatRoom(
       {String? id,
-      List<Message>? Messages,
-      required String userID,
+      List<Message>? messages,
       Message? last_message,
+      List<UserChatRoom>? users,
+      int? index,
       String? chatRoomLast_messageId}) {
     return ChatRoom._internal(
         id: id == null ? UUID.getUUID() : id,
-        Messages:
-            Messages != null ? List<Message>.unmodifiable(Messages) : Messages,
-        userID: userID,
+        messages:
+            messages != null ? List<Message>.unmodifiable(messages) : messages,
         last_message: last_message,
+        users: users != null ? List<UserChatRoom>.unmodifiable(users) : users,
+        index: index,
         chatRoomLast_messageId: chatRoomLast_messageId);
   }
 
@@ -122,9 +120,10 @@ class ChatRoom extends Model {
     if (identical(other, this)) return true;
     return other is ChatRoom &&
         id == other.id &&
-        DeepCollectionEquality().equals(_Messages, other._Messages) &&
-        _userID == other._userID &&
+        DeepCollectionEquality().equals(_messages, other._messages) &&
         _last_message == other._last_message &&
+        DeepCollectionEquality().equals(_users, other._users) &&
+        _index == other._index &&
         _chatRoomLast_messageId == other._chatRoomLast_messageId;
   }
 
@@ -137,7 +136,8 @@ class ChatRoom extends Model {
 
     buffer.write("ChatRoom {");
     buffer.write("id=" + "$id" + ", ");
-    buffer.write("userID=" + "$_userID" + ", ");
+    buffer.write(
+        "index=" + (_index != null ? _index!.toString() : "null") + ", ");
     buffer.write("createdAt=" +
         (_createdAt != null ? _createdAt!.format() : "null") +
         ", ");
@@ -151,33 +151,42 @@ class ChatRoom extends Model {
   }
 
   ChatRoom copyWith(
-      {List<Message>? Messages,
-      String? userID,
+      {List<Message>? messages,
       Message? last_message,
+      List<UserChatRoom>? users,
+      int? index,
       String? chatRoomLast_messageId}) {
     return ChatRoom._internal(
         id: id,
-        Messages: Messages ?? this.Messages,
-        userID: userID ?? this.userID,
+        messages: messages ?? this.messages,
         last_message: last_message ?? this.last_message,
+        users: users ?? this.users,
+        index: index ?? this.index,
         chatRoomLast_messageId:
             chatRoomLast_messageId ?? this.chatRoomLast_messageId);
   }
 
   ChatRoom.fromJson(Map<String, dynamic> json)
       : id = json['id'],
-        _Messages = json['Messages'] is List
-            ? (json['Messages'] as List)
+        _messages = json['messages'] is List
+            ? (json['messages'] as List)
                 .where((e) => e?['serializedData'] != null)
                 .map((e) => Message.fromJson(
                     new Map<String, dynamic>.from(e['serializedData'])))
                 .toList()
             : null,
-        _userID = json['userID'],
         _last_message = json['last_message']?['serializedData'] != null
             ? Message.fromJson(new Map<String, dynamic>.from(
                 json['last_message']['serializedData']))
             : null,
+        _users = json['users'] is List
+            ? (json['users'] as List)
+                .where((e) => e?['serializedData'] != null)
+                .map((e) => UserChatRoom.fromJson(
+                    new Map<String, dynamic>.from(e['serializedData'])))
+                .toList()
+            : null,
+        _index = (json['index'] as num?)?.toInt(),
         _createdAt = json['createdAt'] != null
             ? TemporalDateTime.fromString(json['createdAt'])
             : null,
@@ -188,9 +197,10 @@ class ChatRoom extends Model {
 
   Map<String, dynamic> toJson() => {
         'id': id,
-        'Messages': _Messages?.map((Message? e) => e?.toJson()).toList(),
-        'userID': _userID,
+        'messages': _messages?.map((Message? e) => e?.toJson()).toList(),
         'last_message': _last_message?.toJson(),
+        'users': _users?.map((UserChatRoom? e) => e?.toJson()).toList(),
+        'index': _index,
         'createdAt': _createdAt?.format(),
         'updatedAt': _updatedAt?.format(),
         'chatRoomLast_messageId': _chatRoomLast_messageId
@@ -198,9 +208,10 @@ class ChatRoom extends Model {
 
   Map<String, Object?> toMap() => {
         'id': id,
-        'Messages': _Messages,
-        'userID': _userID,
+        'messages': _messages,
         'last_message': _last_message,
+        'users': _users,
+        'index': _index,
         'createdAt': _createdAt,
         'updatedAt': _updatedAt,
         'chatRoomLast_messageId': _chatRoomLast_messageId
@@ -210,14 +221,18 @@ class ChatRoom extends Model {
       QueryModelIdentifier<ChatRoomModelIdentifier>();
   static final QueryField ID = QueryField(fieldName: "id");
   static final QueryField MESSAGES = QueryField(
-      fieldName: "Messages",
+      fieldName: "messages",
       fieldType:
           ModelFieldType(ModelFieldTypeEnum.model, ofModelName: 'Message'));
-  static final QueryField USERID = QueryField(fieldName: "userID");
   static final QueryField LAST_MESSAGE = QueryField(
       fieldName: "last_message",
       fieldType:
           ModelFieldType(ModelFieldTypeEnum.model, ofModelName: 'Message'));
+  static final QueryField USERS = QueryField(
+      fieldName: "users",
+      fieldType: ModelFieldType(ModelFieldTypeEnum.model,
+          ofModelName: 'UserChatRoom'));
+  static final QueryField INDEX = QueryField(fieldName: "index");
   static final QueryField CHATROOMLAST_MESSAGEID =
       QueryField(fieldName: "chatRoomLast_messageId");
   static var schema =
@@ -234,10 +249,6 @@ class ChatRoom extends Model {
       ])
     ];
 
-    modelSchemaDefinition.indexes = [
-      ModelIndex(fields: const ["userID"], name: "byUser")
-    ];
-
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
 
     modelSchemaDefinition.addField(ModelFieldDefinition.hasMany(
@@ -246,16 +257,22 @@ class ChatRoom extends Model {
         ofModelName: 'Message',
         associatedKey: Message.CHATROOMID));
 
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
-        key: ChatRoom.USERID,
-        isRequired: true,
-        ofType: ModelFieldType(ModelFieldTypeEnum.string)));
-
     modelSchemaDefinition.addField(ModelFieldDefinition.hasOne(
         key: ChatRoom.LAST_MESSAGE,
         isRequired: false,
         ofModelName: 'Message',
         associatedKey: Message.ID));
+
+    modelSchemaDefinition.addField(ModelFieldDefinition.hasMany(
+        key: ChatRoom.USERS,
+        isRequired: false,
+        ofModelName: 'UserChatRoom',
+        associatedKey: UserChatRoom.CHATROOM));
+
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+        key: ChatRoom.INDEX,
+        isRequired: false,
+        ofType: ModelFieldType(ModelFieldTypeEnum.int)));
 
     modelSchemaDefinition.addField(ModelFieldDefinition.nonQueryField(
         fieldName: 'createdAt',

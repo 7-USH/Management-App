@@ -10,8 +10,9 @@ import 'package:manage_app/utils/manage_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class VerifyScreen extends StatefulWidget {
-  VerifyScreen({super.key, required this.email});
+  VerifyScreen({super.key, required this.email, required this.fullName});
   String email;
+  String fullName;
   @override
   State<VerifyScreen> createState() => _VerifyScreenState();
 }
@@ -118,7 +119,10 @@ class _VerifyScreenState extends State<VerifyScreen> {
                               _controller4.clear();
                               Navigator.push(context,
                                   MaterialPageRoute(builder: (_) {
-                                return SubscriptionPlanScreen();
+                                return SubscriptionPlanScreen(
+                                  fullName: widget.fullName,
+                                  email: widget.email,
+                                );
                               }));
                             });
                           } else {

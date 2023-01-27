@@ -38,7 +38,6 @@ class ApiService {
     var response = await http.post(uri,
         body: jsonEncode(requestBody), headers: await getHeaders());
     print(response.body);
-    print(response.statusCode);
     if (response.statusCode == 200) {
       return Right(jsonDecode(response.body));
     }
@@ -54,7 +53,7 @@ class ApiService {
 
   Future<Either<MyError, List<dynamic>>> getAllData(String endpoint) async {
     Uri uri = getUri(endpoint);
-    var response = await http.get(uri);
+    var response = await http.get(uri, headers: await getHeaders());
     if (response.statusCode == 200) {
       return Right(jsonDecode(response.body.toString()) as List<dynamic>);
     }

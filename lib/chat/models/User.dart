@@ -35,8 +35,10 @@ class User extends Model {
   final String? _name;
   final bool? _is_online;
   final String? _subscriber_id;
-  final List<Message>? _Messages;
-  final List<ChatRoom>? _ChatRooms;
+  final List<Message>? _messages;
+  final String? _email_id;
+  final List<UserChatRoom>? _chatRooms;
+  final int? _index;
   final TemporalDateTime? _createdAt;
   final TemporalDateTime? _updatedAt;
 
@@ -73,12 +75,20 @@ class User extends Model {
     return _subscriber_id;
   }
   
-  List<Message>? get Messages {
-    return _Messages;
+  List<Message>? get messages {
+    return _messages;
   }
   
-  List<ChatRoom>? get ChatRooms {
-    return _ChatRooms;
+  String? get email_id {
+    return _email_id;
+  }
+  
+  List<UserChatRoom>? get chatRooms {
+    return _chatRooms;
+  }
+  
+  int? get index {
+    return _index;
   }
   
   TemporalDateTime? get createdAt {
@@ -89,9 +99,9 @@ class User extends Model {
     return _updatedAt;
   }
   
-  const User._internal({required this.id, profile_img_url, tag, name, is_online, subscriber_id, Messages, ChatRooms, createdAt, updatedAt}): _profile_img_url = profile_img_url, _tag = tag, _name = name, _is_online = is_online, _subscriber_id = subscriber_id, _Messages = Messages, _ChatRooms = ChatRooms, _createdAt = createdAt, _updatedAt = updatedAt;
+  const User._internal({required this.id, profile_img_url, tag, name, is_online, subscriber_id, messages, email_id, chatRooms, index, createdAt, updatedAt}): _profile_img_url = profile_img_url, _tag = tag, _name = name, _is_online = is_online, _subscriber_id = subscriber_id, _messages = messages, _email_id = email_id, _chatRooms = chatRooms, _index = index, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory User({String? id, String? profile_img_url, String? tag, String? name, bool? is_online, String? subscriber_id, List<Message>? Messages, List<ChatRoom>? ChatRooms}) {
+  factory User({String? id, String? profile_img_url, String? tag, String? name, bool? is_online, String? subscriber_id, List<Message>? messages, String? email_id, List<UserChatRoom>? chatRooms, int? index}) {
     return User._internal(
       id: id == null ? UUID.getUUID() : id,
       profile_img_url: profile_img_url,
@@ -99,8 +109,10 @@ class User extends Model {
       name: name,
       is_online: is_online,
       subscriber_id: subscriber_id,
-      Messages: Messages != null ? List<Message>.unmodifiable(Messages) : Messages,
-      ChatRooms: ChatRooms != null ? List<ChatRoom>.unmodifiable(ChatRooms) : ChatRooms);
+      messages: messages != null ? List<Message>.unmodifiable(messages) : messages,
+      email_id: email_id,
+      chatRooms: chatRooms != null ? List<UserChatRoom>.unmodifiable(chatRooms) : chatRooms,
+      index: index);
   }
   
   bool equals(Object other) {
@@ -117,8 +129,10 @@ class User extends Model {
       _name == other._name &&
       _is_online == other._is_online &&
       _subscriber_id == other._subscriber_id &&
-      DeepCollectionEquality().equals(_Messages, other._Messages) &&
-      DeepCollectionEquality().equals(_ChatRooms, other._ChatRooms);
+      DeepCollectionEquality().equals(_messages, other._messages) &&
+      _email_id == other._email_id &&
+      DeepCollectionEquality().equals(_chatRooms, other._chatRooms) &&
+      _index == other._index;
   }
   
   @override
@@ -135,6 +149,8 @@ class User extends Model {
     buffer.write("name=" + "$_name" + ", ");
     buffer.write("is_online=" + (_is_online != null ? _is_online!.toString() : "null") + ", ");
     buffer.write("subscriber_id=" + "$_subscriber_id" + ", ");
+    buffer.write("email_id=" + "$_email_id" + ", ");
+    buffer.write("index=" + (_index != null ? _index!.toString() : "null") + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -142,7 +158,7 @@ class User extends Model {
     return buffer.toString();
   }
   
-  User copyWith({String? profile_img_url, String? tag, String? name, bool? is_online, String? subscriber_id, List<Message>? Messages, List<ChatRoom>? ChatRooms}) {
+  User copyWith({String? profile_img_url, String? tag, String? name, bool? is_online, String? subscriber_id, List<Message>? messages, String? email_id, List<UserChatRoom>? chatRooms, int? index}) {
     return User._internal(
       id: id,
       profile_img_url: profile_img_url ?? this.profile_img_url,
@@ -150,8 +166,10 @@ class User extends Model {
       name: name ?? this.name,
       is_online: is_online ?? this.is_online,
       subscriber_id: subscriber_id ?? this.subscriber_id,
-      Messages: Messages ?? this.Messages,
-      ChatRooms: ChatRooms ?? this.ChatRooms);
+      messages: messages ?? this.messages,
+      email_id: email_id ?? this.email_id,
+      chatRooms: chatRooms ?? this.chatRooms,
+      index: index ?? this.index);
   }
   
   User.fromJson(Map<String, dynamic> json)  
@@ -161,27 +179,29 @@ class User extends Model {
       _name = json['name'],
       _is_online = json['is_online'],
       _subscriber_id = json['subscriber_id'],
-      _Messages = json['Messages'] is List
-        ? (json['Messages'] as List)
+      _messages = json['messages'] is List
+        ? (json['messages'] as List)
           .where((e) => e?['serializedData'] != null)
           .map((e) => Message.fromJson(new Map<String, dynamic>.from(e['serializedData'])))
           .toList()
         : null,
-      _ChatRooms = json['ChatRooms'] is List
-        ? (json['ChatRooms'] as List)
+      _email_id = json['email_id'],
+      _chatRooms = json['chatRooms'] is List
+        ? (json['chatRooms'] as List)
           .where((e) => e?['serializedData'] != null)
-          .map((e) => ChatRoom.fromJson(new Map<String, dynamic>.from(e['serializedData'])))
+          .map((e) => UserChatRoom.fromJson(new Map<String, dynamic>.from(e['serializedData'])))
           .toList()
         : null,
+      _index = (json['index'] as num?)?.toInt(),
       _createdAt = json['createdAt'] != null ? TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'profile_img_url': _profile_img_url, 'tag': _tag, 'name': _name, 'is_online': _is_online, 'subscriber_id': _subscriber_id, 'Messages': _Messages?.map((Message? e) => e?.toJson()).toList(), 'ChatRooms': _ChatRooms?.map((ChatRoom? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'profile_img_url': _profile_img_url, 'tag': _tag, 'name': _name, 'is_online': _is_online, 'subscriber_id': _subscriber_id, 'messages': _messages?.map((Message? e) => e?.toJson()).toList(), 'email_id': _email_id, 'chatRooms': _chatRooms?.map((UserChatRoom? e) => e?.toJson()).toList(), 'index': _index, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
-    'id': id, 'profile_img_url': _profile_img_url, 'tag': _tag, 'name': _name, 'is_online': _is_online, 'subscriber_id': _subscriber_id, 'Messages': _Messages, 'ChatRooms': _ChatRooms, 'createdAt': _createdAt, 'updatedAt': _updatedAt
+    'id': id, 'profile_img_url': _profile_img_url, 'tag': _tag, 'name': _name, 'is_online': _is_online, 'subscriber_id': _subscriber_id, 'messages': _messages, 'email_id': _email_id, 'chatRooms': _chatRooms, 'index': _index, 'createdAt': _createdAt, 'updatedAt': _updatedAt
   };
 
   static final QueryModelIdentifier<UserModelIdentifier> MODEL_IDENTIFIER = QueryModelIdentifier<UserModelIdentifier>();
@@ -192,11 +212,13 @@ class User extends Model {
   static final QueryField IS_ONLINE = QueryField(fieldName: "is_online");
   static final QueryField SUBSCRIBER_ID = QueryField(fieldName: "subscriber_id");
   static final QueryField MESSAGES = QueryField(
-    fieldName: "Messages",
+    fieldName: "messages",
     fieldType: ModelFieldType(ModelFieldTypeEnum.model, ofModelName: 'Message'));
+  static final QueryField EMAIL_ID = QueryField(fieldName: "email_id");
   static final QueryField CHATROOMS = QueryField(
-    fieldName: "ChatRooms",
-    fieldType: ModelFieldType(ModelFieldTypeEnum.model, ofModelName: 'ChatRoom'));
+    fieldName: "chatRooms",
+    fieldType: ModelFieldType(ModelFieldTypeEnum.model, ofModelName: 'UserChatRoom'));
+  static final QueryField INDEX = QueryField(fieldName: "index");
   static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "User";
     modelSchemaDefinition.pluralName = "Users";
@@ -251,11 +273,23 @@ class User extends Model {
       associatedKey: Message.USERID
     ));
     
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+      key: User.EMAIL_ID,
+      isRequired: false,
+      ofType: ModelFieldType(ModelFieldTypeEnum.string)
+    ));
+    
     modelSchemaDefinition.addField(ModelFieldDefinition.hasMany(
       key: User.CHATROOMS,
       isRequired: false,
-      ofModelName: 'ChatRoom',
-      associatedKey: ChatRoom.USERID
+      ofModelName: 'UserChatRoom',
+      associatedKey: UserChatRoom.USER
+    ));
+    
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+      key: User.INDEX,
+      isRequired: false,
+      ofType: ModelFieldType(ModelFieldTypeEnum.int)
     ));
     
     modelSchemaDefinition.addField(ModelFieldDefinition.nonQueryField(

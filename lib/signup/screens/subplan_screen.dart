@@ -1,17 +1,19 @@
-// ignore_for_file: unused_field, prefer_final_fields, unused_local_variable
-
-import 'dart:convert';
-
+// ignore_for_file: unused_field, prefer_final_fields, unused_local_variable, must_be_immutable
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:manage_app/app/app.dart';
+import 'package:manage_app/chat/view_models/users_list_viewmodel.dart';
 import 'package:manage_app/signup/models/plan_model.dart';
 import 'package:manage_app/signup/service/signup_service.dart';
 import 'package:manage_app/signup/ui_view/plan_card.dart';
 import 'package:manage_app/utils/manage_theme.dart';
+import 'package:provider/provider.dart';
 
 class SubscriptionPlanScreen extends StatefulWidget {
-  const SubscriptionPlanScreen({super.key});
+  SubscriptionPlanScreen(
+      {super.key, required this.fullName, required this.email});
+  String fullName;
+  String email;
 
   @override
   State<SubscriptionPlanScreen> createState() => _SubscriptionPlanScreenState();
@@ -131,61 +133,75 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                       height: 30,
                     ),
                     Center(
-                      child: SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.65,
-                        height: 45,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              _isLoading = true;
-                            });
-
-                            int idx = 0;
-                            if (highlight_1) {
-                              idx = 0;
-                            } else if (highlight_2) {
-                              idx = 1;
-                            } else if (highlight_3) {
-                              idx = 2;
-                            } else if (highlight_4) {
-                              idx = 3;
-                            }
-                            service
-                                .createPlan(
-                                    context: context,
-                                    model: snapshot.data![idx])
-                                .then((value) {
-                              if (value is AdminPlan) {
-                                setState(() {
-                                  _isLoading = false;
-                                });
-                                Navigator.push(context,
-                                    MaterialPageRoute(builder: (_) {
-                                  return const App();
-                                }));
-                              } else {
-                                setState(() {
-                                  _isLoading = false;
-                                });
-                              }
-                            });
-                          },
-                          style: ManageTheme.buttonStyle(
-                            backColor: ManageTheme.nearlyBlack,
-                            fontSize: 15,
-                          ),
-                          child: _isLoading
-                              ? Center(
-                                  child:
-                                      LoadingAnimationWidget.staggeredDotsWave(
-                                  color: Colors.white,
-                                  size: 20,
-                                ))
-                              : const Text(
-                                  "Continue",
+                      child: ChangeNotifierProvider(
+                          create: (_) => UsersListViewModel(),
+                          builder: (context, child) {
+                            return SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.65,
+                              height: 45,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _isLoading = true;
+                                  });
+                                  int idx = 0;
+                                  if (highlight_1) {
+                                    idx = 0;
+                                  } else if (highlight_2) {
+                                    idx = 1;
+                                  } else if (highlight_3) {
+                                    idx = 2;
+                                  } else if (highlight_4) {
+                                    idx = 3;
+                                  }
+                                  service
+                                      .createPlan(
+                                          context: context,
+                                          model: snapshot.data![idx])
+                                      .then((value) {
+                                    if (value is AdminPlan) {
+                                      context
+                                          .read<UsersListViewModel>()
+                                          .addUser(
+                                              tag: "admin",
+                                              profile_image_url: "",
+                                              index: 1,
+                                              email: widget.email,
+                                              name: widget.fullName,
+                                              is_online: false)
+                                          .then((value) {
+                                        setState(() {
+                                          _isLoading = false;
+                                        });
+                                        Navigator.push(context,
+                                            MaterialPageRoute(builder: (_) {
+                                          return const App();
+                                        }));
+                                      });
+                                    } else {
+                                      setState(() {
+                                        _isLoading = false;
+                                      });
+                                    }
+                                  });
+                                },
+                                style: ManageTheme.buttonStyle(
+                                  backColor: ManageTheme.nearlyBlack,
+                                  fontSize: 15,
                                 ),
-                        ),
-                      ),
+                                child: _isLoading
+                                    ? Center(
+                                        child: LoadingAnimationWidget
+                                            .staggeredDotsWave(
+                                        color: Colors.white,
+                                        size: 20,
+                                      ))
+                                    : const Text(
+                                        "Continue",
+                                      ),
+                              ),
+                            );
+                          }),
                     ),
                   ],
                 );

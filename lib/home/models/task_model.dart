@@ -2,12 +2,12 @@
 
 class TaskModel {
   String task_number;
-  String task_given_by;
+  String task_priority;
   String task_message;
 
   TaskModel(
     {
-      required this.task_given_by,
+      required this.task_priority,
       required this.task_message,
       required this.task_number
     }

@@ -56,6 +56,7 @@ class _AppState extends State<App> {
     return Builder(builder: (_) {
       if (_isLoading) {
         return Scaffold(
+          resizeToAvoidBottomInset: false,
           body: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -71,7 +72,7 @@ class _AppState extends State<App> {
                     margin: EdgeInsets.only(top: 20),
                     child: Center(
                       child: LoadingAnimationWidget.staggeredDotsWave(
-                          color: ManageTheme.nearlyBlack, size: 35),
+                          color: ManageTheme.nearlyBlack, size: 25),
                     ))
               ],
             ),
@@ -105,12 +106,16 @@ class _AppState extends State<App> {
             Home(
               model: model,
             ),
-            Chat(),
+            Chat(
+              model: model,
+            ),
             model.profile == "staff"
                 ? Attendance(
                     model: model,
                   )
-                : Task(model: model,)
+                : Task(
+                    model: model,
+                  )
           ],
           items: [
             PersistentBottomNavBarItem(
