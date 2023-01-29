@@ -40,6 +40,14 @@ class _TaskState extends State<Task> {
   }
 
   @override
+  void dispose() {
+    if (mounted) {
+      _timer.cancel();
+    }
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
     double screenWidth = MediaQuery.of(context).size.width;

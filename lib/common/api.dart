@@ -25,11 +25,12 @@ class ApiService {
     if (response.statusCode >= 500) {
       return Left(MyError(
           key: AppError.SERVER_ERROR,
-          message: "Server error with http status ${response.statusCode}"));
+          message: "Server error with http status ${response.statusCode}", statusCode: response.statusCode));
     }
     return Left(MyError(
         key: AppError.ERROR_DETECTED,
-        message: "Bad http status ${response.statusCode}"));
+        message: "Bad http status ${response.statusCode}",
+        statusCode: response.statusCode));
   }
 
   Future<Either<MyError, Map<String, dynamic>>> postData(
@@ -44,11 +45,13 @@ class ApiService {
     if (response.statusCode >= 500) {
       return Left(MyError(
           key: AppError.SERVER_ERROR,
-          message: "Server error with http status ${response.statusCode}"));
+          message: "Server error with http status ${response.statusCode}",
+          statusCode: response.statusCode));
     }
     return Left(MyError(
         key: AppError.ERROR_DETECTED,
-        message: jsonDecode(response.body)["detail"]));
+        message: jsonDecode(response.body)["detail"],
+        statusCode: response.statusCode));
   }
 
   Future<Either<MyError, List<dynamic>>> getAllData(String endpoint) async {
@@ -60,11 +63,13 @@ class ApiService {
     if (response.statusCode >= 500) {
       return Left(MyError(
           key: AppError.SERVER_ERROR,
-          message: "Server error with http status ${response.statusCode}"));
+          message: "Server error with http status ${response.statusCode}",
+          statusCode: response.statusCode));
     }
     return Left(MyError(
         key: AppError.ERROR_DETECTED,
-        message: "Bad http status ${response.statusCode}"));
+        message: "Bad http status ${response.statusCode}",
+        statusCode: response.statusCode));
   }
 
   Future<Either<MyError, Map<String, dynamic>>> postAllData(
@@ -77,11 +82,13 @@ class ApiService {
     if (response.statusCode >= 500) {
       return Left(MyError(
           key: AppError.SERVER_ERROR,
-          message: "Server error with http status ${response.statusCode}"));
+          message: "Server error with http status ${response.statusCode}",
+          statusCode: response.statusCode));
     }
     return Left(MyError(
         key: AppError.ERROR_DETECTED,
-        message: "Bad http status ${response.statusCode}"));
+        message: "Bad http status ${response.statusCode}",
+        statusCode: response.statusCode));
   }
 
   Uri getUri(String endpoint) {

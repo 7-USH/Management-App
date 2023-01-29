@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, must_be_immutable
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:manage_app/home/models/profile_detail_model.dart';
 import 'package:manage_app/home/ui_view/profile_card.dart';
@@ -91,11 +93,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           await SharedPreferences.getInstance();
                       pref.clear().then((value) {
                         if (value) {
-                          PersistentNavBarNavigator.pushNewScreen(context,
-                              screen: Login(),
-                              withNavBar: false,
-                              pageTransitionAnimation:
-                                  PageTransitionAnimation.scale);
+                          Navigator.of(context, rootNavigator: true)
+                              .pushReplacement(
+                            MaterialPageRoute(
+                              builder: (context) => Login(),
+                            ),
+                          );
                         }
                       });
                     },

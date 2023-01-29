@@ -9,6 +9,7 @@ import 'package:manage_app/attendance/models/attendance_time_model.dart';
 import 'package:manage_app/attendance/models/check_status_model.dart';
 import 'package:manage_app/attendance/models/status_enum.dart';
 import 'package:manage_app/attendance/screens/history_screen.dart';
+import 'package:manage_app/attendance/screens/leave_screen.dart';
 import 'package:manage_app/attendance/service/attendance_service.dart';
 import 'package:manage_app/attendance/ui_view/leave_card.dart';
 import 'package:manage_app/home/models/profile_detail_model.dart';
@@ -375,7 +376,14 @@ class _AttendanceState extends State<Attendance> {
                 width: screenWidth,
                 height: screenHeight / 15,
                 child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      PersistentNavBarNavigator.pushNewScreen(
+                        context,
+                        withNavBar: false,
+                        screen: LeaveScreen(),
+                        pageTransitionAnimation: PageTransitionAnimation.scale,
+                      );
+                    },
                     style: ManageTheme.buttonStyle(
                         backColor: ManageTheme.backgroundWhite,
                         borderColor: ManageTheme.nearlyBlack),
@@ -427,5 +435,13 @@ class _AttendanceState extends State<Attendance> {
       formattedDate =
           DateFormat("MMM dd, yyyy").format(DateTime.now()).toString();
     });
+  }
+
+  @override
+  void dispose() {
+    if (mounted) {
+      _timer.cancel();
+    }
+    super.dispose();
   }
 }

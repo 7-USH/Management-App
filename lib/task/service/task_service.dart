@@ -23,9 +23,25 @@ class TaskService {
     }
   }
 
-  Future<List<DisplayStaffTaskModel>> getAllTasks(
+  Future<List<DisplayStaffTaskModel>> getStaffTasks(
       {required BuildContext context}) async {
-    String endpoint = "staff/get-tasks";
+    String endpoint = "staff/get-tasks-by-staff";
+    var response = await _service.getAllData(endpoint);
+    if (response.isLeft) {
+      return ManageTheme.moveToError(
+          context: context, text: response.left.message!);
+    } else {
+      return response.right
+          .map<DisplayStaffTaskModel>(
+              (e) => DisplayStaffTaskModel.fromJson(e as Map<String, dynamic>))
+          .toList();
+    }
+  }
+
+
+  Future<List<DisplayStaffTaskModel>> getGroupTasks(
+      {required BuildContext context}) async {
+    String endpoint = "staff/get-tasks-by-group";
     var response = await _service.getAllData(endpoint);
     if (response.isLeft) {
       return ManageTheme.moveToError(
@@ -39,34 +55,3 @@ class TaskService {
   }
 }
 
-class TaskStream {
-  List<DisplayStaffTaskModel> models = [];
-  final ApiService _service = ApiService();
-
-  final StreamController<List<DisplayStaffTaskModel>> _taskController =
-      StreamController();
-
-  TaskStream({required BuildContext context}) {
-    getAllTasks(context: context);
-  }
-
-  Stream<List<DisplayStaffTaskModel>> get taskStream => _taskController.stream;
-  StreamSink<List<DisplayStaffTaskModel>> get counterSink =>
-      _taskController.sink;
-
-  Future<void> getAllTasks({required BuildContext context}) async {
-    String endpoint = "staff/get-tasks";
-    var response = await _service.getAllData(endpoint);
-    if (response.isLeft) {
-      counterSink.add(models);
-    } else {
-      models = response.right
-          .map<DisplayStaffTaskModel>(
-              (e) => DisplayStaffTaskModel.fromJson(e as Map<String, dynamic>))
-          .toList();
-      counterSink.add(models);
-    }
-  }
-
-  Future<void> closeStream() => _taskController.close();
-}

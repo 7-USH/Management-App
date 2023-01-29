@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, unused_field, sized_box_for_whitespace, use_build_context_synchronously, unused_local_variable, non_constant_identifier_names, prefer_final_fields, must_be_immutable
+// ignore_for_file: prefer_const_constructors, unused_field, sized_box_for_whitespace, use_build_context_synchronously, unused_local_variable, non_constant_identifier_names, prefer_final_fields, must_be_immutable, unrelated_type_equality_checks, unnecessary_null_comparison
 
 import 'dart:async';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -18,6 +18,7 @@ import 'package:manage_app/home/screens/guest_relation.dart';
 import 'package:manage_app/home/screens/notifications.dart';
 import 'package:manage_app/home/screens/profile.dart';
 import 'package:manage_app/home/screens/staff_tree.dart';
+import 'package:manage_app/home/screens/task_detail_screen.dart';
 import 'package:manage_app/home/service/home_service.dart';
 import 'package:manage_app/home/ui_view/task_card.dart';
 import 'package:manage_app/task/models/display_task_model.dart';
@@ -44,13 +45,11 @@ class _HomeState extends State<Home> {
   TextEditingController emailController = TextEditingController();
   TextEditingController bankController = TextEditingController();
   late Future<FamilyRelationShipModel> _familyRelationShips;
-  late TaskStream stream;
   bool _familyLoader = false;
   String _currentFamilySelectedValue = "Dad";
   String _currentStaffSelectedValue = "Manager";
   String _currentGuestSelectedValue = "Home tutor";
   CarouselController buttonCarouselController = CarouselController();
-
   final List<String> _family_relations = [
     "Dad",
     "Mom",
@@ -58,7 +57,6 @@ class _HomeState extends State<Home> {
     "Daughter",
     "Other",
   ];
-
   final List<String> _staff_relations = [
     "Manager",
     "Housekeeper",
@@ -66,23 +64,49 @@ class _HomeState extends State<Home> {
     "Cook",
     "Other",
   ];
-
   final List<String> _guest_relations = [
     "Home tutor",
     "Friends",
   ];
+  StreamController<List<DisplayStaffTaskModel>> _controller =
+      StreamController();
+  Timer? _timer;
 
   @override
   void initState() {
     _familyRelationShips = service.getFamilyMembers(context: context);
-    stream = TaskStream(context: context);
+    if (widget.model.profile == "staff") {
+      _timer = Timer.periodic(Duration(seconds: 5), (timer) {
+        getCurrentTasks().onError((error, stackTrace) {
+          closeStream();
+          timer.cancel();
+        });
+      });
+    }
     super.initState();
   }
 
   @override
   void dispose() {
-    stream.closeStream();
+    if (_timer != null && mounted) {
+      _timer!.cancel();
+      closeStream();
+    }
     super.dispose();
+  }
+
+  void closeStream() async {
+    await _controller.close();
+  }
+
+  Future<void> getCurrentTasks() async {
+    try {
+      List<DisplayStaffTaskModel> models =
+          await taskService.getStaffTasks(context: context);
+      _controller.sink.add(models);
+    } catch (e) {
+      throw e.toString();
+    }
   }
 
   Future<void> addFamilyMembers() async {
@@ -862,7 +886,7 @@ class _HomeState extends State<Home> {
                               height: 20,
                             ),
                             StreamBuilder<List<DisplayStaffTaskModel>>(
-                                stream: stream.taskStream,
+                                stream: _controller.stream,
                                 builder: (context, snapshot) {
                                   if (snapshot.hasData) {
                                     return snapshot.data!.isEmpty
@@ -884,9 +908,12 @@ class _HomeState extends State<Home> {
                                                   ),
                                                   Text(
                                                     "No Task for Today!",
-                                                    style: ManageTheme.insideAppText(
-                                                        size: screenWidth / 24,
-                                                        weight: FontWeight.w500),
+                                                    style: ManageTheme
+                                                        .insideAppText(
+                                                            size: screenWidth /
+                                                                24,
+                                                            weight: FontWeight
+                                                                .w500),
                                                   )
                                                 ],
                                               )),
@@ -897,13 +924,30 @@ class _HomeState extends State<Home> {
                                                 buttonCarouselController,
                                             items: List.generate(
                                                 snapshot.data!.length,
-                                                (index) => TaskCard(
-                                                    index:
-                                                        (index + 1).toString(),
-                                                    isCurrent:
-                                                        index == _current,
-                                                    model:
-                                                        snapshot.data![index])),
+                                                (index) => GestureDetector(
+                                                      onTap: () {
+                                                        PersistentNavBarNavigator
+                                                            .pushNewScreen(
+                                                          context,
+                                                          screen:
+                                                              TaskDetailScreen(
+                                                            model: snapshot
+                                                                .data![index],
+                                                          ),
+                                                          withNavBar: true,
+                                                          pageTransitionAnimation:
+                                                              PageTransitionAnimation
+                                                                  .scale,
+                                                        );
+                                                      },
+                                                      child: TaskCard(
+                                                          index: (index + 1)
+                                                              .toString(),
+                                                          isCurrent:
+                                                              index == _current,
+                                                          model: snapshot
+                                                              .data![index]),
+                                                    )),
                                             options: CarouselOptions(
                                               height: MediaQuery.of(context)
                                                       .size
@@ -1043,24 +1087,29 @@ class _HomeState extends State<Home> {
                                         ),
                                       );
                                     })
-                                      ..add(GestureDetector(
-                                        onTap: () {
-                                          addFamilyMembers().then((value) =>
-                                              setState(() {
-                                                _familyRelationShips =
-                                                    service.getFamilyMembers(
-                                                        context: context);
-                                              }));
-                                        },
-                                        child: CircleAvatar(
-                                          backgroundColor: Colors.grey.shade400,
-                                          child: Icon(
-                                            Icons.add,
-                                            color: ManageTheme.backgroundWhite,
-                                            size: screenWidth / 9,
-                                          ),
-                                        ),
-                                      ))),
+                                      ..add(widget.model.profile == "staff"
+                                          ? SizedBox()
+                                          : GestureDetector(
+                                              onTap: () {
+                                                addFamilyMembers().then(
+                                                    (value) => setState(() {
+                                                          _familyRelationShips =
+                                                              service.getFamilyMembers(
+                                                                  context:
+                                                                      context);
+                                                        }));
+                                              },
+                                              child: CircleAvatar(
+                                                backgroundColor:
+                                                    Colors.grey.shade400,
+                                                child: Icon(
+                                                  Icons.add,
+                                                  color: ManageTheme
+                                                      .backgroundWhite,
+                                                  size: screenWidth / 9,
+                                                ),
+                                              ),
+                                            ))),
                               ),
                             ),
                             SizedBox(
@@ -1125,19 +1174,23 @@ class _HomeState extends State<Home> {
                                       ),
                                     );
                                   })
-                                    ..add(GestureDetector(
-                                      onTap: () {
-                                        addStaffMembers();
-                                      },
-                                      child: CircleAvatar(
-                                        backgroundColor: Colors.grey.shade400,
-                                        child: Icon(
-                                          Icons.add,
-                                          color: ManageTheme.backgroundWhite,
-                                          size: screenWidth / 9,
-                                        ),
-                                      ),
-                                    )),
+                                    ..add(widget.model.profile == "staff"
+                                        ? SizedBox()
+                                        : GestureDetector(
+                                            onTap: () {
+                                              addStaffMembers();
+                                            },
+                                            child: CircleAvatar(
+                                              backgroundColor:
+                                                  Colors.grey.shade400,
+                                              child: Icon(
+                                                Icons.add,
+                                                color:
+                                                    ManageTheme.backgroundWhite,
+                                                size: screenWidth / 9,
+                                              ),
+                                            ),
+                                          )),
                                 ),
                               ),
                             ),
@@ -1204,19 +1257,23 @@ class _HomeState extends State<Home> {
                                       ),
                                     );
                                   })
-                                    ..add(GestureDetector(
-                                      onTap: () {
-                                        addGuestMembers();
-                                      },
-                                      child: CircleAvatar(
-                                        backgroundColor: Colors.grey.shade400,
-                                        child: Icon(
-                                          Icons.add,
-                                          color: ManageTheme.backgroundWhite,
-                                          size: screenWidth / 9,
-                                        ),
-                                      ),
-                                    )),
+                                    ..add(widget.model.profile == "staff"
+                                        ? SizedBox()
+                                        : GestureDetector(
+                                            onTap: () {
+                                              addGuestMembers();
+                                            },
+                                            child: CircleAvatar(
+                                              backgroundColor:
+                                                  Colors.grey.shade400,
+                                              child: Icon(
+                                                Icons.add,
+                                                color:
+                                                    ManageTheme.backgroundWhite,
+                                                size: screenWidth / 9,
+                                              ),
+                                            ),
+                                          )),
                                 ),
                               ),
                             )

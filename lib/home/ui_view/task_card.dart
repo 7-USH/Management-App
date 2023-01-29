@@ -1,4 +1,4 @@
-// ignore_for_file: must_be_immutable, prefer_const_constructors, unused_local_variable
+// ignore_for_file: must_be_immutable, prefer_const_constructors, unused_local_variable, avoid_print, non_constant_identifier_names
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -21,7 +21,21 @@ class TaskCard extends StatefulWidget {
 }
 
 class _TaskCardState extends State<TaskCard> {
-  DateFormat formatter = DateFormat("h:mm");
+  DateFormat formatter = DateFormat("yyyy-MM-dd HH:mm");
+  String display_date = "";
+
+  @override
+  void initState() {
+    if (widget.model.validFrom!.isNotEmpty) {
+      String date =
+          widget.model.validFrom!.replaceAll("T", ' ').replaceAll("Z", "");
+      var dateTime = formatter.parse(date, true).toLocal();
+      setState(() {
+        display_date = DateFormat("HH:mm").format(dateTime);
+      });
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -107,20 +121,20 @@ class _TaskCardState extends State<TaskCard> {
                       children: [
                         Chip(
                           elevation: 3,
+                          padding: EdgeInsets.zero,
                           label: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Icon(
                                 FontAwesomeIcons.businessTime,
-                                size: MediaQuery.of(context).size.width / 30,
+                                size: MediaQuery.of(context).size.width / 34,
                                 color: ManageTheme.nearlyBlack,
                               ),
-                              SizedBox(
-                                width: 10,
-                              ),
+                              SizedBox(width: 7),
                               Text(
-                                "12:40",
+                                display_date,
                                 style: ManageTheme.insideAppText(
-                                  size: MediaQuery.of(context).size.width / 30,
+                                  size: MediaQuery.of(context).size.width / 35,
                                   weight: FontWeight.bold,
                                   color: ManageTheme.nearlyBlack,
                                 ),
@@ -149,7 +163,7 @@ class _TaskCardState extends State<TaskCard> {
             ? Align(
                 alignment: Alignment.topRight,
                 child: Chip(
-                  backgroundColor: ManageTheme.successGreen,
+                  backgroundColor: ManageTheme.successGreen.withOpacity(0.7),
                   elevation: 3,
                   label: Text(
                     widget.model.status!.toUpperCase(),

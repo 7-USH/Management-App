@@ -94,6 +94,10 @@ class ManageTheme {
       contentPadding:
           padding ?? const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       counter: const Offstage(),
+      disabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(radius)),
+        borderSide: const BorderSide(color: Colors.grey),
+      ),
       border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(radius),
           borderSide: const BorderSide(color: Colors.grey)),
@@ -103,7 +107,7 @@ class ManageTheme {
       focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(radius),
           borderSide: BorderSide(color: borderColor ?? nearlyBlack)),
-      enabledBorder:  OutlineInputBorder(
+      enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(radius)),
         borderSide: const BorderSide(color: Colors.grey),
       ),

@@ -1,9 +1,10 @@
-// ignore_for_file: must_be_immutable
+// ignore_for_file: must_be_immutable, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:manage_app/login/login.dart';
 import 'package:manage_app/utils/manage_theme.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ErrorPage extends StatelessWidget {
   ErrorPage({super.key, required this.text});
@@ -45,10 +46,28 @@ class ErrorPage extends StatelessWidget {
                   width: MediaQuery.of(context).size.width * 0.5,
                   height: 40,
                   child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) {
-                        return const Login();
-                      }));
+                    onPressed: () async {
+                      SharedPreferences pref =
+                          await SharedPreferences.getInstance();
+                      if (text == "Server error with http status 500") {
+                        pref.clear().then((value) {
+                          if (value) {
+                            Navigator.of(context, rootNavigator: true)
+                                .pushReplacement(
+                              MaterialPageRoute(
+                                builder: (context) => const Login(),
+                              ),
+                            );
+                          }
+                        });
+                      } else {
+                        await Navigator.of(context, rootNavigator: true)
+                            .pushReplacement(
+                          MaterialPageRoute(
+                            builder: (context) => const Login(),
+                          ),
+                        );
+                      }
                     },
                     style: ManageTheme.buttonStyle(
                         backColor: Colors.white,

@@ -164,7 +164,6 @@ class _AppState extends State<App> {
           confineInSafeArea: true,
           handleAndroidBackButtonPress: true,
           resizeToAvoidBottomInset: true,
-          stateManagement: true,
           hideNavigationBarWhenKeyboardShows: false,
           popAllScreensOnTapOfSelectedTab: true,
           popActionScreens: PopActionScreensType.all,
