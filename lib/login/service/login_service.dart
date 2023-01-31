@@ -17,7 +17,8 @@ class LoginService {
     var response = await _service.postData(endpoint, model.toJson());
     if (response.isLeft) {
       return ManageTheme.moveToError(
-          context: context, text: response.left.message!);
+          context: context, text: response.left.message!,
+          statusCode: response.left.statusCode);
     } else {
       SessionModel token = SessionModel.fromJson(response.right);
       SharedPreferences pref = await SharedPreferences.getInstance();
@@ -33,7 +34,8 @@ class LoginService {
     var response = await _service.postData(endpoint, requestBody);
     if (response.isLeft) {
       return ManageTheme.moveToError(
-          context: context, text: response.left.message!);
+          context: context, text: response.left.message!,
+          statusCode: response.left.statusCode);
     } else {
       return true;
     }
@@ -57,7 +59,8 @@ class LoginService {
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
       } else {
         return ManageTheme.moveToError(
-            context: context, text: response.left.message!);
+            context: context, text: response.left.message!,
+            statusCode: response.left.statusCode);
       }
     } else {
       SessionModel token = SessionModel.fromJson(response.right);
@@ -73,7 +76,8 @@ class LoginService {
     var response = await _service.postData(endpoint, model.toJson());
     if (response.isLeft) {
       return ManageTheme.moveToError(
-          context: context, text: response.left.message!);
+          context: context, text: response.left.message!,
+          statusCode: response.left.statusCode);
     } else {
       return response;
     }

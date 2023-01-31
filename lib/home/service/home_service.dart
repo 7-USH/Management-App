@@ -17,7 +17,10 @@ class HomeService {
     Map<String, dynamic> sub_id = await _service.getHeaders();
     var response = await _service.postData(endpoint, model.toJson());
     if (response.isLeft) {
-      ManageTheme.moveToError(context: context, text: response.left.message!);
+      ManageTheme.moveToError(
+          context: context,
+          text: response.left.message!,
+          statusCode: response.left.statusCode);
       return false;
     } else {
       return true;
@@ -30,19 +33,23 @@ class HomeService {
     var response = await _service.getData(endpoint);
     if (response.isLeft) {
       return ManageTheme.moveToError(
-          context: context, text: response.left.message!);
+          context: context,
+          text: response.left.message!,
+          statusCode: response.left.statusCode);
     } else {
       return FamilyRelationShipModel.fromJson(response.right);
     }
   }
 
-    Future<ProfileDetailModel> getMyDetails(
+  Future<ProfileDetailModel> getMyDetails(
       {required BuildContext context}) async {
     String endpoint = "user/get-user-details";
     var response = await _service.getData(endpoint);
     if (response.isLeft) {
       return ManageTheme.moveToError(
-          context: context, text: response.left.message!);
+          context: context,
+          text: response.left.message!,
+          statusCode: response.left.statusCode);
     } else {
       return ProfileDetailModel.fromJson(response.right);
     }

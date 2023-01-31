@@ -1,18 +1,41 @@
-// ignore_for_file: unused_local_variable, prefer_const_literals_to_create_immutables, prefer_const_constructors, must_be_immutable
+// ignore_for_file: unused_local_variable, prefer_const_literals_to_create_immutables, prefer_const_constructors, must_be_immutable, non_constant_identifier_names
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:manage_app/task/models/display_admin_task_model.dart';
 import 'package:manage_app/task/models/display_task_model.dart';
 import 'package:manage_app/utils/manage_theme.dart';
 
 class TaskDetailScreen extends StatefulWidget {
-  TaskDetailScreen({super.key, required this.model});
+  TaskDetailScreen(
+      {super.key, required this.model, required this.staff_details});
   DisplayStaffTaskModel model;
+  List<StaffDetails> staff_details;
 
   @override
   State<TaskDetailScreen> createState() => _TaskDetailScreenState();
 }
 
 class _TaskDetailScreenState extends State<TaskDetailScreen> {
+  String date = "15 Monday, 2021";
+  String time_range = "6:00 PM-9:00 PM";
+  String month = "Jan 2021";
+  DateFormat formatter = DateFormat("yyyy-MM-dd HH:mm");
+
+  @override
+  void initState() {
+    String demo_date =
+        widget.model.validFrom!.replaceAll("T", ' ').replaceAll("Z", "");
+    var dateTime = formatter.parse(demo_date, true).toLocal();
+    date =
+        "${DateFormat.d().format(dateTime)} ${DateFormat.EEEE().format(dateTime)}, ${DateFormat.y().format(dateTime)}";
+    month =
+        "${DateFormat.MMM().format(dateTime)} ${DateFormat.y().format(dateTime)}";
+    time_range =
+        "${DateFormat("h:mm a").format(dateTime)}-${DateFormat("h:mm a").format(dateTime)}";
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
@@ -37,15 +60,29 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
           children: [
             Container(
                 alignment: Alignment.topLeft,
-                child: Chip(
-                  backgroundColor: ManageTheme.successGreen.withOpacity(0.6),
-                  label: Text(
-                    widget.model.status!.toUpperCase(),
-                    style: ManageTheme.insideAppText(
-                        size: MediaQuery.of(context).size.width / 40,
-                        weight: FontWeight.bold,
-                        color: ManageTheme.nearlyBlack),
-                  ),
+                child: Row(
+                  children: [
+                    Text(
+                      "status:  ",
+                      style: ManageTheme.insideAppText(
+                        size: screenWidth / 30,
+                        weight: FontWeight.w500,
+                        color: Colors.grey.shade500,
+                      ),
+                    ),
+                    Chip(
+                      backgroundColor:
+                          ManageTheme.successGreen.withOpacity(0.6),
+                      padding: EdgeInsets.zero,
+                      label: Text(
+                        widget.model.status!.toUpperCase(),
+                        style: ManageTheme.insideAppText(
+                            size: MediaQuery.of(context).size.width / 40,
+                            weight: FontWeight.bold,
+                            color: ManageTheme.nearlyBlack),
+                      ),
+                    ),
+                  ],
                 )),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -74,7 +111,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                     child: Chip(
                       backgroundColor: ManageTheme.nearlyBlack,
                       label: Text(
-                        "Jan 2021",
+                        month,
                         style: ManageTheme.insideAppText(
                             size: screenWidth / 30,
                             weight: FontWeight.w600,
@@ -106,7 +143,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                                   color: Colors.grey.shade500),
                             )),
                         Text(
-                          "15 Monday, 2021",
+                          date,
                           style: ManageTheme.insideAppText(
                             size: screenWidth / 29,
                             weight: FontWeight.w600,
@@ -137,7 +174,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                                   color: Colors.grey.shade500),
                             )),
                         Text(
-                          "6:00 PM-9:00 PM",
+                          time_range,
                           style: ManageTheme.insideAppText(
                             size: screenWidth / 29,
                             weight: FontWeight.w600,
@@ -190,6 +227,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
             ),
             Container(
               alignment: Alignment.centerLeft,
+              margin: EdgeInsets.only(bottom: 10),
               child: Chip(
                 backgroundColor: chipColor,
                 padding: EdgeInsets.symmetric(horizontal: 10),
@@ -201,6 +239,44 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                     )),
               ),
             ),
+            widget.staff_details.isEmpty
+                ? SizedBox()
+                : Column(
+                    children: [
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        margin: const EdgeInsets.only(bottom: 10),
+                        child: Text(
+                          "Assignee",
+                          style: ManageTheme.insideAppText(
+                              size: screenWidth / 18,
+                              weight: FontWeight.w700,
+                              isShadow: true),
+                        ),
+                      ),
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        child: SizedBox(
+                          height: 50,
+                          child: ListView(
+                              scrollDirection: Axis.horizontal,
+                              physics: const BouncingScrollPhysics(),
+                              shrinkWrap: true,
+                              children: List.generate(
+                                widget.staff_details.length,
+                                (index) => Container(
+                                  height: 50,
+                                  width: 50,
+                                  margin: const EdgeInsets.only(right: 10),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(25),
+                                      color: ManageTheme.nearlyBlack),
+                                ),
+                              )),
+                        ),
+                      ),
+                    ],
+                  ),
           ],
         ),
       ),

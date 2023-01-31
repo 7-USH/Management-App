@@ -59,6 +59,7 @@ dependencies:
   animated_toggle_switch: ^0.6.1
   flutter_chat_ui: ^1.6.6
   syncfusion_flutter_datepicker: ^20.4.44
+  image_stack: ^2.1.1
 
 dev_dependencies:
   flutter_test:

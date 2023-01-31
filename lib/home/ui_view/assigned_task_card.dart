@@ -3,24 +3,25 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:manage_app/task/models/display_task_model.dart';
 import 'package:manage_app/utils/manage_theme.dart';
 
-class TaskCard extends StatefulWidget {
-  TaskCard(
+import '../../task/models/display_admin_task_model.dart';
+
+class AssignedTaskCard extends StatefulWidget {
+  AssignedTaskCard(
       {super.key,
       required this.model,
       this.isCurrent = false,
       required this.index});
-  DisplayStaffTaskModel model;
+  DisplayAdminTaskModel model;
   bool isCurrent;
   String index;
 
   @override
-  State<TaskCard> createState() => _TaskCardState();
+  State<AssignedTaskCard> createState() => _AssignedTaskCardState();
 }
 
-class _TaskCardState extends State<TaskCard> {
+class _AssignedTaskCardState extends State<AssignedTaskCard> {
   DateFormat formatter = DateFormat("yyyy-MM-dd HH:mm");
   String display_date = "";
 

@@ -8,6 +8,7 @@ class DisplayStaffTaskModel {
   String? validFrom;
   String? status;
 
+
   DisplayStaffTaskModel(
       {this.validFor,
       this.id,
@@ -16,7 +17,8 @@ class DisplayStaffTaskModel {
       this.assignedAt,
       this.taskTitle,
       this.validFrom,
-      this.status});
+      this.status,
+      });
 
   DisplayStaffTaskModel.fromJson(Map<String, dynamic> json) {
     validFor = json['valid_for'];
@@ -42,3 +44,5 @@ class DisplayStaffTaskModel {
     return data;
   }
 }
+
+

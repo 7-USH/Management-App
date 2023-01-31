@@ -1,14 +1,16 @@
-// ignore_for_file: unused_local_variable, prefer_const_constructors, prefer_const_literals_to_create_immutables, unused_field, avoid_print
+// ignore_for_file: unused_local_variable, prefer_const_constructors, prefer_const_literals_to_create_immutables, unused_field, avoid_print, body_might_complete_normally_nullable
 
 import 'dart:math';
 
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:manage_app/task/models/task_model.dart';
 import 'package:manage_app/task/service/task_service.dart';
 import 'package:manage_app/utils/manage_theme.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class TaskAddScreen extends StatefulWidget {
   const TaskAddScreen({super.key});
@@ -19,15 +21,57 @@ class TaskAddScreen extends StatefulWidget {
 
 class _TaskAddScreenState extends State<TaskAddScreen> {
   String value = "Low";
-  final TextEditingController _taskTitleController = TextEditingController();
+  final TextEditingController _taskTitleController = TextEditingController(text: "Wash Clothes");
   final TextEditingController _taskDescriptionController =
-      TextEditingController();
-  final TextEditingController _dateController = TextEditingController();
+      TextEditingController(text: "Wash all clothes");
+  final TextEditingController _dateController = TextEditingController(text: "21/2/22");
   final TextEditingController _validityController = TextEditingController();
   final TextEditingController _validTimeController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   TaskService service = TaskService();
   bool _isLoading = false;
+  TimeOfDay selectedTime = TimeOfDay.now();
+
+  Future<TimeOfDay?> _selectTime(BuildContext context) async {
+    final TimeOfDay? pickedS = await showTimePicker(
+      context: context,
+      initialTime: selectedTime,
+      initialEntryMode: TimePickerEntryMode.dialOnly,
+      builder: (context, child) {
+        return Theme(
+          data: ThemeData.dark().copyWith(
+            colorScheme: ColorScheme.light(
+              primary: ManageTheme.nearlyBlack,
+              // change the text color
+              onSurface: Colors.grey,
+            ),
+          ),
+          child: MediaQuery(
+              data:
+                  MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+              child: child!),
+        );
+      },
+    );
+    if (pickedS != null && pickedS != selectedTime) {
+      setState(() {
+        selectedTime = pickedS;
+      });
+      return selectedTime;
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
+    setState(() {
+      _dateController.text =
+          DateFormat("dd/MM/yy").format(args.value).toString();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -211,6 +255,7 @@ class _TaskAddScreenState extends State<TaskAddScreen> {
                     cursorColor: ManageTheme.nearlyBlack,
                     controller: _dateController,
                     keyboardType: TextInputType.datetime,
+                    enabled: false,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return "Please enter date";
@@ -233,13 +278,70 @@ class _TaskAddScreenState extends State<TaskAddScreen> {
               SizedBox(
                 height: 10,
               ),
+              Container(
+                alignment: Alignment.centerLeft,
+                margin: const EdgeInsets.only(bottom: 10),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.info,
+                      size: screenWidth / 22,
+                    ),
+                    const SizedBox(
+                      width: 6,
+                    ),
+                    Text(
+                      "Select date from the picker",
+                      style: ManageTheme.appText(
+                          size: screenWidth / 34, weight: FontWeight.w400),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.only(bottom: 20),
+                decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(10)),
+                child: SfDateRangePicker(
+                  headerHeight: 50,
+                  selectionColor: ManageTheme.nearlyBlack,
+                  onSelectionChanged: _onSelectionChanged,
+                  view: DateRangePickerView.month,
+                  headerStyle: DateRangePickerHeaderStyle(
+                      textStyle: ManageTheme.insideAppText(
+                          size: screenWidth / 21, weight: FontWeight.w600)),
+                  selectionTextStyle: const TextStyle(color: Colors.white),
+                  startRangeSelectionColor: ManageTheme.nearlyBlack,
+                  endRangeSelectionColor: ManageTheme.nearlyBlack,
+                  rangeSelectionColor: Colors.grey.shade300,
+                  enablePastDates: false,
+                  todayHighlightColor: ManageTheme.nearlyBlack,
+                  monthViewSettings: DateRangePickerMonthViewSettings(
+                      viewHeaderStyle: DateRangePickerViewHeaderStyle(
+                          textStyle: ManageTheme.insideAppText(
+                              size: screenWidth / 30,
+                              weight: FontWeight.bold))),
+                  monthCellStyle: DateRangePickerMonthCellStyle(
+                      textStyle: ManageTheme.insideAppText(
+                          size: screenWidth / 30, weight: FontWeight.w500)),
+                  selectionMode: DateRangePickerSelectionMode.single,
+                ),
+              ),
               Row(
                 children: [
                   Expanded(
                     child: TextFormField(
                       cursorColor: ManageTheme.nearlyBlack,
-                      keyboardType: TextInputType.datetime,
+                      keyboardType: TextInputType.none,
                       controller: _validTimeController,
+                      onTap: () async {
+                        TimeOfDay? timeOfDay = await _selectTime(context);
+                        if (timeOfDay != null) {
+                          _validTimeController.text =
+                              "${timeOfDay.hour.toString().padLeft(2,"0")}:${timeOfDay.minute.toString().padLeft(2,"0")}";
+                        }
+                      },
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return "Please enter valid time";
@@ -251,7 +353,9 @@ class _TaskAddScreenState extends State<TaskAddScreen> {
                           radius: 7,
                           hint: "Enter valid from",
                           suffixIcon: IconButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                _validTimeController.clear();
+                              },
                               icon: Icon(
                                 Icons.close,
                                 color: Colors.black45,
@@ -277,7 +381,9 @@ class _TaskAddScreenState extends State<TaskAddScreen> {
                           radius: 7,
                           hint: "Enter valid for",
                           suffixIcon: IconButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                _validityController.clear();
+                              },
                               icon: Icon(
                                 Icons.close,
                                 color: Colors.black45,

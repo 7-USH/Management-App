@@ -158,9 +158,9 @@ class ManageTheme {
     );
   }
 
-  static moveToError({required BuildContext context, required String text}) {
+  static moveToError({required BuildContext context, required String text,required int statusCode}) {
     PersistentNavBarNavigator.pushNewScreen(context,
-        screen: ErrorPage(text: text), withNavBar: false);
+        screen: ErrorPage(text: text,statusCode: statusCode,), withNavBar: false);
   }
 
   static int generateOTP() {

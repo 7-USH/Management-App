@@ -7,8 +7,9 @@ import 'package:manage_app/utils/manage_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ErrorPage extends StatelessWidget {
-  ErrorPage({super.key, required this.text});
+  ErrorPage({super.key, required this.text, required this.statusCode});
   String text;
+  int statusCode;
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +50,7 @@ class ErrorPage extends StatelessWidget {
                     onPressed: () async {
                       SharedPreferences pref =
                           await SharedPreferences.getInstance();
-                      if (text == "Server error with http status 500") {
+                      if (statusCode >= 500) {
                         pref.clear().then((value) {
                           if (value) {
                             Navigator.of(context, rootNavigator: true)

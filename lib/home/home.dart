@@ -20,7 +20,9 @@ import 'package:manage_app/home/screens/profile.dart';
 import 'package:manage_app/home/screens/staff_tree.dart';
 import 'package:manage_app/home/screens/task_detail_screen.dart';
 import 'package:manage_app/home/service/home_service.dart';
+import 'package:manage_app/home/ui_view/assigned_task_card.dart';
 import 'package:manage_app/home/ui_view/task_card.dart';
+import 'package:manage_app/task/models/display_admin_task_model.dart';
 import 'package:manage_app/task/models/display_task_model.dart';
 import 'package:manage_app/task/service/task_service.dart';
 import 'package:manage_app/utils/manage_theme.dart';
@@ -70,6 +72,8 @@ class _HomeState extends State<Home> {
   ];
   StreamController<List<DisplayStaffTaskModel>> _controller =
       StreamController();
+  StreamController<List<DisplayAdminTaskModel>> _adminController =
+      StreamController();
   Timer? _timer;
 
   @override
@@ -82,6 +86,13 @@ class _HomeState extends State<Home> {
           timer.cancel();
         });
       });
+    } else {
+      _timer = Timer.periodic(Duration(seconds: 5), (timer) {
+        getAssignedTasks().onError((error, stackTrace) {
+          closeAdminStream();
+          timer.cancel();
+        });
+      });
     }
     super.initState();
   }
@@ -91,6 +102,7 @@ class _HomeState extends State<Home> {
     if (_timer != null && mounted) {
       _timer!.cancel();
       closeStream();
+      closeAdminStream();
     }
     super.dispose();
   }
@@ -99,11 +111,27 @@ class _HomeState extends State<Home> {
     await _controller.close();
   }
 
+  void closeAdminStream() async {
+    await _adminController.close();
+  }
+
   Future<void> getCurrentTasks() async {
     try {
       List<DisplayStaffTaskModel> models =
           await taskService.getStaffTasks(context: context);
+      models.removeWhere((element) => element.validFrom == null);
       _controller.sink.add(models);
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  Future<void> getAssignedTasks() async {
+    try {
+      List<DisplayAdminTaskModel> models =
+          await taskService.getGroupTasks(context: context);
+      models.removeWhere((element) => element.validFrom == null);
+      _adminController.sink.add(models);
     } catch (e) {
       throw e.toString();
     }
@@ -738,11 +766,240 @@ class _HomeState extends State<Home> {
         });
   }
 
+  Widget displayStaffTasks(double screenHeight, double screenWidth) {
+    return StreamBuilder<List<DisplayStaffTaskModel>>(
+        stream: _controller.stream,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return snapshot.data!.isEmpty
+                ? SizedBox(
+                    height: screenHeight / 3.4,
+                    child: Chip(
+                      label: Center(
+                          child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          LottieBuilder.asset(
+                            "assets/gifs/task.json",
+                            frameRate: FrameRate.max,
+                            repeat: false,
+                            height: 150,
+                          ),
+                          Text(
+                            "No Task for Today!",
+                            style: ManageTheme.insideAppText(
+                                size: screenWidth / 24,
+                                weight: FontWeight.w500),
+                          )
+                        ],
+                      )),
+                    ),
+                  )
+                : CarouselSlider(
+                    carouselController: buttonCarouselController,
+                    items: List.generate(
+                        snapshot.data!.length,
+                        (index) => GestureDetector(
+                              onTap: () {
+                                PersistentNavBarNavigator.pushNewScreen(
+                                  context,
+                                  screen: TaskDetailScreen(
+                                    model: snapshot.data![index],
+                                    staff_details: [],
+                                  ),
+                                  withNavBar: true,
+                                  pageTransitionAnimation:
+                                      PageTransitionAnimation.scale,
+                                );
+                              },
+                              child: TaskCard(
+                                  index: (index + 1).toString(),
+                                  isCurrent: index == _current,
+                                  model: snapshot.data![index]),
+                            )),
+                    options: CarouselOptions(
+                      height: MediaQuery.of(context).size.height * 0.32,
+                      aspectRatio: 1,
+                      viewportFraction: 0.6,
+                      padEnds: true,
+                      disableCenter: true,
+                      initialPage: 0,
+                      enableInfiniteScroll: snapshot.data!.length > 1,
+                      onPageChanged: (index, reason) {
+                        setState(() {
+                          _current = index;
+                        });
+                      },
+                      enlargeCenterPage: true,
+                      enlargeFactor: 0.3,
+                      scrollDirection: Axis.horizontal,
+                    ));
+          } else {
+            return CarouselSlider(
+                carouselController: buttonCarouselController,
+                items: List.generate(
+                    5,
+                    (index) => Shimmer.fromColors(
+                          baseColor: Colors.grey.shade300,
+                          highlightColor:
+                              ManageTheme.nearlyGrey.withOpacity(0.5),
+                          direction: ShimmerDirection.rtl,
+                          child: TaskCard(
+                              isCurrent: true,
+                              index: "",
+                              model: DisplayStaffTaskModel(
+                                  priority: "",
+                                  validFor: 2,
+                                  validFrom: "",
+                                  taskTitle: "",
+                                  description: "",
+                                  status: "",
+                                  id: "",
+                                  assignedAt: "")),
+                        )),
+                options: CarouselOptions(
+                  height: MediaQuery.of(context).size.height * 0.32,
+                  aspectRatio: 1,
+                  viewportFraction: 0.6,
+                  padEnds: true,
+                  disableCenter: true,
+                  initialPage: 0,
+                  enableInfiniteScroll: true,
+                  onPageChanged: (index, reason) {
+                    setState(() {
+                      _current = index;
+                    });
+                  },
+                  reverse: false,
+                  enlargeCenterPage: true,
+                  enlargeFactor: 0.3,
+                  scrollDirection: Axis.horizontal,
+                ));
+          }
+        });
+  }
+
+  Widget displayAdminTasks(double screenHeight, double screenWidth) {
+    return StreamBuilder<List<DisplayAdminTaskModel>>(
+        stream: _adminController.stream,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return snapshot.data!.isEmpty
+                ? SizedBox(
+                    height: screenHeight / 3.4,
+                    child: Chip(
+                      label: Center(
+                          child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          LottieBuilder.asset(
+                            "assets/gifs/task.json",
+                            frameRate: FrameRate.max,
+                            repeat: false,
+                            height: 150,
+                          ),
+                          Text(
+                            "No Task for Today!",
+                            style: ManageTheme.insideAppText(
+                                size: screenWidth / 24,
+                                weight: FontWeight.w500),
+                          )
+                        ],
+                      )),
+                    ),
+                  )
+                : CarouselSlider(
+                    carouselController: buttonCarouselController,
+                    items: List.generate(
+                        snapshot.data!.length,
+                        (index) => GestureDetector(
+                              onTap: () {
+                                PersistentNavBarNavigator.pushNewScreen(
+                                  context,
+                                  screen: TaskDetailScreen(
+                                    model: snapshot.data![index],
+                                    staff_details:
+                                        snapshot.data![index].staffDetails!,
+                                  ),
+                                  withNavBar: true,
+                                  pageTransitionAnimation:
+                                      PageTransitionAnimation.scale,
+                                );
+                              },
+                              child: AssignedTaskCard(
+                                  index: (index + 1).toString(),
+                                  isCurrent: index == _current,
+                                  model: snapshot.data![index]),
+                            )),
+                    options: CarouselOptions(
+                      height: MediaQuery.of(context).size.height * 0.32,
+                      aspectRatio: 1,
+                      viewportFraction: 0.6,
+                      padEnds: true,
+                      disableCenter: true,
+                      initialPage: 0,
+                      enableInfiniteScroll: snapshot.data!.length > 1,
+                      onPageChanged: (index, reason) {
+                        setState(() {
+                          _current = index;
+                        });
+                      },
+                      reverse: false,
+                      enlargeCenterPage: true,
+                      enlargeFactor: 0.3,
+                      scrollDirection: Axis.horizontal,
+                    ));
+          } else {
+            return CarouselSlider(
+                carouselController: buttonCarouselController,
+                items: List.generate(
+                    5,
+                    (index) => Shimmer.fromColors(
+                          baseColor: Colors.grey.shade300,
+                          highlightColor:
+                              ManageTheme.nearlyGrey.withOpacity(0.5),
+                          direction: ShimmerDirection.rtl,
+                          child: TaskCard(
+                              isCurrent: true,
+                              index: "",
+                              model: DisplayStaffTaskModel(
+                                  priority: "",
+                                  validFor: 2,
+                                  validFrom: "",
+                                  taskTitle: "",
+                                  description: "",
+                                  status: "",
+                                  id: "",
+                                  assignedAt: "")),
+                        )),
+                options: CarouselOptions(
+                  height: MediaQuery.of(context).size.height * 0.32,
+                  aspectRatio: 1,
+                  viewportFraction: 0.6,
+                  padEnds: true,
+                  disableCenter: true,
+                  initialPage: 0,
+                  enableInfiniteScroll: true,
+                  onPageChanged: (index, reason) {
+                    setState(() {
+                      _current = index;
+                    });
+                  },
+                  reverse: false,
+                  enlargeCenterPage: true,
+                  enlargeFactor: 0.3,
+                  scrollDirection: Axis.horizontal,
+                ));
+          }
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
     double screenWidth = MediaQuery.of(context).size.width;
-
     return WillPopScope(
         onWillPop: () async => false,
         child: Scaffold(
@@ -885,141 +1142,9 @@ class _HomeState extends State<Home> {
                             SizedBox(
                               height: 20,
                             ),
-                            StreamBuilder<List<DisplayStaffTaskModel>>(
-                                stream: _controller.stream,
-                                builder: (context, snapshot) {
-                                  if (snapshot.hasData) {
-                                    return snapshot.data!.isEmpty
-                                        ? SizedBox(
-                                            height: screenHeight / 3.4,
-                                            child: Chip(
-                                              label: Center(
-                                                  child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  LottieBuilder.asset(
-                                                    "assets/gifs/task.json",
-                                                    frameRate: FrameRate.max,
-                                                    repeat: false,
-                                                    height: 150,
-                                                  ),
-                                                  Text(
-                                                    "No Task for Today!",
-                                                    style: ManageTheme
-                                                        .insideAppText(
-                                                            size: screenWidth /
-                                                                24,
-                                                            weight: FontWeight
-                                                                .w500),
-                                                  )
-                                                ],
-                                              )),
-                                            ),
-                                          )
-                                        : CarouselSlider(
-                                            carouselController:
-                                                buttonCarouselController,
-                                            items: List.generate(
-                                                snapshot.data!.length,
-                                                (index) => GestureDetector(
-                                                      onTap: () {
-                                                        PersistentNavBarNavigator
-                                                            .pushNewScreen(
-                                                          context,
-                                                          screen:
-                                                              TaskDetailScreen(
-                                                            model: snapshot
-                                                                .data![index],
-                                                          ),
-                                                          withNavBar: true,
-                                                          pageTransitionAnimation:
-                                                              PageTransitionAnimation
-                                                                  .scale,
-                                                        );
-                                                      },
-                                                      child: TaskCard(
-                                                          index: (index + 1)
-                                                              .toString(),
-                                                          isCurrent:
-                                                              index == _current,
-                                                          model: snapshot
-                                                              .data![index]),
-                                                    )),
-                                            options: CarouselOptions(
-                                              height: MediaQuery.of(context)
-                                                      .size
-                                                      .height *
-                                                  0.32,
-                                              aspectRatio: 1,
-                                              viewportFraction: 0.6,
-                                              padEnds: true,
-                                              disableCenter: true,
-                                              initialPage: 0,
-                                              enableInfiniteScroll: true,
-                                              onPageChanged: (index, reason) {
-                                                setState(() {
-                                                  _current = index;
-                                                });
-                                              },
-                                              reverse: false,
-                                              enlargeCenterPage: true,
-                                              enlargeFactor: 0.3,
-                                              scrollDirection: Axis.horizontal,
-                                            ));
-                                  } else {
-                                    return CarouselSlider(
-                                        carouselController:
-                                            buttonCarouselController,
-                                        items: List.generate(
-                                            5,
-                                            (index) => Shimmer.fromColors(
-                                                  baseColor:
-                                                      Colors.grey.shade300,
-                                                  highlightColor: ManageTheme
-                                                      .nearlyGrey
-                                                      .withOpacity(0.5),
-                                                  direction:
-                                                      ShimmerDirection.rtl,
-                                                  child: TaskCard(
-                                                      isCurrent: true,
-                                                      index: "",
-                                                      model:
-                                                          DisplayStaffTaskModel(
-                                                              priority: "",
-                                                              validFor: 3,
-                                                              validFrom: "",
-                                                              taskTitle: "",
-                                                              description: "",
-                                                              status: "",
-                                                              id: "",
-                                                              assignedAt: "")),
-                                                )),
-                                        options: CarouselOptions(
-                                          height: MediaQuery.of(context)
-                                                  .size
-                                                  .height *
-                                              0.32,
-                                          aspectRatio: 1,
-                                          viewportFraction: 0.6,
-                                          padEnds: true,
-                                          disableCenter: true,
-                                          initialPage: 0,
-                                          enableInfiniteScroll: true,
-                                          onPageChanged: (index, reason) {
-                                            setState(() {
-                                              _current = index;
-                                            });
-                                          },
-                                          reverse: false,
-                                          enlargeCenterPage: true,
-                                          enlargeFactor: 0.3,
-                                          scrollDirection: Axis.horizontal,
-                                        ));
-                                  }
-                                }),
+                            widget.model.profile == "staff"
+                                ? displayStaffTasks(screenHeight, screenWidth)
+                                : displayAdminTasks(screenHeight, screenWidth),
                             SizedBox(
                               height: 20,
                             ),

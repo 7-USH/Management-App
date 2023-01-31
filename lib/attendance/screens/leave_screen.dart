@@ -1,8 +1,10 @@
-// ignore_for_file: unused_local_variable, prefer_final_fields
+// ignore_for_file: unused_local_variable, prefer_final_fields, unnecessary_type_check
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:manage_app/attendance/models/create_leave_model.dart';
+import 'package:manage_app/attendance/service/attendance_service.dart';
 import 'package:manage_app/utils/manage_theme.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
@@ -17,6 +19,10 @@ class _LeaveScreenState extends State<LeaveScreen> {
   bool _isLoading = false;
   TextEditingController fromController = TextEditingController();
   TextEditingController toController = TextEditingController();
+  TextEditingController subjectController = TextEditingController();
+  TextEditingController reasonController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  AttendanceService service = AttendanceService();
 
   void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
     setState(() {
@@ -55,7 +61,33 @@ class _LeaveScreenState extends State<LeaveScreen> {
                   style: ManageTheme.buttonStyle(
                     backColor: ManageTheme.nearlyBlack,
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      setState(() {
+                        _isLoading = true;
+                      });
+                      service
+                          .createLeave(
+                              context: context,
+                              model: CreateLeaveModel(
+                                  startingDate: fromController.text,
+                                  endingDate: toController.text,
+                                  reason: reasonController.text,
+                                  leaveSubject: subjectController.text))
+                          .then((value) {
+                        if (value is CreateLeaveModel) {
+                          setState(() {
+                            _isLoading = false;
+                          });
+                          Navigator.pop(context);
+                        }
+                      }).onError((error, stackTrace) {
+                        setState(() {
+                          _isLoading = false;
+                        });
+                      });
+                    }
+                  },
                   child: _isLoading
                       ? Center(
                           child: LoadingAnimationWidget.staggeredDotsWave(
@@ -78,181 +110,191 @@ class _LeaveScreenState extends State<LeaveScreen> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         physics: const BouncingScrollPhysics(),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Column(
-              children: [
-                Container(
-                  alignment: Alignment.centerLeft,
-                  margin: const EdgeInsets.only(bottom: 10),
-                  child: Text(
-                    "Leave Subject",
-                    style: ManageTheme.insideAppText(
-                        size: screenWidth / 21, weight: FontWeight.w600),
-                  ),
-                ),
-                TextFormField(
-                  cursorColor: ManageTheme.nearlyBlack,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Please enter leave title";
-                    }
-                    return null;
-                  },
-                  decoration: ManageTheme.faInputDecoration(
-                      hint: "Enter Leave Title", fontSize: 16, radius: 7),
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Column(
-              children: [
-                Container(
-                  alignment: Alignment.centerLeft,
-                  margin: const EdgeInsets.only(bottom: 10),
-                  child: Text(
-                    "Reason",
-                    style: ManageTheme.insideAppText(
-                        size: screenWidth / 21, weight: FontWeight.w600),
-                  ),
-                ),
-                TextFormField(
-                  maxLines: 5,
-                  cursorColor: ManageTheme.nearlyBlack,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Please enter reason";
-                    }
-                    return null;
-                  },
-                  decoration: ManageTheme.faInputDecoration(
-                      hint: "Enter Reason For Taking Leave",
-                      fontSize: 16,
-                      radius: 7),
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    children: [
-                      Container(
-                        alignment: Alignment.centerLeft,
-                        margin: const EdgeInsets.only(bottom: 10),
-                        child: Text(
-                          "From",
-                          style: ManageTheme.insideAppText(
-                              size: screenWidth / 21, weight: FontWeight.w600),
-                        ),
-                      ),
-                      TextFormField(
-                        cursorColor: ManageTheme.nearlyBlack,
-                        enabled: false,
-                        controller: fromController,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "Please enter date";
-                          }
-                          return null;
-                        },
-                        decoration: ManageTheme.faInputDecoration(
-                            hint: "Select Date from", fontSize: 16, radius: 7),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(
-                  width: 15,
-                ),
-                Expanded(
-                  child: Column(
-                    children: [
-                      Container(
-                        alignment: Alignment.centerLeft,
-                        margin: const EdgeInsets.only(bottom: 10),
-                        child: Text(
-                          "To",
-                          style: ManageTheme.insideAppText(
-                              size: screenWidth / 21, weight: FontWeight.w600),
-                        ),
-                      ),
-                      TextFormField(
-                        cursorColor: ManageTheme.nearlyBlack,
-                        enabled: false,
-                        controller: toController,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "Please enter date";
-                          }
-                          return null;
-                        },
-                        decoration: ManageTheme.faInputDecoration(
-                            hint: "Select Date to", fontSize: 16, radius: 7),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 15,
-            ),
-            Container(
-              alignment: Alignment.centerLeft,
-              margin: const EdgeInsets.only(bottom: 10),
-              child: Row(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Column(
                 children: [
-                  Icon(
-                    Icons.info,
-                    size: screenWidth / 22,
+                  Container(
+                    alignment: Alignment.centerLeft,
+                    margin: const EdgeInsets.only(bottom: 10),
+                    child: Text(
+                      "Leave Subject",
+                      style: ManageTheme.insideAppText(
+                          size: screenWidth / 21, weight: FontWeight.w600),
+                    ),
                   ),
-                  const SizedBox(
-                    width: 6,
-                  ),
-                  Text(
-                    "Select date from the picker",
-                    style: ManageTheme.appText(
-                        size: screenWidth / 34, weight: FontWeight.w400),
+                  TextFormField(
+                    cursorColor: ManageTheme.nearlyBlack,
+                    controller: subjectController,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Please enter leave title";
+                      }
+                      return null;
+                    },
+                    decoration: ManageTheme.faInputDecoration(
+                        hint: "Enter Leave Title", fontSize: 16, radius: 7),
                   ),
                 ],
               ),
-            ),
-            Container(
-              decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(10)),
-              child: SfDateRangePicker(
-                headerHeight: 50,
-                onSelectionChanged: _onSelectionChanged,
-                view: DateRangePickerView.month,
-                headerStyle: DateRangePickerHeaderStyle(
-                    textStyle: ManageTheme.insideAppText(
-                        size: screenWidth / 21, weight: FontWeight.w600)),
-                selectionTextStyle: const TextStyle(color: Colors.white),
-                startRangeSelectionColor: ManageTheme.nearlyBlack,
-                endRangeSelectionColor: ManageTheme.nearlyBlack,
-                rangeSelectionColor: Colors.grey.shade300,
-                enablePastDates: false,
-                todayHighlightColor: ManageTheme.nearlyBlack,
-                monthViewSettings: DateRangePickerMonthViewSettings(
-                    viewHeaderStyle: DateRangePickerViewHeaderStyle(
-                        textStyle: ManageTheme.insideAppText(
-                            size: screenWidth / 30, weight: FontWeight.bold))),
-                monthCellStyle: DateRangePickerMonthCellStyle(
-                    textStyle: ManageTheme.insideAppText(
-                        size: screenWidth / 30, weight: FontWeight.w500)),
-                selectionMode: DateRangePickerSelectionMode.range,
+              const SizedBox(
+                height: 10,
               ),
-            ),
-          ],
+              Column(
+                children: [
+                  Container(
+                    alignment: Alignment.centerLeft,
+                    margin: const EdgeInsets.only(bottom: 10),
+                    child: Text(
+                      "Reason",
+                      style: ManageTheme.insideAppText(
+                          size: screenWidth / 21, weight: FontWeight.w600),
+                    ),
+                  ),
+                  TextFormField(
+                    maxLines: 5,
+                    controller: reasonController,
+                    cursorColor: ManageTheme.nearlyBlack,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Please enter reason";
+                      }
+                      return null;
+                    },
+                    decoration: ManageTheme.faInputDecoration(
+                        hint: "Enter Reason For Taking Leave",
+                        fontSize: 16,
+                        radius: 7),
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      children: [
+                        Container(
+                          alignment: Alignment.centerLeft,
+                          margin: const EdgeInsets.only(bottom: 10),
+                          child: Text(
+                            "From",
+                            style: ManageTheme.insideAppText(
+                                size: screenWidth / 21,
+                                weight: FontWeight.w600),
+                          ),
+                        ),
+                        TextFormField(
+                          cursorColor: ManageTheme.nearlyBlack,
+                          enabled: false,
+                          controller: fromController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Please enter date";
+                            }
+                            return null;
+                          },
+                          decoration: ManageTheme.faInputDecoration(
+                              hint: "Select Date from",
+                              fontSize: 16,
+                              radius: 7),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 15,
+                  ),
+                  Expanded(
+                    child: Column(
+                      children: [
+                        Container(
+                          alignment: Alignment.centerLeft,
+                          margin: const EdgeInsets.only(bottom: 10),
+                          child: Text(
+                            "To",
+                            style: ManageTheme.insideAppText(
+                                size: screenWidth / 21,
+                                weight: FontWeight.w600),
+                          ),
+                        ),
+                        TextFormField(
+                          cursorColor: ManageTheme.nearlyBlack,
+                          enabled: false,
+                          controller: toController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Please enter date";
+                            }
+                            return null;
+                          },
+                          decoration: ManageTheme.faInputDecoration(
+                              hint: "Select Date to", fontSize: 16, radius: 7),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 15,
+              ),
+              Container(
+                alignment: Alignment.centerLeft,
+                margin: const EdgeInsets.only(bottom: 10),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.info,
+                      size: screenWidth / 22,
+                    ),
+                    const SizedBox(
+                      width: 6,
+                    ),
+                    Text(
+                      "Select date from the picker",
+                      style: ManageTheme.appText(
+                          size: screenWidth / 34, weight: FontWeight.w400),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(10)),
+                child: SfDateRangePicker(
+                  headerHeight: 50,
+                  onSelectionChanged: _onSelectionChanged,
+                  view: DateRangePickerView.month,
+                  headerStyle: DateRangePickerHeaderStyle(
+                      textStyle: ManageTheme.insideAppText(
+                          size: screenWidth / 21, weight: FontWeight.w600)),
+                  selectionTextStyle: const TextStyle(color: Colors.white),
+                  startRangeSelectionColor: ManageTheme.nearlyBlack,
+                  endRangeSelectionColor: ManageTheme.nearlyBlack,
+                  rangeSelectionColor: Colors.grey.shade300,
+                  enablePastDates: false,
+                  todayHighlightColor: ManageTheme.nearlyBlack,
+                  monthViewSettings: DateRangePickerMonthViewSettings(
+                      viewHeaderStyle: DateRangePickerViewHeaderStyle(
+                          textStyle: ManageTheme.insideAppText(
+                              size: screenWidth / 30,
+                              weight: FontWeight.bold))),
+                  monthCellStyle: DateRangePickerMonthCellStyle(
+                      textStyle: ManageTheme.insideAppText(
+                          size: screenWidth / 30, weight: FontWeight.w500)),
+                  selectionMode: DateRangePickerSelectionMode.range,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

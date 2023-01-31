@@ -18,7 +18,8 @@ class SignUpService {
     var response = await _service.postData(endpoint, model.toJson());
     if (response.isLeft) {
       return ManageTheme.moveToError(
-          context: context, text: response.left.message!);
+          context: context, text: response.left.message!,
+          statusCode: response.left.statusCode);
     } else {
       return RegisterModel.fromJson(response.right);
     }
@@ -42,7 +43,8 @@ class SignUpService {
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
       } else {
         return ManageTheme.moveToError(
-            context: context, text: response.left.message!);
+            context: context, text: response.left.message!,
+            statusCode: response.left.statusCode);
       }
     } else {
       return SessionModel.fromJson(response.right);
@@ -53,7 +55,8 @@ class SignUpService {
     String endpoint = "subscriptions/get-plans";
     var response = await _service.getAllData(endpoint);
     if (response.isLeft) {
-      ManageTheme.moveToError(context: context, text: response.left.message!);
+      ManageTheme.moveToError(context: context, text: response.left.message!,
+          statusCode: response.left.statusCode);
       return [];
     } else {
       return response.right
@@ -67,7 +70,8 @@ class SignUpService {
     String endpoint = "subscriber/create";
     var response = await _service.postData(endpoint, model.toJson());
     if (response.isLeft) {
-      ManageTheme.moveToError(context: context, text: response.left.message!);
+      ManageTheme.moveToError(context: context, text: response.left.message!,
+          statusCode: response.left.statusCode);
       return [];
     } else {
       return AdminPlan.fromJson(response.right);
@@ -78,7 +82,8 @@ class SignUpService {
     String endpoint = "subscriber/get";
     var response = await _service.getData(endpoint);
     if (response.isLeft) {
-      ManageTheme.moveToError(context: context, text: response.left.message!);
+      ManageTheme.moveToError(context: context, text: response.left.message!,
+          statusCode: response.left.statusCode);
     } else {
       return response.right;
     }
