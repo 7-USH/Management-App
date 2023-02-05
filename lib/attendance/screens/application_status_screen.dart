@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:manage_app/attendance/service/attendance_service.dart';
+import 'package:manage_app/attendance/ui_view/status_card.dart';
 import 'package:manage_app/utils/manage_theme.dart';
 
 class ApplicationStatusSreen extends StatefulWidget {
@@ -37,10 +38,11 @@ class _ApplicationStatusSreenState extends State<ApplicationStatusSreen> {
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               return ListView.builder(
+                physics: const BouncingScrollPhysics(),
                   itemCount: snapshot.data!.length,
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
-                    return SizedBox();
+                    return StatusCard(model: snapshot.data![index]);
                   });
             } else {
               return Center(

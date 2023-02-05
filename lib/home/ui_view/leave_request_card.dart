@@ -155,6 +155,8 @@ class _LeaveRequestCardState extends State<LeaveRequestCard> {
                           : Align(
                               alignment: Alignment.centerLeft,
                               child: Chip(
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10)),
                                   backgroundColor: chipColor.withOpacity(0.2),
                                   label: Row(
                                     crossAxisAlignment:
