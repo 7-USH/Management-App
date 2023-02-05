@@ -5,6 +5,7 @@ import 'package:manage_app/common/api.dart';
 import 'package:manage_app/home/models/family_member_model.dart';
 import 'package:manage_app/home/models/family_relationship_model.dart';
 import 'package:manage_app/home/models/profile_detail_model.dart';
+import 'package:manage_app/home/models/staff_leave_application_model.dart';
 
 import '../../utils/manage_theme.dart';
 
@@ -52,6 +53,53 @@ class HomeService {
           statusCode: response.left.statusCode);
     } else {
       return ProfileDetailModel.fromJson(response.right);
+    }
+  }
+
+  Future<List<StaffLeaveApplicationModel>> getAllLeaveApplications(
+      {required BuildContext context}) async {
+    String endpoint = "staff-leave/get-all-leave-applications";
+    var response = await _service.getAllData(endpoint);
+    if (response.isLeft) {
+      return ManageTheme.moveToError(
+          context: context,
+          text: response.left.message!,
+          statusCode: response.left.statusCode);
+    } else {
+      return response.right
+          .map<StaffLeaveApplicationModel>(
+              (e) => StaffLeaveApplicationModel.fromJson(e))
+          .toList();
+    }
+  }
+
+  Future<dynamic> approveApplication(
+      {required BuildContext context, required String leave_id}) async {
+    String endpoint = "staff-leave/approve-application";
+    var response =
+        await _service.updateData(endpoint, {"staff_leave_id": leave_id});
+    if (response.isLeft) {
+      return ManageTheme.moveToError(
+          context: context,
+          text: response.left.message!,
+          statusCode: response.left.statusCode);
+    } else {
+      return response.right;
+    }
+  }
+
+  Future<dynamic> rejectApplication(
+      {required BuildContext context, required String leave_id}) async {
+    String endpoint = "staff-leave/reject-application";
+    var response =
+        await _service.updateData(endpoint, {"staff_leave_id": leave_id});
+    if (response.isLeft) {
+      return ManageTheme.moveToError(
+          context: context,
+          text: response.left.message!,
+          statusCode: response.left.statusCode);
+    } else {
+      return response.right;
     }
   }
 }

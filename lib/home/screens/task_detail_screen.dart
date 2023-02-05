@@ -26,7 +26,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   void initState() {
     String demo_date =
         widget.model.validFrom!.replaceAll("T", ' ').replaceAll("Z", "");
-    var dateTime = formatter.parse(demo_date, true).toLocal();
+    var dateTime = formatter.parse(demo_date).toLocal();
     date =
         "${DateFormat.d().format(dateTime)} ${DateFormat.EEEE().format(dateTime)}, ${DateFormat.y().format(dateTime)}";
     month =

@@ -68,7 +68,8 @@ class StaffDetails {
 class DisplayAdminTaskModel extends DisplayStaffTaskModel {
   List<StaffDetails>? staffDetails;
 
-  DisplayAdminTaskModel.fromJson(Map<String, dynamic> json) : super.fromJson(json) {
+  DisplayAdminTaskModel.fromJson(Map<String, dynamic> json)
+      : super.fromJson(json) {
     if (json['staff_details'] != null) {
       staffDetails = <StaffDetails>[];
       json['staff_details'].forEach((v) {

@@ -26,19 +26,6 @@ class _AssignedTaskCardState extends State<AssignedTaskCard> {
   String display_date = "";
 
   @override
-  void initState() {
-    if (widget.model.validFrom!.isNotEmpty) {
-      String date =
-          widget.model.validFrom!.replaceAll("T", ' ').replaceAll("Z", "");
-      var dateTime = formatter.parse(date, true).toLocal();
-      setState(() {
-        display_date = DateFormat("h:mm a").format(dateTime);
-      });
-    }
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     Color chipColor = ManageTheme.successGreen;
     if (widget.model.priority == "High") {
@@ -46,6 +33,14 @@ class _AssignedTaskCardState extends State<AssignedTaskCard> {
     } else if (widget.model.priority == "Medium") {
       chipColor = Colors.amber;
     }
+
+    if (widget.model.validFrom!.isNotEmpty) {
+      String date =
+          widget.model.validFrom!.replaceAll("T", ' ').replaceAll("Z", "");
+      var dateTime = formatter.parse(date).toLocal();
+      display_date = DateFormat("h:mm a").format(dateTime);
+    }
+
     return Stack(
       children: [
         Container(

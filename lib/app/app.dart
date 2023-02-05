@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_final_fields, library_private_types_in_public_api, prefer_const_literals_to_create_immutables, unnecessary_type_check
+// ignore_for_file: prefer_const_constructors, prefer_final_fields, library_private_types_in_public_api, prefer_const_literals_to_create_immutables, unnecessary_type_check, unused_local_variable
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +9,7 @@ import 'package:manage_app/chat/chat.dart';
 import 'package:manage_app/chat/view_models/users_list_viewmodel.dart';
 import 'package:manage_app/home/home.dart';
 import 'package:manage_app/home/models/profile_detail_model.dart';
+import 'package:manage_app/home/service/home_provider.dart';
 import 'package:manage_app/home/service/home_service.dart';
 import 'package:manage_app/task/task.dart';
 import 'package:manage_app/utils/manage_theme.dart';
@@ -53,6 +54,8 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
     return Builder(builder: (_) {
       if (_isLoading) {
         return Scaffold(
@@ -69,11 +72,19 @@ class _AppState extends State<App> {
                   fit: BoxFit.contain,
                 ),
                 Container(
-                    margin: EdgeInsets.only(top: 20),
-                    child: Center(
-                      child: LoadingAnimationWidget.staggeredDotsWave(
-                          color: ManageTheme.nearlyBlack, size: 25),
-                    ))
+                  height: screenWidth / 9,
+                  width: screenWidth / 9,
+                  margin: EdgeInsets.only(top: 10),
+                  padding: const EdgeInsets.all(7),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(screenWidth / 18),
+                      color: ManageTheme.backgroundWhite,
+                      border: Border.all(color: Colors.black26, width: 1)),
+                  child: const CircularProgressIndicator(
+                    strokeWidth: 1.8,
+                    color: ManageTheme.nearlyBlack,
+                  ),
+                ),
               ],
             ),
           ),
@@ -87,8 +98,16 @@ class _AppState extends State<App> {
   Widget buildWidget(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => UsersListViewModel()),
-        ChangeNotifierProvider(create: (_) => ChatRoomListViewModel()),
+        ChangeNotifierProvider<UsersListViewModel>(
+            create: (_) => UsersListViewModel()),
+        ChangeNotifierProvider<ChatRoomListViewModel>(
+            create: (_) => ChatRoomListViewModel()),
+        ChangeNotifierProvider<HomeAdminProvider>(
+            create: (_) => HomeAdminProvider(context: context)),
+        ChangeNotifierProvider<HomeStaffProvider>(
+            create: (_) => HomeStaffProvider(context: context)),
+        ChangeNotifierProvider<StaffLeaveApplicationProvider>(
+            create: (_) => StaffLeaveApplicationProvider(context: context)),
       ],
       child: WillPopScope(
         onWillPop: () async => false,

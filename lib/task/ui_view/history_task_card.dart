@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:image_stack/image_stack.dart';
 import 'package:intl/intl.dart';
 import 'package:manage_app/task/models/display_admin_task_model.dart';
+import 'package:manage_app/task/screens/task_update.dart';
 import 'package:manage_app/utils/manage_theme.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 class HistoryTaskCard extends StatefulWidget {
   HistoryTaskCard({super.key, required this.model});
@@ -27,21 +29,16 @@ class _HistoryTaskCardState extends State<HistoryTaskCard> {
   DateFormat formatter = DateFormat("yyyy-MM-dd HH:mm");
 
   @override
-  void initState() {
+  Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
     String demo_date =
         widget.model.validFrom!.replaceAll("T", ' ').replaceAll("Z", "");
-    var dateTime = formatter.parse(demo_date, true).toLocal();
+    var dateTime = formatter.parse(demo_date).toLocal();
     date =
         "${DateFormat.d().format(dateTime)} ${DateFormat.MMM().format(dateTime)}, ${DateFormat.y().format(dateTime)}";
     time_range =
         "${DateFormat("h:mm a").format(dateTime)}-${DateFormat("h:mm a").format(dateTime)}";
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    double screenHeight = MediaQuery.of(context).size.height;
-    double screenWidth = MediaQuery.of(context).size.width;
 
     Color chipColor = ManageTheme.successGreen;
     if (widget.model.priority == "High") {
@@ -75,7 +72,17 @@ class _HistoryTaskCardState extends State<HistoryTaskCard> {
                     )),
               ),
               IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    PersistentNavBarNavigator.pushNewScreen(
+                      context,
+                      screen: TaskUpdateScreen(
+                        model: widget.model,
+                        id: widget.model.id!,
+                      ),
+                      withNavBar: false,
+                      pageTransitionAnimation: PageTransitionAnimation.scale,
+                    );
+                  },
                   icon: Icon(
                     Icons.edit,
                     size: 20,
@@ -101,7 +108,9 @@ class _HistoryTaskCardState extends State<HistoryTaskCard> {
                   label: Text(
                     widget.model.priority!.toUpperCase(),
                     style: ManageTheme.insideAppText(
-                        size: screenWidth / 40, weight: FontWeight.bold,color: ManageTheme.backgroundWhite),
+                        size: screenWidth / 40,
+                        weight: FontWeight.bold,
+                        color: ManageTheme.backgroundWhite),
                   ))
             ],
           ),

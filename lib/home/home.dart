@@ -13,12 +13,14 @@ import 'package:manage_app/home/models/family_member_model.dart';
 import 'package:manage_app/home/models/family_relationship_model.dart';
 import 'package:manage_app/home/models/notification_model.dart';
 import 'package:manage_app/home/models/profile_detail_model.dart';
+import 'package:manage_app/home/models/staff_leave_application_model.dart';
 import 'package:manage_app/home/screens/family_tree.dart';
 import 'package:manage_app/home/screens/guest_relation.dart';
 import 'package:manage_app/home/screens/notifications.dart';
 import 'package:manage_app/home/screens/profile.dart';
 import 'package:manage_app/home/screens/staff_tree.dart';
 import 'package:manage_app/home/screens/task_detail_screen.dart';
+import 'package:manage_app/home/service/home_provider.dart';
 import 'package:manage_app/home/service/home_service.dart';
 import 'package:manage_app/home/ui_view/assigned_task_card.dart';
 import 'package:manage_app/home/ui_view/task_card.dart';
@@ -28,6 +30,7 @@ import 'package:manage_app/task/service/task_service.dart';
 import 'package:manage_app/utils/manage_theme.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 
 class Home extends StatefulWidget {
@@ -41,7 +44,6 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   int _current = 0;
   HomeService service = HomeService();
-  TaskService taskService = TaskService();
   final _formKey = GlobalKey<FormState>();
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
@@ -51,6 +53,7 @@ class _HomeState extends State<Home> {
   String _currentFamilySelectedValue = "Dad";
   String _currentStaffSelectedValue = "Manager";
   String _currentGuestSelectedValue = "Home tutor";
+  String number_of_notifications = "0";
   CarouselController buttonCarouselController = CarouselController();
   final List<String> _family_relations = [
     "Dad",
@@ -70,71 +73,11 @@ class _HomeState extends State<Home> {
     "Home tutor",
     "Friends",
   ];
-  StreamController<List<DisplayStaffTaskModel>> _controller =
-      StreamController();
-  StreamController<List<DisplayAdminTaskModel>> _adminController =
-      StreamController();
-  Timer? _timer;
 
   @override
   void initState() {
     _familyRelationShips = service.getFamilyMembers(context: context);
-    if (widget.model.profile == "staff") {
-      _timer = Timer.periodic(Duration(seconds: 5), (timer) {
-        getCurrentTasks().onError((error, stackTrace) {
-          closeStream();
-          timer.cancel();
-        });
-      });
-    } else {
-      _timer = Timer.periodic(Duration(seconds: 5), (timer) {
-        getAssignedTasks().onError((error, stackTrace) {
-          closeAdminStream();
-          timer.cancel();
-        });
-      });
-    }
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    if (_timer != null && mounted) {
-      _timer!.cancel();
-      closeStream();
-      closeAdminStream();
-    }
-    super.dispose();
-  }
-
-  void closeStream() async {
-    await _controller.close();
-  }
-
-  void closeAdminStream() async {
-    await _adminController.close();
-  }
-
-  Future<void> getCurrentTasks() async {
-    try {
-      List<DisplayStaffTaskModel> models =
-          await taskService.getStaffTasks(context: context);
-      models.removeWhere((element) => element.validFrom == null);
-      _controller.sink.add(models);
-    } catch (e) {
-      throw e.toString();
-    }
-  }
-
-  Future<void> getAssignedTasks() async {
-    try {
-      List<DisplayAdminTaskModel> models =
-          await taskService.getGroupTasks(context: context);
-      models.removeWhere((element) => element.validFrom == null);
-      _adminController.sink.add(models);
-    } catch (e) {
-      throw e.toString();
-    }
   }
 
   Future<void> addFamilyMembers() async {
@@ -768,7 +711,7 @@ class _HomeState extends State<Home> {
 
   Widget displayStaffTasks(double screenHeight, double screenWidth) {
     return StreamBuilder<List<DisplayStaffTaskModel>>(
-        stream: _controller.stream,
+        stream: Provider.of<HomeStaffProvider>(context).streamGetter,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return snapshot.data!.isEmpty
@@ -882,7 +825,7 @@ class _HomeState extends State<Home> {
 
   Widget displayAdminTasks(double screenHeight, double screenWidth) {
     return StreamBuilder<List<DisplayAdminTaskModel>>(
-        stream: _adminController.stream,
+        stream: Provider.of<HomeAdminProvider>(context).streamGetter,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return snapshot.data!.isEmpty
@@ -1030,79 +973,50 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 Spacer(),
-                GestureDetector(
-                  onTap: () {
-                    PersistentNavBarNavigator.pushNewScreen(
-                      context,
-                      screen: NotificationsScreen(
-                        models: [
-                          NotificationModel(
-                              date: "Jun 28, 2022",
-                              notify_message: "Your Leave is Approved",
-                              owner_image: "",
-                              owner_name: "Tushar Mali"),
-                          NotificationModel(
-                              date: "Jun 28, 2022",
-                              notify_message:
-                                  "Your Leave is Approved fsfsfsfsfsfsfsf afqfaf",
-                              owner_image: "",
-                              owner_name: "Tushar Mali"),
-                          NotificationModel(
-                              date: "Jun 28, 2022",
-                              notify_message: "Your Leave is Approved",
-                              owner_image: "",
-                              owner_name: "Tushar Mali"),
-                          NotificationModel(
-                              date: "Jun 28, 2022",
-                              notify_message:
-                                  "Your Leave is Approved fsfsfsfsfsfsfsf afqfaf",
-                              owner_image: "",
-                              owner_name: "Tushar Mali"),
-                          NotificationModel(
-                              date: "Jun 28, 2022",
-                              notify_message: "Your Leave is Approved",
-                              owner_image: "",
-                              owner_name: "Tushar Mali"),
-                          NotificationModel(
-                              date: "Jun 28, 2022",
-                              notify_message:
-                                  "Your Leave is Approved fsfsfsfsfsfsfsf afqfaf",
-                              owner_image: "",
-                              owner_name: "Tushar Mali"),
-                          NotificationModel(
-                              date: "Jun 28, 2022",
-                              notify_message: "Your Leave is Approved",
-                              owner_image: "",
-                              owner_name: "Tushar Mali"),
-                          NotificationModel(
-                              date: "Jun 28, 2022",
-                              notify_message:
-                                  "Your Leave is Approved fsfsfsfsfsfsfsf afqfaf",
-                              owner_image: "",
-                              owner_name: "Tushar Mali"),
-                          NotificationModel(
-                              date: "Jun 28, 2022",
-                              notify_message: "Your Leave is Approved",
-                              owner_image: "",
-                              owner_name: "Tushar Mali"),
-                          NotificationModel(
-                              date: "Jun 28, 2022",
-                              notify_message:
-                                  "Your Leave is Approved fsfsfsfsfsfsfsf afqfaf",
-                              owner_image: "",
-                              owner_name: "Tushar Mali")
-                        ],
-                      ),
-                      withNavBar: true,
-                      pageTransitionAnimation: PageTransitionAnimation.scale,
-                    );
-                  },
-                  child: Icon(
-                    Icons.notifications_outlined,
-                    color: Colors.grey,
-                    size: screenWidth / 13,
-                  ),
-                ),
+                widget.model.profile == "staff"
+                    ? SizedBox()
+                    : StreamBuilder<List<StaffLeaveApplicationModel>>(
+                        stream:
+                            Provider.of<StaffLeaveApplicationProvider>(context)
+                                .streamGetter,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            return GestureDetector(
+                              onTap: () {
+                                PersistentNavBarNavigator.pushNewScreen(
+                                  context,
+                                  screen: NotificationsScreen(
+                                    models: snapshot.data!,
+                                  ),
+                                  withNavBar: true,
+                                  pageTransitionAnimation:
+                                      PageTransitionAnimation.scale,
+                                );
+                              },
+                              child: Badge(
+                                isLabelVisible: number_of_notifications != "0",
+                                label: Text(
+                                  number_of_notifications,
+                                  style: ManageTheme.insideAppText(
+                                      size: 12,
+                                      weight: FontWeight.w500,
+                                      color: ManageTheme.backgroundWhite),
+                                ),
+                                child: Icon(
+                                  Icons.notifications_outlined,
+                                  color: Colors.grey,
+                                  size: screenWidth / 13,
+                                ),
+                              ),
+                            );
+                          } else {
+                            return Icon(
+                              Icons.notifications_outlined,
+                              color: Colors.grey,
+                              size: screenWidth / 13,
+                            );
+                          }
+                        }),
                 Spacer(),
                 GestureDetector(
                   onTap: () {
@@ -1407,8 +1321,19 @@ class _HomeState extends State<Home> {
                   );
                 } else {
                   return Center(
-                    child: LoadingAnimationWidget.staggeredDotsWave(
-                        color: ManageTheme.nearlyBlack, size: 35),
+                    child: Container(
+                      height: screenWidth / 9,
+                      width: screenWidth / 9,
+                      padding: const EdgeInsets.all(7),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(screenWidth / 18),
+                          color: ManageTheme.backgroundWhite,
+                          border: Border.all(color: Colors.black26, width: 1)),
+                      child: const CircularProgressIndicator(
+                        strokeWidth: 1.8,
+                        color: ManageTheme.nearlyBlack,
+                      ),
+                    ),
                   );
                 }
               }),

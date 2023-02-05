@@ -231,8 +231,19 @@ class _ChatState extends State<Chat> {
                 }
               } else {
                 return Center(
-                  child: LoadingAnimationWidget.staggeredDotsWave(
-                      color: ManageTheme.nearlyBlack, size: 35),
+                  child: Container(
+                    height: screenWidth / 9,
+                    width: screenWidth / 9,
+                    padding: const EdgeInsets.all(7),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(screenWidth / 18),
+                        color: ManageTheme.backgroundWhite,
+                        border: Border.all(color: Colors.black26, width: 1)),
+                    child: const CircularProgressIndicator(
+                      strokeWidth: 1.8,
+                      color: ManageTheme.nearlyBlack,
+                    ),
+                  ),
                 );
               }
             }));

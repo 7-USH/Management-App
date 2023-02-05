@@ -1,20 +1,24 @@
-// ignore_for_file: must_be_immutable
+// ignore_for_file: must_be_immutable, prefer_const_constructors, unused_import
 
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:manage_app/home/models/notification_model.dart';
-import 'package:manage_app/home/ui_view/notification_card.dart';
+import 'package:manage_app/home/models/staff_leave_application_model.dart';
+import 'package:manage_app/home/service/home_service.dart';
+import 'package:manage_app/home/ui_view/leave_request_card.dart';
 import 'package:manage_app/utils/manage_theme.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class NotificationsScreen extends StatefulWidget {
   NotificationsScreen({super.key, required this.models});
-  List<NotificationModel> models;
+  List<StaffLeaveApplicationModel> models;
 
   @override
   State<NotificationsScreen> createState() => _NotificationsScreenState();
 }
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,9 +35,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       body: widget.models.isEmpty
           ? Center(
               child: Text(
-                "No Notifications received Yet!",
-                style: ManageTheme.insideAppText(
-                    size: 20, weight: FontWeight.w500),
+                "No Notifications received yet!",
+                style: ManageTheme.appText(size: 17, weight: FontWeight.w500),
               ),
             )
           : AnimationLimiter(
@@ -46,8 +49,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         child: SlideAnimation(
                             horizontalOffset: 80.0,
                             child: FadeInAnimation(
-                                child: NotificationCard(
-                                    model: widget.models[index]))));
+                                child: LeaveRequestCard(
+                              model: widget.models[index],
+                            ))));
                   },
                   separatorBuilder: (context, index) {
                     return Container(

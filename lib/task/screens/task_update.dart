@@ -1,4 +1,4 @@
-// ignore_for_file: unused_local_variable, prefer_const_constructors, prefer_const_literals_to_create_immutables, unused_field, avoid_print, body_might_complete_normally_nullable
+// ignore_for_file: unused_local_variable, prefer_const_constructors, prefer_const_literals_to_create_immutables, unused_field, avoid_print, body_might_complete_normally_nullable, prefer_const_constructors_in_immutables, non_constant_identifier_names
 
 import 'dart:math';
 
@@ -7,31 +7,34 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:manage_app/task/models/display_admin_task_model.dart';
 import 'package:manage_app/task/models/task_model.dart';
 import 'package:manage_app/task/service/task_service.dart';
 import 'package:manage_app/utils/manage_theme.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
-class TaskAddScreen extends StatefulWidget {
-  const TaskAddScreen({super.key});
+class TaskUpdateScreen extends StatefulWidget {
+  TaskUpdateScreen({super.key, required this.model, required this.id});
+  final DisplayAdminTaskModel model;
+  final String id;
 
   @override
-  State<TaskAddScreen> createState() => _TaskAddScreenState();
+  State<TaskUpdateScreen> createState() => _TaskUpdateScreenState();
 }
 
-class _TaskAddScreenState extends State<TaskAddScreen> {
+class _TaskUpdateScreenState extends State<TaskUpdateScreen> {
   String value = "Low";
   final TextEditingController _taskTitleController = TextEditingController();
   final TextEditingController _taskDescriptionController =
       TextEditingController();
   final TextEditingController _dateController = TextEditingController();
-  final TextEditingController _validityController = TextEditingController();
-  final TextEditingController _validTimeController = TextEditingController();
+  final TextEditingController _validFromController = TextEditingController();
+  final TextEditingController _validForController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   TaskService service = TaskService();
   bool _isLoading = false;
   TimeOfDay selectedTime = TimeOfDay.now();
-
+  DateFormat formatter = DateFormat("yyyy-MM-dd HH:mm");
   Future<TimeOfDay?> _selectTime(BuildContext context) async {
     final TimeOfDay? pickedS = await showTimePicker(
       context: context,
@@ -63,6 +66,16 @@ class _TaskAddScreenState extends State<TaskAddScreen> {
 
   @override
   void initState() {
+    print(widget.model.validFrom!);
+    value = widget.model.priority!;
+    String demo_date =
+        widget.model.validFrom!.replaceAll("T", ' ').replaceAll("Z", "");
+    var dateTime = formatter.parse(demo_date).toLocal();
+    _taskTitleController.text = widget.model.taskTitle!;
+    _dateController.text = DateFormat("dd/MM/yy").format(dateTime).toString();
+    _validForController.text = widget.model.validFor!.toInt().toString();
+    _validFromController.text = DateFormat("HH:MM").format(dateTime).toString();
+    _taskDescriptionController.text = widget.model.description!;
     super.initState();
   }
 
@@ -115,13 +128,14 @@ class _TaskAddScreenState extends State<TaskAddScreen> {
                             _isLoading = true;
                           });
                           service
-                              .createTask(
+                              .updateTask(
                                   context: context,
                                   model: StaffTaskModel(
+                                    id: widget.id,
                                     validFor:
-                                        int.parse(_validityController.text),
+                                        int.parse(_validForController.text),
                                     validFrom:
-                                        "${_dateController.text} ${_validTimeController.text}",
+                                        "${_dateController.text} ${_validFromController.text}",
                                     staffEmails: ["ewhfbevwd@gmail.com"],
                                     taskTitle: _taskTitleController.text,
                                     description:
@@ -146,12 +160,12 @@ class _TaskAddScreenState extends State<TaskAddScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Icon(Icons.check),
+                                Icon(Icons.update),
                                 SizedBox(
                                   width: 10,
                                 ),
                                 Text(
-                                  "Create Task",
+                                  "Update Task",
                                   style: ManageTheme.insideAppText(
                                       size: screenWidth / 25,
                                       weight: FontWeight.w600,
@@ -170,7 +184,7 @@ class _TaskAddScreenState extends State<TaskAddScreen> {
         foregroundColor: ManageTheme.nearlyBlack,
         elevation: 0.0,
         title: Text(
-          "Create New Task",
+          "Update Task",
           style: ManageTheme.insideAppText(size: 25, weight: FontWeight.bold),
         ),
       ),
@@ -334,12 +348,12 @@ class _TaskAddScreenState extends State<TaskAddScreen> {
                     child: TextFormField(
                       cursorColor: ManageTheme.nearlyBlack,
                       keyboardType: TextInputType.none,
-                      controller: _validTimeController,
+                      controller: _validFromController,
                       onTap: () async {
                         TimeOfDay? timeOfDay = await _selectTime(context);
                         if (timeOfDay != null) {
-                          _validTimeController.text =
-                              "${timeOfDay.hour.toString().padLeft(2,"0")}:${timeOfDay.minute.toString().padLeft(2,"0")}";
+                          _validFromController.text =
+                              "${timeOfDay.hour.toString().padLeft(2, "0")}:${timeOfDay.minute.toString().padLeft(2, "0")}";
                         }
                       },
                       validator: (value) {
@@ -354,7 +368,7 @@ class _TaskAddScreenState extends State<TaskAddScreen> {
                           hint: "Enter valid from",
                           suffixIcon: IconButton(
                               onPressed: () {
-                                _validTimeController.clear();
+                                _validFromController.clear();
                               },
                               icon: Icon(
                                 Icons.close,
@@ -368,7 +382,7 @@ class _TaskAddScreenState extends State<TaskAddScreen> {
                   Expanded(
                     child: TextFormField(
                       cursorColor: ManageTheme.nearlyBlack,
-                      controller: _validityController,
+                      controller: _validForController,
                       keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -382,7 +396,7 @@ class _TaskAddScreenState extends State<TaskAddScreen> {
                           hint: "Enter valid for",
                           suffixIcon: IconButton(
                               onPressed: () {
-                                _validityController.clear();
+                                _validForController.clear();
                               },
                               icon: Icon(
                                 Icons.close,

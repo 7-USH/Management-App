@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:manage_app/attendance/models/attendance_time_model.dart';
 import 'package:manage_app/attendance/models/check_status_model.dart';
 import 'package:manage_app/attendance/models/status_enum.dart';
+import 'package:manage_app/attendance/screens/application_status_screen.dart';
 import 'package:manage_app/attendance/screens/history_screen.dart';
 import 'package:manage_app/attendance/screens/leave_screen.dart';
 import 'package:manage_app/attendance/service/attendance_service.dart';
@@ -111,7 +112,8 @@ class _AttendanceState extends State<Attendance> {
                       height: 200,
                       decoration: BoxDecoration(
                           color: ManageTheme.backgroundWhite,
-                          border: Border.all(color: ManageTheme.nearlyBlack),
+                          border: Border.all(
+                              color: ManageTheme.nearlyBlack, width: 0.6),
                           borderRadius: BorderRadius.all(Radius.circular(20)),
                           boxShadow: const [
                             BoxShadow(
@@ -296,44 +298,62 @@ class _AttendanceState extends State<Attendance> {
                               },
                             )
                           : Center(
-                              child: SizedBox(
+                            child: SizedBox(
                                 height: 70,
-                                child: Shimmer.fromColors(
-                                  baseColor: Colors.lightGreen,
-                                  highlightColor: ManageTheme.successGreen,
-                                  child: Text(
-                                    "You have completed this day!",
-                                    style: ManageTheme.insideAppText(
-                                        size: screenWidth / 21,
-                                        weight: FontWeight.w600,
-                                        color: ManageTheme.successGreen),
-                                  ),
+                                child: Text(
+                                  "You have completed this day!",
+                                  style: ManageTheme.insideAppText(
+                                      size: screenWidth / 21,
+                                      weight: FontWeight.w600,
+                                      color: Colors.black38),
                                 ),
                               ),
-                            );
-                    }
-                    return Center(
-                      child: SizedBox(
-                        height: 70,
-                        child: Text(
-                          "Working on today's status..",
-                          style: ManageTheme.insideAppText(
-                              size: screenWidth / 21,
-                              weight: FontWeight.w600,
-                              color: Colors.black38),
+                          );
+                    } else {
+                      return Center(
+                        child: SizedBox(
+                          height: 70,
+                          child: Text(
+                            "Working on today's status..",
+                            style: ManageTheme.insideAppText(
+                                size: screenWidth / 21,
+                                weight: FontWeight.w600,
+                                color: Colors.black38),
+                          ),
                         ),
-                      ),
-                    );
+                      );
+                    }
                   }),
               Container(
                 alignment: Alignment.centerLeft,
                 margin: const EdgeInsets.only(top: 32),
-                child: Text(
-                  "Leave Status",
-                  style: ManageTheme.insideAppText(
-                    size: screenWidth / 18,
-                    weight: FontWeight.w600,
-                  ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Leave Status",
+                      style: ManageTheme.insideAppText(
+                        size: screenWidth / 18,
+                        weight: FontWeight.w600,
+                      ),
+                    ),
+                    IconButton(
+                        onPressed: () {
+                         PersistentNavBarNavigator.pushNewScreen(
+                            context,
+                            withNavBar: false,
+                            screen: ApplicationStatusSreen(),
+                            pageTransitionAnimation:
+                                PageTransitionAnimation.scale,
+                          );
+                        },
+                        icon: Icon(
+                          FontAwesomeIcons.history,
+                          size: screenWidth / 15,
+                          color: Colors.black38,
+                        ))
+                  ],
                 ),
               ),
               Container(
@@ -342,7 +362,8 @@ class _AttendanceState extends State<Attendance> {
                 decoration: BoxDecoration(
                     color: ManageTheme.backgroundWhite,
                     borderRadius: BorderRadius.all(Radius.circular(20)),
-                    border: Border.all(color: ManageTheme.nearlyBlack),
+                    border:
+                        Border.all(color: ManageTheme.nearlyBlack, width: 0.6),
                     boxShadow: const [
                       BoxShadow(
                           color: Colors.black26,
@@ -385,35 +406,14 @@ class _AttendanceState extends State<Attendance> {
                       );
                     },
                     style: ManageTheme.buttonStyle(
-                        backColor: ManageTheme.backgroundWhite,
-                        borderColor: ManageTheme.nearlyBlack),
+                      backColor: ManageTheme.nearlyBlack,
+                    ),
                     child: Text(
-                      "Request Leave",
+                      "REQUEST LEAVE",
                       style: ManageTheme.insideAppText(
                           size: screenWidth / 25,
                           weight: FontWeight.w600,
-                          color: ManageTheme.nearlyBlack),
-                    )),
-              ),
-              SizedBox(
-                height: screenHeight / 40,
-              ),
-              SizedBox(
-                width: screenWidth,
-                height: screenHeight / 15,
-                child: ElevatedButton(
-                    onPressed: () {
-                      
-                    },
-                    style: ManageTheme.buttonStyle(
-                        backColor: ManageTheme.backgroundWhite,
-                        borderColor: ManageTheme.nearlyBlack),
-                    child: Text(
-                      "Application Status",
-                      style: ManageTheme.insideAppText(
-                          size: screenWidth / 25,
-                          weight: FontWeight.w600,
-                          color: ManageTheme.nearlyBlack),
+                          color: ManageTheme.backgroundWhite),
                     )),
               )
             ],

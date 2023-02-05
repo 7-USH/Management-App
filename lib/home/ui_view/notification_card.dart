@@ -33,7 +33,7 @@ class _NotificationCardState extends State<NotificationCard> {
                 width: MediaQuery.of(context).size.width * 0.7,
                 child: Text(
                   widget.model.notify_message,
-                  style: ManageTheme.insideAppText(
+                  style: ManageTheme.appText(
                       size: 14, weight: FontWeight.w500),
                 ),
               )

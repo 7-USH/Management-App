@@ -25,7 +25,8 @@ class ApiService {
     if (response.statusCode >= 500) {
       return Left(MyError(
           key: AppError.SERVER_ERROR,
-          message: "Server error with http status ${response.statusCode}", statusCode: response.statusCode));
+          message: "Server error with http status ${response.statusCode}",
+          statusCode: response.statusCode));
     }
     return Left(MyError(
         key: AppError.ERROR_DETECTED,
@@ -39,6 +40,26 @@ class ApiService {
     var response = await http.post(uri,
         body: jsonEncode(requestBody), headers: await getHeaders());
     print(response.body);
+    if (response.statusCode == 200) {
+      return Right(jsonDecode(response.body));
+    }
+    if (response.statusCode >= 500) {
+      return Left(MyError(
+          key: AppError.SERVER_ERROR,
+          message: "Server error with http status ${response.statusCode}",
+          statusCode: response.statusCode));
+    }
+    return Left(MyError(
+        key: AppError.ERROR_DETECTED,
+        message: jsonDecode(response.body)["detail"],
+        statusCode: response.statusCode));
+  }
+
+  Future<Either<MyError, Map<String, dynamic>>> updateData(
+      String endpoint, Map<String, dynamic> requestBody) async {
+    Uri uri = getUri(endpoint);
+    var response = await http.put(uri,
+        body: jsonEncode(requestBody), headers: await getHeaders());
     if (response.statusCode == 200) {
       return Right(jsonDecode(response.body));
     }

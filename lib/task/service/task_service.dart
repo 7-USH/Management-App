@@ -60,4 +60,17 @@ class TaskService {
     }
   }
 
+  Future<dynamic> updateTask(
+      {required BuildContext context, required StaffTaskModel model}) async {
+    String endpoint = "staff-task/update-task";
+    var response = await _service.updateData(endpoint, model.toJson());
+    if (response.isLeft) {
+      return ManageTheme.moveToError(
+          context: context,
+          text: response.left.message!,
+          statusCode: response.left.statusCode);
+    } else {
+      return response.right;
+    }
+  }
 }

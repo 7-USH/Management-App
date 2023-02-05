@@ -5,10 +5,12 @@ class StaffTaskModel {
   String? description;
   String? priority;
   int? validFor;
+  String? id;
 
   StaffTaskModel(
       {this.validFrom,
       this.staffEmails,
+      this.id,
       this.taskTitle,
       this.description,
       this.priority,
@@ -24,13 +26,14 @@ class StaffTaskModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['valid_from'] = this.validFrom;
-    data['staff_emails'] = this.staffEmails;
-    data['task_title'] = this.taskTitle;
-    data['description'] = this.description;
-    data['priority'] = this.priority;
-    data['valid_for'] = this.validFor;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['valid_from'] = validFrom;
+    data['staff_emails'] = staffEmails;
+    data['task_title'] = taskTitle;
+    data['description'] = description;
+    data['priority'] = priority;
+    data['valid_for'] = validFor;
+    data['task_id'] = id;
     return data;
   }
 }
