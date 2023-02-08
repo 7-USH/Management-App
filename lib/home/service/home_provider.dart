@@ -7,7 +7,6 @@ import 'package:manage_app/home/models/staff_leave_application_model.dart';
 import 'package:manage_app/home/service/home_service.dart';
 import 'package:manage_app/task/models/display_task_model.dart';
 import 'package:manage_app/task/service/task_service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../task/models/display_admin_task_model.dart';
 
@@ -33,6 +32,7 @@ class HomeAdminProvider with ChangeNotifier {
     closeAdminStream();
     super.dispose();
   }
+
 
   void closeAdminStream() async {
     await _adminController.close();
@@ -134,4 +134,8 @@ class StaffLeaveApplicationProvider with ChangeNotifier {
       throw e.toString();
     }
   }
+}
+
+class StaffMembersProvider with ChangeNotifier {
+  
 }

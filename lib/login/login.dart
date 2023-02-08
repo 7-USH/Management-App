@@ -31,9 +31,11 @@ class _LoginState extends State<Login> {
       onWillPop: () async => false,
       child: Scaffold(
         backgroundColor: ManageTheme.nearlyWhite,
-        resizeToAvoidBottomInset: false,
-        body: Padding(
-          padding: const EdgeInsets.only(top: 80),
+        resizeToAvoidBottomInset: true,
+        body: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          padding:
+              EdgeInsets.only(top: MediaQuery.of(context).size.height / 10),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -180,10 +182,6 @@ class _LoginState extends State<Login> {
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 50,
-              ),
-              Spacer(),
               Container(
                 margin: EdgeInsets.only(bottom: 20),
                 alignment: Alignment.center,

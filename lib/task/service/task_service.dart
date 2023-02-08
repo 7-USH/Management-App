@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:manage_app/common/api.dart';
 import 'package:manage_app/task/models/display_admin_task_model.dart';
 import 'package:manage_app/task/models/display_task_model.dart';
+import 'package:manage_app/task/models/staff_details_model.dart';
 import 'package:manage_app/task/models/task_model.dart';
 import 'package:manage_app/utils/manage_theme.dart';
 
@@ -23,6 +24,23 @@ class TaskService {
           statusCode: response.left.statusCode);
     } else {
       return response.right;
+    }
+  }
+
+  Future<List<StaffDetailsModel>> getStaffMembers(
+      {required BuildContext context}) async {
+    String endpoint = "profile/get-staff-members";
+    var response = await _service.getAllData(endpoint);
+    if (response.isLeft) {
+      return ManageTheme.moveToError(
+          context: context,
+          text: response.left.message!,
+          statusCode: response.left.statusCode);
+    } else {
+      return response.right
+          .map<StaffDetailsModel>(
+              (e) => StaffDetailsModel.fromJson(e as Map<String, dynamic>))
+          .toList();
     }
   }
 

@@ -1,15 +1,21 @@
-// ignore_for_file: unused_local_variable, prefer_const_literals_to_create_immutables, prefer_const_constructors, must_be_immutable, non_constant_identifier_names
+// ignore_for_file: unused_local_variable, prefer_const_literals_to_create_immutables, prefer_const_constructors, must_be_immutable, non_constant_identifier_names, prefer_final_fields
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:manage_app/home/service/home_service.dart';
 import 'package:manage_app/task/models/display_admin_task_model.dart';
 import 'package:manage_app/task/models/display_task_model.dart';
 import 'package:manage_app/utils/manage_theme.dart';
 
 class TaskDetailScreen extends StatefulWidget {
   TaskDetailScreen(
-      {super.key, required this.model, required this.staff_details});
+      {super.key,
+      required this.model,
+      required this.staff_details,
+      required this.profile});
   DisplayStaffTaskModel model;
+  String profile;
   List<StaffDetails> staff_details;
 
   @override
@@ -21,6 +27,9 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   String time_range = "6:00 PM-9:00 PM";
   String month = "Jan 2021";
   DateFormat formatter = DateFormat("yyyy-MM-dd HH:mm");
+  bool _isLoading = false;
+  HomeService service = HomeService();
+  bool onCompletion = false;
 
   @override
   void initState() {
@@ -48,6 +57,67 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     }
     return Scaffold(
       backgroundColor: ManageTheme.nearlyWhite,
+      bottomNavigationBar: onCompletion ||
+              widget.model.status! != "Active" ||
+              widget.profile != "staff"
+          ? null
+          : Container(
+              margin: EdgeInsets.all(20),
+              child: Row(
+                children: [
+                  Expanded(
+                      flex: 2,
+                      child: SizedBox(
+                        height: 50,
+                        child: ElevatedButton(
+                            style: ManageTheme.buttonStyle(
+                              backColor: ManageTheme.nearlyBlack,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _isLoading = true;
+                              });
+                              service.updateStatusTask(
+                                  context: context,
+                                  requestBody: {
+                                    "task_id": widget.model.id!,
+                                    "status": "Completed"
+                                  }).then((value) {
+                                setState(() {
+                                  _isLoading = false;
+                                  onCompletion = true;
+                                });
+                              }).onError((error, stackTrace) {
+                                setState(() {
+                                  _isLoading = false;
+                                });
+                              });
+                            },
+                            child: _isLoading
+                                ? Center(
+                                    child: LoadingAnimationWidget
+                                        .staggeredDotsWave(
+                                    color: Colors.white,
+                                    size: 20,
+                                  ))
+                                : Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "Done",
+                                        style: ManageTheme.insideAppText(
+                                            size: screenWidth / 25,
+                                            weight: FontWeight.w600,
+                                            color: ManageTheme.backgroundWhite),
+                                      ),
+                                    ],
+                                  )),
+                      ))
+                ],
+              ),
+            ),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         foregroundColor: ManageTheme.nearlyBlack,
@@ -206,7 +276,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
               alignment: Alignment.centerLeft,
               margin: const EdgeInsets.only(bottom: 15),
               child: Text(
-                "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum",
+                widget.model.description!.trim(),
                 textAlign: TextAlign.justify,
                 style: ManageTheme.insideAppText(
                     size: screenWidth / 27,

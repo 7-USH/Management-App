@@ -158,9 +158,15 @@ class ManageTheme {
     );
   }
 
-  static moveToError({required BuildContext context, required String text,required int statusCode}) {
-    PersistentNavBarNavigator.pushNewScreen(context,
-        screen: ErrorPage(text: text,statusCode: statusCode,), withNavBar: false);
+  static moveToError(
+      {required BuildContext context,
+      required String text,
+      required int statusCode}) {
+    Navigator.of(context, rootNavigator: true).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) => ErrorPage(text: text, statusCode: statusCode),
+      ),
+    );
   }
 
   static int generateOTP() {

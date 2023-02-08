@@ -342,7 +342,7 @@ class _AttendanceState extends State<Attendance> {
                         onPressed: () {
                          PersistentNavBarNavigator.pushNewScreen(
                             context,
-                            withNavBar: false,
+                            withNavBar: true,
                             screen: ApplicationStatusSreen(),
                             pageTransitionAnimation:
                                 PageTransitionAnimation.scale,

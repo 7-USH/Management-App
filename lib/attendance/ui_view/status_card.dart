@@ -67,7 +67,7 @@ class _StatusCardState extends State<StatusCard> {
                     widget.model.leaveSubject!,
                     overflow: TextOverflow.ellipsis,
                     style: ManageTheme.insideAppText(
-                        size: screenWidth / 25, weight: FontWeight.w700),
+                        size: screenWidth / 24, weight: FontWeight.w600),
                   ),
                 ),
                 Chip(
@@ -169,7 +169,7 @@ class _StatusCardState extends State<StatusCard> {
           Container(
             alignment: Alignment.centerLeft,
             margin: const EdgeInsets.only(top: 15),
-            child: Text('“ ${widget.model.reason!} ”',
+            child: Text('“ ${widget.model.reason!.trim()} ”',
                 style: ManageTheme.appText(
                     size: screenWidth / 25,
                     weight: FontWeight.w500,

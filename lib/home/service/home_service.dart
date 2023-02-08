@@ -102,4 +102,35 @@ class HomeService {
       return response.right;
     }
   }
+
+
+  Future<dynamic> uploadProfileImage(
+      {required BuildContext context,
+      required Map<String, dynamic> requestBody}) async {
+    String endpoint = "user/upload-profile-image";
+    var response = await _service.postData(endpoint, requestBody);
+    if (response.isLeft) {
+      return ManageTheme.moveToError(
+          context: context,
+          text: response.left.message!,
+          statusCode: response.left.statusCode);
+    } else {
+      return response.right;
+    }
+  }
+
+  Future<dynamic> updateStatusTask(
+      {required BuildContext context,
+      required Map<String, dynamic> requestBody}) async {
+    String endpoint = "staff-task/update-task-by-staff";
+    var response = await _service.updateData(endpoint, requestBody);
+    if (response.isLeft) {
+      return ManageTheme.moveToError(
+          context: context,
+          text: response.left.message!,
+          statusCode: response.left.statusCode);
+    } else {
+      return response.right;
+    }
+  }
 }

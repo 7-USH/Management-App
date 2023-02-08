@@ -1,17 +1,20 @@
-// ignore_for_file: prefer_const_constructors, unused_field, sized_box_for_whitespace, use_build_context_synchronously, unused_local_variable, non_constant_identifier_names, prefer_final_fields, must_be_immutable, unrelated_type_equality_checks, unnecessary_null_comparison
+// ignore_for_file: prefer_const_constructors, unused_field, sized_box_for_whitespace, use_build_context_synchronously, unused_local_variable, non_constant_identifier_names, prefer_final_fields, must_be_immutable, unrelated_type_equality_checks, unnecessary_null_comparison, unused_element
 
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:lottie/lottie.dart';
 import 'package:manage_app/chat/view_models/users_list_viewmodel.dart';
 import 'package:manage_app/home/models/family_member_model.dart';
 import 'package:manage_app/home/models/family_relationship_model.dart';
-import 'package:manage_app/home/models/notification_model.dart';
 import 'package:manage_app/home/models/profile_detail_model.dart';
 import 'package:manage_app/home/models/staff_leave_application_model.dart';
 import 'package:manage_app/home/screens/family_tree.dart';
@@ -26,11 +29,9 @@ import 'package:manage_app/home/ui_view/assigned_task_card.dart';
 import 'package:manage_app/home/ui_view/task_card.dart';
 import 'package:manage_app/task/models/display_admin_task_model.dart';
 import 'package:manage_app/task/models/display_task_model.dart';
-import 'package:manage_app/task/service/task_service.dart';
 import 'package:manage_app/utils/manage_theme.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 
 class Home extends StatefulWidget {
@@ -44,6 +45,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   int _current = 0;
   HomeService service = HomeService();
+  late Uint8List familyMemberProfileImage;
   final _formKey = GlobalKey<FormState>();
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
@@ -78,6 +80,88 @@ class _HomeState extends State<Home> {
   void initState() {
     _familyRelationShips = service.getFamilyMembers(context: context);
     super.initState();
+  }
+
+  showCameraDialog() {
+    showDialog(
+        context: context,
+        builder: (_) {
+          return StatefulBuilder(
+            builder: (context, setState) => AlertDialog(
+              content: Container(
+                width: 100,
+                decoration:
+                    BoxDecoration(borderRadius: BorderRadius.circular(5)),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Where do you want to take the image from?",
+                      style: ManageTheme.appText(
+                          size: 15, weight: FontWeight.w500),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    ElevatedButton.icon(
+                        style: ManageTheme.buttonStyle(
+                            backColor: ManageTheme.nearlyBlack),
+                        onPressed: () async {
+                          var imageFile = await ImagePicker()
+                              .pickImage(source: ImageSource.camera);
+                          if (imageFile != null) {
+                            File file = File(imageFile.path);
+                            setState(() {
+                              familyMemberProfileImage = file.readAsBytesSync();
+                              Navigator.of(context, rootNavigator: true)
+                                  .pop(familyMemberProfileImage);
+                            });
+                          }
+                        },
+                        icon: Icon(Icons.add_a_photo),
+                        label: Center(
+                          child: Text(
+                            "Camera",
+                            style: ManageTheme.insideAppText(
+                                size: 12,
+                                weight: FontWeight.bold,
+                                color: ManageTheme.backgroundWhite),
+                          ),
+                        )),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    ElevatedButton.icon(
+                        style: ManageTheme.buttonStyle(
+                            backColor: ManageTheme.nearlyBlack),
+                        onPressed: () async {
+                          var imageFile = await ImagePicker()
+                              .pickImage(source: ImageSource.gallery);
+                        },
+                        icon: Icon(Icons.add_photo_alternate),
+                        label: Center(
+                          child: Text(
+                            "Gallery",
+                            style: ManageTheme.insideAppText(
+                                size: 12,
+                                weight: FontWeight.bold,
+                                color: ManageTheme.backgroundWhite),
+                          ),
+                        )),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }).then((value) {
+      if (familyMemberProfileImage != null) {
+        service.uploadProfileImage(context: context, requestBody: {
+          "profile_image": base64Encode(familyMemberProfileImage)
+        }).then((value) => print(value));
+      }
+    });
   }
 
   Future<void> addFamilyMembers() async {
@@ -116,41 +200,47 @@ class _HomeState extends State<Home> {
                               ),
                               Column(
                                 children: [
-                                  Container(
-                                    height:
-                                        MediaQuery.of(context).size.width / 3,
-                                    width:
-                                        MediaQuery.of(context).size.width / 3,
-                                    margin: EdgeInsets.only(bottom: 25),
-                                    decoration: BoxDecoration(
-                                        border: Border.all(color: Colors.grey),
-                                        borderRadius:
-                                            BorderRadius.circular(20)),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Icon(
-                                          Icons.add_a_photo,
-                                          color: Colors.grey,
-                                          size: MediaQuery.of(context)
-                                                  .size
-                                                  .width /
-                                              14,
-                                        ),
-                                        Text(
-                                          "Add Image",
-                                          style: ManageTheme.insideAppText(
-                                              size: MediaQuery.of(context)
-                                                      .size
-                                                      .width /
-                                                  43,
-                                              weight: FontWeight.w500,
-                                              color: Colors.grey),
-                                        )
-                                      ],
+                                  GestureDetector(
+                                    onTap: () async {
+                                      showCameraDialog();
+                                    },
+                                    child: Container(
+                                      height:
+                                          MediaQuery.of(context).size.width / 3,
+                                      width:
+                                          MediaQuery.of(context).size.width / 3,
+                                      margin: EdgeInsets.only(bottom: 25),
+                                      decoration: BoxDecoration(
+                                          border:
+                                              Border.all(color: Colors.grey),
+                                          borderRadius:
+                                              BorderRadius.circular(20)),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.add_a_photo,
+                                            color: Colors.grey,
+                                            size: MediaQuery.of(context)
+                                                    .size
+                                                    .width /
+                                                14,
+                                          ),
+                                          Text(
+                                            "Add Image",
+                                            style: ManageTheme.insideAppText(
+                                                size: MediaQuery.of(context)
+                                                        .size
+                                                        .width /
+                                                    43,
+                                                weight: FontWeight.w500,
+                                                color: Colors.grey),
+                                          )
+                                        ],
+                                      ),
                                     ),
                                   ),
                                   TextFormField(
@@ -718,6 +808,7 @@ class _HomeState extends State<Home> {
                 ? SizedBox(
                     height: screenHeight / 3.4,
                     child: Chip(
+                      backgroundColor: ManageTheme.nearlyWhite,
                       label: Center(
                           child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -727,7 +818,7 @@ class _HomeState extends State<Home> {
                             "assets/gifs/task.json",
                             frameRate: FrameRate.max,
                             repeat: false,
-                            height: 150,
+                            height: screenHeight/5,
                           ),
                           Text(
                             "No Task for Today!",
@@ -748,10 +839,11 @@ class _HomeState extends State<Home> {
                                 PersistentNavBarNavigator.pushNewScreen(
                                   context,
                                   screen: TaskDetailScreen(
+                                    profile: widget.model.profile!,
                                     model: snapshot.data![index],
                                     staff_details: [],
                                   ),
-                                  withNavBar: true,
+                                  withNavBar: false,
                                   pageTransitionAnimation:
                                       PageTransitionAnimation.scale,
                                 );
@@ -832,6 +924,7 @@ class _HomeState extends State<Home> {
                 ? SizedBox(
                     height: screenHeight / 3.4,
                     child: Chip(
+                       backgroundColor: ManageTheme.nearlyWhite,
                       label: Center(
                           child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -841,7 +934,7 @@ class _HomeState extends State<Home> {
                             "assets/gifs/task.json",
                             frameRate: FrameRate.max,
                             repeat: false,
-                            height: 150,
+                            height: screenHeight/5,
                           ),
                           Text(
                             "No Task for Today!",
@@ -862,11 +955,12 @@ class _HomeState extends State<Home> {
                                 PersistentNavBarNavigator.pushNewScreen(
                                   context,
                                   screen: TaskDetailScreen(
+                                    profile: widget.model.profile!,
                                     model: snapshot.data![index],
                                     staff_details:
                                         snapshot.data![index].staffDetails!,
                                   ),
-                                  withNavBar: true,
+                                  withNavBar: false,
                                   pageTransitionAnimation:
                                       PageTransitionAnimation.scale,
                                 );

@@ -1,4 +1,4 @@
-// ignore_for_file: unused_local_variable, prefer_const_constructors, prefer_const_literals_to_create_immutables, unused_field, avoid_print, body_might_complete_normally_nullable
+// ignore_for_file: unused_local_variable, prefer_const_constructors, prefer_const_literals_to_create_immutables, unused_field, avoid_print, body_might_complete_normally_nullable, no_leading_underscores_for_local_identifiers
 
 import 'dart:math';
 
@@ -7,9 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:manage_app/task/models/staff_details_model.dart';
 import 'package:manage_app/task/models/task_model.dart';
 import 'package:manage_app/task/service/task_service.dart';
 import 'package:manage_app/utils/manage_theme.dart';
+import 'package:multi_select_flutter/multi_select_flutter.dart';
+
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class TaskAddScreen extends StatefulWidget {
@@ -21,6 +24,7 @@ class TaskAddScreen extends StatefulWidget {
 
 class _TaskAddScreenState extends State<TaskAddScreen> {
   String value = "Low";
+  List<String> selected = [];
   final TextEditingController _taskTitleController = TextEditingController();
   final TextEditingController _taskDescriptionController =
       TextEditingController();
@@ -31,6 +35,9 @@ class _TaskAddScreenState extends State<TaskAddScreen> {
   TaskService service = TaskService();
   bool _isLoading = false;
   TimeOfDay selectedTime = TimeOfDay.now();
+  final _multiSelectKey = GlobalKey<FormFieldState>();
+  List<StaffDetailsModel> _selectedStaffs = [];
+  bool staffEmtpy = false;
 
   Future<TimeOfDay?> _selectTime(BuildContext context) async {
     final TimeOfDay? pickedS = await showTimePicker(
@@ -110,9 +117,11 @@ class _TaskAddScreenState extends State<TaskAddScreen> {
                         backColor: ManageTheme.nearlyBlack,
                       ),
                       onPressed: () {
-                        if (_formKey.currentState!.validate()) {
+                        if (_formKey.currentState!.validate() &&
+                            _selectedStaffs.isNotEmpty) {
                           setState(() {
                             _isLoading = true;
+                            staffEmtpy = false;
                           });
                           service
                               .createTask(
@@ -122,7 +131,9 @@ class _TaskAddScreenState extends State<TaskAddScreen> {
                                         int.parse(_validityController.text),
                                     validFrom:
                                         "${_dateController.text} ${_validTimeController.text}",
-                                    staffEmails: ["ewhfbevwd@gmail.com"],
+                                    staffEmails: _selectedStaffs
+                                        .map((e) => e.userEmail!)
+                                        .toList(),
                                     taskTitle: _taskTitleController.text,
                                     description:
                                         _taskDescriptionController.text,
@@ -133,6 +144,10 @@ class _TaskAddScreenState extends State<TaskAddScreen> {
                               _isLoading = false;
                             });
                             Navigator.pop(context);
+                          });
+                        } else {
+                          setState(() {
+                            staffEmtpy = true;
                           });
                         }
                       },
@@ -339,7 +354,7 @@ class _TaskAddScreenState extends State<TaskAddScreen> {
                         TimeOfDay? timeOfDay = await _selectTime(context);
                         if (timeOfDay != null) {
                           _validTimeController.text =
-                              "${timeOfDay.hour.toString().padLeft(2,"0")}:${timeOfDay.minute.toString().padLeft(2,"0")}";
+                              "${timeOfDay.hour.toString().padLeft(2, "0")}:${timeOfDay.minute.toString().padLeft(2, "0")}";
                         }
                       },
                       validator: (value) {
@@ -445,13 +460,24 @@ class _TaskAddScreenState extends State<TaskAddScreen> {
                 children: [
                   Container(
                     alignment: Alignment.centerLeft,
-                    margin: EdgeInsets.only(bottom: 10),
+                    margin: EdgeInsets.only(bottom: staffEmtpy ? 0: 10),
                     child: Text(
                       "Assignee",
                       style: ManageTheme.insideAppText(
                           size: screenWidth / 20, weight: FontWeight.w600),
                     ),
                   ),
+                 staffEmtpy ? Container(
+                    alignment: Alignment.centerLeft,
+                    margin: EdgeInsets.only(bottom: 10),
+                    child: Text(
+                      "Please add members",
+                      style: ManageTheme.appText(
+                          size: screenWidth / 33,
+                          weight: FontWeight.w500,
+                          color: Colors.redAccent),
+                    ),
+                  ) : SizedBox(),
                   SizedBox(
                     height: 50,
                     child: ListView(
@@ -459,7 +485,7 @@ class _TaskAddScreenState extends State<TaskAddScreen> {
                         physics: const BouncingScrollPhysics(),
                         shrinkWrap: true,
                         children: List.generate(
-                          3,
+                          _selectedStaffs.length,
                           (index) => Container(
                             height: 50,
                             width: 50,
@@ -469,18 +495,118 @@ class _TaskAddScreenState extends State<TaskAddScreen> {
                                 color: ManageTheme.nearlyBlack),
                           ),
                         )..add(
-                            Container(
-                                height: 50,
-                                width: 50,
-                                margin: const EdgeInsets.only(right: 10),
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(25),
-                                    color: ManageTheme.nearlyBlack),
-                                child: Icon(
-                                  FontAwesomeIcons.plus,
-                                  color: ManageTheme.backgroundWhite,
-                                  size: screenWidth / 25,
-                                )),
+                            GestureDetector(
+                              onTap: () {
+                                showModalBottomSheet(
+                                    context: context,
+                                    useSafeArea: true,
+                                    useRootNavigator: true,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(20),
+                                            topRight: Radius.circular(20))),
+                                    builder: (_) {
+                                      return StatefulBuilder(
+                                          builder: (context, st) {
+                                        return FutureBuilder(
+                                          builder: ((context, snapshot) {
+                                            if (snapshot.hasData) {
+                                              final _items = snapshot.data!
+                                                  .map((e) => MultiSelectItem<
+                                                          StaffDetailsModel>(
+                                                      e, e.fullName!))
+                                                  .toList();
+
+                                              return Container(
+                                                padding: EdgeInsets.all(10),
+                                                child: MultiSelectBottomSheet<
+                                                    StaffDetailsModel>(
+                                                  listType:
+                                                      MultiSelectListType.LIST,
+                                                  selectedColor:
+                                                      ManageTheme.nearlyBlack,
+                                                  itemsTextStyle:
+                                                      ManageTheme.insideAppText(
+                                                          size: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width /
+                                                              28,
+                                                          weight:
+                                                              FontWeight.w500),
+                                                  selectedItemsTextStyle:
+                                                      ManageTheme.insideAppText(
+                                                          size: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width /
+                                                              28,
+                                                          weight:
+                                                              FontWeight.w600),
+                                                  title: Text(
+                                                    "All Staff Members",
+                                                    style: ManageTheme
+                                                        .insideAppText(
+                                                            size: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width /
+                                                                20,
+                                                            weight: FontWeight
+                                                                .w600),
+                                                  ),
+                                                  initialValue: snapshot.data!
+                                                      .where((element) {
+                                                    for (StaffDetailsModel x
+                                                        in _selectedStaffs) {
+                                                      if (x.userEmail! ==
+                                                          element.userEmail) {
+                                                        return true;
+                                                      }
+                                                    }
+                                                    return false;
+                                                  }).toList(),
+                                                  initialChildSize: 0.7,
+                                                  maxChildSize: 0.95,
+                                                  items: _items,
+                                                  onConfirm: (values) {
+                                                    setState(() {
+                                                      _selectedStaffs = values;
+                                                    });
+                                                  },
+                                                ),
+                                              );
+                                            } else {
+                                              return Center(
+                                                  child: LoadingAnimationWidget
+                                                      .staggeredDotsWave(
+                                                color: ManageTheme.nearlyBlack,
+                                                size: MediaQuery.of(context)
+                                                        .size
+                                                        .width /
+                                                    14,
+                                              ));
+                                            }
+                                          }),
+                                          future: service.getStaffMembers(
+                                              context: context),
+                                        );
+                                      });
+                                    });
+                              },
+                              child: Container(
+                                  height: 50,
+                                  width: 50,
+                                  margin: const EdgeInsets.only(right: 10),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(25),
+                                      color: ManageTheme.nearlyBlack),
+                                  child: Icon(
+                                    FontAwesomeIcons.plus,
+                                    color: ManageTheme.backgroundWhite,
+                                    size: screenWidth / 25,
+                                  )),
+                            ),
                           )),
                   ),
                 ],
